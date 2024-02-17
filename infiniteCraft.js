@@ -19,6 +19,9 @@ async function craft(a, b) {
 }
 
 function alreadyChecked(attempted, elementA, elementB) {
+    if (elementA == elementB) {
+        return attempted.some(x => x.elements.includes(elementA) && x.elements.includes(elementB) && x.elements[0] == x.elements[1])
+    }
     return attempted.some(x => x.elements.includes(elementA) && x.elements.includes(elementB))
 }
 
@@ -119,17 +122,17 @@ async function getElements() {
         // let [elementA, elementB] = getSpecificPair(attempted, costs, "Dragon")
         let response = await craft(elementA, elementB)
         if (response.result == "Nothing") {
-            console.log(`${elementA} + ${elementB} -> ${response.result} (not added)`)
+            console.log(`${i}: ${elementA} + ${elementB} -> ${response.result} (not added)`)
             attempted.push({ elements: [elementA, elementB], result: response.result })
         } else if (Object.keys(costs).includes(response.result)) {
-            console.log(`${elementA} + ${elementB} -> ${response.result}`)
+            console.log(`${i}: ${elementA} + ${elementB} -> ${response.result}`)
             attempted.push({ elements: [elementA, elementB], result: response.result })
             if (costs[response.result] > costs[elementA] + costs[elementB]) {
-                console.log(`Reduced cost for ${response.result} from ${costs[response.result]} to ${costs[elementA] + costs[elementB]}`)
+                // console.log(`Reduced cost for ${response.result} from ${costs[response.result]} to ${costs[elementA] + costs[elementB]}`)
                 costs[response.result] = costs[elementA] + costs[elementB]
             }
         } else {
-            console.log(`${elementA} + ${elementB} -> ${response.result} (new element)`)
+            console.log(`${i}: ${elementA} + ${elementB} -> ${response.result} (new element)`)
             attempted.push({ elements: [elementA, elementB], result: response.result })
             costs[response.result] = costs[elementA] + costs[elementB]
             icons[response.result] = response.emoji
