@@ -54,10 +54,10 @@
 
 <body>
     <div id="app">
-        <h1 style="text-align: center; cursor: pointer;" @click="currentElement = ''">Infinite Craft Wiki</h1>
+        <h1 style="text-align: center; cursor: pointer;" @click="navigateTo('')">Infinite Craft Wiki</h1>
         <div v-if="currentElement">
             <h2 style="text-align: center;">
-                <div class="item" style=" padding: 13px 15px 12px" @click="currentElement = ''">{{ icons[currentElement]
+                <div class="item" style=" padding: 13px 15px 12px" @click="navigateTo('')">{{ icons[currentElement]
                     }}&nbsp;{{
                     currentElement }}</div>
             </h2>
@@ -68,19 +68,38 @@
                         <h3>Created by</h3>
                         <table>
                             <tr v-for="recipe in createdBy">
-                                <td class="item" @click="currentElement = recipe.ingredientA">{{
+                                <td class="item" @click="navigateTo(recipe.ingredientA)">{{
                                     icons[recipe.ingredientA]
                                     }}&nbsp;{{ recipe.ingredientA }}</td>
                                 <td>+</td>
-                                <td class="item" @click="currentElement = recipe.ingredientB">{{
+                                <td class="item" @click="navigateTo(recipe.ingredientB)">{{
                                     icons[recipe.ingredientB]
                                     }}&nbsp;{{ recipe.ingredientB }}</td>
                                 <td>=</td>
-                                <td class="item" @click="currentElement = recipe.result">{{ icons[recipe.result]
+                                <td class="item" @click="navigateTo(recipe.result)">{{ icons[recipe.result]
+                                    }}&nbsp;{{
+                                    recipe.result }}</td>
+                            </tr>
+                            
+                            <tr v-for="recipe in hidden" v-if="showHiddenRecipes">
+                                <td class="item" @click="navigateTo(recipe.ingredientA)">{{
+                                    icons[recipe.ingredientA]
+                                    }}&nbsp;{{ recipe.ingredientA }}</td>
+                                <td>+</td>
+                                <td class="item" @click="navigateTo(recipe.ingredientB)">{{
+                                    icons[recipe.ingredientB]
+                                    }}&nbsp;{{ recipe.ingredientB }}</td>
+                                <td>=</td>
+                                <td class="item" @click="navigateTo(recipe.result)">{{ icons[recipe.result]
                                     }}&nbsp;{{
                                     recipe.result }}</td>
                             </tr>
                         </table>
+                        <div v-if="hidden.length > 0">
+                            <div v-if="!showHiddenRecipes" style="text-decoration: underline; margin-top: 5px; color: #949494; cursor: pointer" @click="showHiddenRecipes = true">
+                                {{hidden.length}} entries hidden
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -88,23 +107,40 @@
                     <h3>Used in</h3>
                     <table>
                         <tr v-for="recipe in usedIn">
-                            <td class="item" @click="currentElement = recipe.ingredientA">{{ icons[recipe.ingredientA]
+                            <td class="item" @click="navigateTo(recipe.ingredientA)">{{ icons[recipe.ingredientA]
                                 }}&nbsp;{{ recipe.ingredientA }}</td>
                             <td>+</td>
-                            <td class="item" @click="currentElement = recipe.ingredientB">{{ icons[recipe.ingredientB]
+                            <td class="item" @click="navigateTo(recipe.ingredientB)">{{ icons[recipe.ingredientB]
                                 }}&nbsp;{{ recipe.ingredientB }}</td>
                             <td>=</td>
-                            <td class="item" @click="currentElement = recipe.result">{{ icons[recipe.result] }}&nbsp;{{
+                            <td class="item" @click="navigateTo(recipe.result)">{{ icons[recipe.result] }}&nbsp;{{
+                                recipe.result }}</td>
+                        </tr>
+
+                        <tr v-for="recipe in hidden" v-if="showHiddenRecipes">
+                            <td class="item" @click="navigateTo(recipe.ingredientA)">{{ icons[recipe.ingredientA]
+                                }}&nbsp;{{ recipe.ingredientA }}</td>
+                            <td>+</td>
+                            <td class="item" @click="navigateTo(recipe.ingredientB)">{{ icons[recipe.ingredientB]
+                                }}&nbsp;{{ recipe.ingredientB }}</td>
+                            <td>=</td>
+                            <td class="item" @click="navigateTo(recipe.result)">{{ icons[recipe.result] }}&nbsp;{{
                                 recipe.result }}</td>
                         </tr>
                     </table>
+
+                    <div v-if="hidden.length > 0">
+                        <div v-if="!showHiddenRecipes" style="text-decoration: underline; margin-top: 5px; color: #949494; cursor: pointer" @click="showHiddenRecipes = true">
+                            {{hidden.length}} entries hidden
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div v-else>
             <h2 style="text-align: center;">Elements</h2>
             <div style="display: flex; flex-wrap: wrap; justify-content: center;">
-                <div class="item" v-for="element in elementList" @click="currentElement = element">{{ icons[element]
+                <div class="item" v-for="element in elementList" @click="navigateTo(element)">{{ icons[element]
                     }}&nbsp;{{ element }}</div>
             </div>
         </div>
@@ -121,16 +157,26 @@
                 let currentRecipe = { ingredientA: recipe.elements[0], ingredientB: recipe.elements[1], result: recipe.result }
                 for (let element of recipe.elements) {
                     if (!wikiData[element]) {
-                        wikiData[element] = { usedIn: [], createdBy: [] }
+                        wikiData[element] = { usedIn: [], createdBy: [], hidden: []}
                     }
-                    if (!recipesInclude(wikiData[element].usedIn, currentRecipe))
-                        wikiData[element].usedIn.push(currentRecipe)
+                    if (!recipesInclude(wikiData[element].usedIn, currentRecipe) && !recipesInclude(wikiData[element].hidden, currentRecipe)) {
+                        if (recipe.result != element) {
+                            wikiData[element].usedIn.push(currentRecipe)
+                        } else {
+                            wikiData[element].hidden.push(currentRecipe)
+                        }
+                    }
                 }
                 if (!wikiData[recipe.result]) {
-                    wikiData[recipe.result] = { usedIn: [], createdBy: [] }
+                    wikiData[recipe.result] = { usedIn: [], createdBy: [], hidden: []}
                 }
-                if (!recipesInclude(wikiData[recipe.result].createdBy, currentRecipe))
-                    wikiData[recipe.result].createdBy.push(currentRecipe)
+                if (!recipesInclude(wikiData[recipe.result].createdBy, currentRecipe) && !recipesInclude(wikiData[recipe.result].hidden, currentRecipe)) {
+                    if (recipe.result != recipe.elements[0] && recipe.result != recipe.elements[1]) {
+                        wikiData[recipe.result].createdBy.push(currentRecipe)
+                    } else {
+                        wikiData[recipe.result].hidden.push(currentRecipe)
+                    }
+                }
             }
 
             for (let element in wikiData) {
@@ -139,6 +185,28 @@
             }
             return wikiData
         }
+
+        function setQuery(query) {
+            const url = new URL(window.location.href);
+            for (let key in query) {
+                url.searchParams.set(key, query[key]);
+            }
+
+            window.history.replaceState({}, '', url);
+        }
+
+        function getQuery() {
+            const params = new URLSearchParams(window.location.search);
+            const queryParams = {};
+
+            // Iterate over each query parameter
+            for (const [key, value] of params.entries()) {
+                queryParams[key] = value;
+            }
+
+            return queryParams;
+        }
+
         // Vue app
         new Vue({
             el: '#app',
@@ -146,7 +214,8 @@
                 data: [],
                 costs: {},
                 currentElement: "",
-                icons: {}
+                icons: {},
+                showHiddenRecipes: false,
             },
             computed: {
                 usedIn: function () {
@@ -155,8 +224,19 @@
                 createdBy: function () {
                     return this.data.find(element => element[0] === this.currentElement)[1].createdBy
                 },
+                hidden: function () {
+                    return this.data.find(element => element[0] === this.currentElement)[1].hidden
+                },
                 elementList: function () {
                     return this.data.map(element => element[0]).sort((a, b) => this.costs[a] - this.costs[b])
+                }
+            },
+            methods: {
+                navigateTo: function (element) {
+                    this.currentElement = element
+                    this.showHiddenRecipes = false
+                    setQuery({ element: this.currentElement })
+                    return this.currentElement ? this.currentElement : ""
                 }
             },
             mounted() {
@@ -169,6 +249,7 @@
                         this.data = Object.entries(wikiData);
                         this.costs = data.costs
                         this.icons = data.icons
+                        this.currentElement = getQuery().element || ""
                     })
                     .catch(error => {
                         console.error('Error loading recipes:', error);
