@@ -294,6 +294,7 @@
                     .catch(error => {
                         console.error('Error loading recipes:', error);
                     });
+                addEventListener("popstate", (event) => this.currentElement = getQuery().element || "");
             }
         });
     </script>
