@@ -49,6 +49,16 @@
         .item:hover {
             border: 1px solid #45505c;
         }
+
+        #ingredients-flex {
+            display: flex; flex-direction: row; gap: 2rem; justify-content: space-evenly; text-align: center;
+        }
+
+        @media (max-width: 900px) {
+            #ingredients-flex {
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
 
@@ -61,9 +71,8 @@
                     }}&nbsp;{{
                     currentElement }}</div>
             </h2>
-            <div
-                style="display: flex; flex-direction: row; gap: 2rem; justify-content: space-evenly; text-align: center;">
-                <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+            <div id="ingredients-flex">
+                <div id="ingredients-flex" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
                     <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
                         <h3>Created by</h3>
                         <table>
@@ -80,7 +89,7 @@
                                     }}&nbsp;{{
                                     recipe.result }}</td>
                             </tr>
-                            
+
                             <tr v-for="recipe in hidden" v-if="showHiddenRecipes">
                                 <td class="item" @click="navigateTo(recipe.ingredientA)">{{
                                     icons[recipe.ingredientA]
@@ -96,7 +105,9 @@
                             </tr>
                         </table>
                         <div v-if="hidden.length > 0">
-                            <div v-if="!showHiddenRecipes" style="text-decoration: underline; margin-top: 5px; color: #949494; cursor: pointer" @click="showHiddenRecipes = true">
+                            <div v-if="!showHiddenRecipes"
+                                style="text-decoration: underline; margin-top: 5px; color: #949494; cursor: pointer"
+                                @click="showHiddenRecipes = true">
                                 {{hidden.length}} entries hidden
                             </div>
                         </div>
@@ -130,7 +141,9 @@
                     </table>
 
                     <div v-if="hidden.length > 0">
-                        <div v-if="!showHiddenRecipes" style="text-decoration: underline; margin-top: 5px; color: #949494; cursor: pointer" @click="showHiddenRecipes = true">
+                        <div v-if="!showHiddenRecipes"
+                            style="text-decoration: underline; margin-top: 5px; color: #949494; cursor: pointer"
+                            @click="showHiddenRecipes = true">
                             {{hidden.length}} entries hidden
                         </div>
                     </div>
@@ -157,7 +170,7 @@
                 let currentRecipe = { ingredientA: recipe.elements[0], ingredientB: recipe.elements[1], result: recipe.result }
                 for (let element of recipe.elements) {
                     if (!wikiData[element]) {
-                        wikiData[element] = { usedIn: [], createdBy: [], hidden: []}
+                        wikiData[element] = { usedIn: [], createdBy: [], hidden: [] }
                     }
                     if (!recipesInclude(wikiData[element].usedIn, currentRecipe) && !recipesInclude(wikiData[element].hidden, currentRecipe)) {
                         if (recipe.result != element) {
@@ -168,7 +181,7 @@
                     }
                 }
                 if (!wikiData[recipe.result]) {
-                    wikiData[recipe.result] = { usedIn: [], createdBy: [], hidden: []}
+                    wikiData[recipe.result] = { usedIn: [], createdBy: [], hidden: [] }
                 }
                 if (!recipesInclude(wikiData[recipe.result].createdBy, currentRecipe) && !recipesInclude(wikiData[recipe.result].hidden, currentRecipe)) {
                     if (recipe.result != recipe.elements[0] && recipe.result != recipe.elements[1]) {
