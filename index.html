@@ -224,7 +224,7 @@
                 wikiData[element].usedIn = wikiData[element].usedIn.sort((a, b) => raw.costs[a.result] - raw.costs[b.result])
                 wikiData[element].createdBy = wikiData[element].createdBy.sort((a, b) => raw.costs[a.ingredientA] + raw.costs[a.ingredientB] - raw.costs[b.ingredientA] - raw.costs[b.ingredientB])
                 wikiData[element].hidden = wikiData[element].hidden.sort((a, b) => raw.costs[a.ingredientA] + raw.costs[a.ingredientB] - raw.costs[b.ingredientA] - raw.costs[b.ingredientB])
-                wikiData[element].hidden = [...wikiData[element].hidden.filter(x => x.result != 'Nothing'), ...wikiData[element].hidden.filter(x => x.result == 'Nothing')]
+                wikiData[element].hidden = [...wikiData[element].hidden.filter(x => x.result != 'Nothing' && x.result != element), ...wikiData[element].hidden.filter(x => x.result == element), ...wikiData[element].hidden.filter(x => x.result == 'Nothing')]
             }
             return wikiData
         }
