@@ -62,6 +62,7 @@
             #ingredients-flex {
                 flex-direction: column;
             }
+
             #app {
                 padding: 1rem 1rem 3rem;
             }
@@ -96,7 +97,7 @@
                                 recipe.result }}</td>
                         </tr>
 
-                        <tr v-for="recipe in hidden" v-if="showHiddenRecipes">
+                        <tr v-for="recipe in hiddenCreatedBy" v-if="showHiddenRecipes">
                             <td class="item" @click="navigateTo(recipe.ingredientA)">{{
                                 icons[recipe.ingredientA]
                                 }}&nbsp;{{ recipe.ingredientA }}</td>
@@ -110,16 +111,15 @@
                                 recipe.result }}</td>
                         </tr>
                     </table>
-                    <div v-if="hidden.length > 0">
+                    <div v-if="hiddenCreatedBy.length > 0">
                         <div v-if="!showHiddenRecipes"
                             style="text-decoration: underline; margin-top: 5px; color: #949494; cursor: pointer"
                             @click="showHiddenRecipes = true">
-                            {{hidden.length}} entries hidden
+                            {{hiddenCreatedBy.length}} entries hidden
                         </div>
-                        <div v-else
-                            style="text-decoration: underline; margin-top: 5px; color: #949494; cursor: pointer"
+                        <div v-else style="text-decoration: underline; margin-top: 5px; color: #949494; cursor: pointer"
                             @click="showHiddenRecipes = false">
-                            {{hidden.length}} entries shown
+                            {{hiddenCreatedBy.length}} entries shown
                         </div>
                     </div>
                 </div>
@@ -138,7 +138,7 @@
                                 recipe.result }}</td>
                         </tr>
 
-                        <tr v-for="recipe in hidden" v-if="showHiddenRecipes">
+                        <tr v-for="recipe in hiddenUsedIn" v-if="showHiddenRecipes">
                             <td class="item" @click="navigateTo(recipe.ingredientA)">{{ icons[recipe.ingredientA]
                                 }}&nbsp;{{ recipe.ingredientA }}</td>
                             <td>+</td>
@@ -150,23 +150,24 @@
                         </tr>
                     </table>
 
-                    <div v-if="hidden.length > 0">
+                    <div v-if="hiddenUsedIn.length > 0">
                         <div v-if="!showHiddenRecipes"
                             style="text-decoration: underline; margin-top: 5px; color: #949494; cursor: pointer"
                             @click="showHiddenRecipes = true">
-                            {{hidden.length}} entries hidden
+                            {{hiddenUsedIn.length}} entries hidden
                         </div>
-                        <div v-else
-                            style="text-decoration: underline; margin-top: 5px; color: #949494; cursor: pointer"
+                        <div v-else style="text-decoration: underline; margin-top: 5px; color: #949494; cursor: pointer"
                             @click="showHiddenRecipes = false">
-                            {{hidden.length}} entries shown
+                            {{hiddenUsedIn.length}} entries shown
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         <div v-else style="display: flex; flex-direction: column; align-items: center;">
-            <input style="border-radius: 0.5rem; height: 1.5rem; width: 80%; margin: 1rem; text-align: center; background-color: #242424; border: none; color: #c6c7c7" type="text" placeholder="Search..." v-model="searchQuery"></input>
+            <input
+                style="border-radius: 0.5rem; height: 1.5rem; width: 80%; margin: 1rem; text-align: center; background-color: #242424; border: none; color: #c6c7c7"
+                type="text" placeholder="Search..." v-model="searchQuery"></input>
             <div style="display: flex; flex-wrap: wrap; justify-content: center;">
                 <div class="item" v-for="element in elementList" @click="navigateTo(element)">{{ icons[element]
                     }}&nbsp;{{ element }}</div>
@@ -190,6 +191,31 @@
 
         function isIdempotent(recipe) {
             return recipe.ingredientA == recipe.result || recipe.ingredientB == recipe.result
+        }
+
+        function compareRecipes(A, B, costs) {
+            if (costs[A.result] > costs[B.result]) {
+                return 1
+            }
+            if (costs[A.result] < costs[B.result]) {
+                return -1
+            }
+
+            if (A.result > B.result) {
+                return 1
+            }
+            if (A.result < B.result) {
+                return -1
+            }
+
+            if (costs[A.ingredientA] + costs[A.ingredientB] > costs[B.ingredientA] + costs[B.ingredientB]) {
+                return 1
+            }
+            if (costs[A.ingredientA] + costs[A.ingredientB] < costs[B.ingredientA] + costs[B.ingredientB]) {
+                return -1
+            }
+
+            return 0
         }
 
         function generateData(raw) {
@@ -221,10 +247,18 @@
             }
 
             for (let element in wikiData) {
-                wikiData[element].usedIn = wikiData[element].usedIn.sort((a, b) => raw.costs[a.result] - raw.costs[b.result])
-                wikiData[element].createdBy = wikiData[element].createdBy.sort((a, b) => raw.costs[a.ingredientA] + raw.costs[a.ingredientB] - raw.costs[b.ingredientA] - raw.costs[b.ingredientB])
-                wikiData[element].hidden = wikiData[element].hidden.sort((a, b) => raw.costs[a.ingredientA] + raw.costs[a.ingredientB] - raw.costs[b.ingredientA] - raw.costs[b.ingredientB])
-                wikiData[element].hidden = [...wikiData[element].hidden.filter(x => x.result != 'Nothing' && x.result != element), ...wikiData[element].hidden.filter(x => x.result == element), ...wikiData[element].hidden.filter(x => x.result == 'Nothing')]
+                wikiData[element].usedIn = wikiData[element].usedIn.sort((a, b) => compareRecipes(a, b, raw.costs))
+                wikiData[element].createdBy = wikiData[element].createdBy.sort((a, b) => compareRecipes(a, b, raw.costs))
+                        .map(recipe => {
+                            if (raw.costs[recipe.ingredientA] > raw.costs[recipe.ingredientB]) {
+                                return { ingredientA: recipe.ingredientB, ingredientB: recipe.ingredientA, result: recipe.result }
+                            } else {
+                                return { ingredientA: recipe.ingredientA, ingredientB: recipe.ingredientB, result: recipe.result }
+                            }
+                        })
+                wikiData[element].hiddenUsedIn = wikiData[element].hidden.sort((a, b) => compareRecipes(a, b, raw.costs))
+                wikiData[element].hiddenUsedIn = [...wikiData[element].hidden.filter(x => x.result != 'Nothing' && x.result != element), ...wikiData[element].hidden.filter(x => x.result == element), ...wikiData[element].hidden.filter(x => x.result == 'Nothing')]
+                wikiData[element].hiddenCreatedBy = wikiData[element].hidden.sort((a, b) => compareRecipes(a, b, raw.costs)).filter(x => x.result == element)
             }
             return wikiData
         }
@@ -263,16 +297,45 @@
             },
             computed: {
                 usedIn: function () {
-                    return this.data.find(element => element[0] === this.currentElement)[1].usedIn
+                    console.log(this.data.find(element => element[0] === this.currentElement)[1])
+                    let result = this.data.find(element => element[0] === this.currentElement)[1].usedIn
+                        .map(recipe => {
+                            if (recipe.ingredientA != this.currentElement) {
+                                return { ingredientA: recipe.ingredientB, ingredientB: recipe.ingredientA, result: recipe.result }
+                            } else {
+                                return { ingredientA: recipe.ingredientA, ingredientB: recipe.ingredientB, result: recipe.result }
+                            }
+                        })
+                    return result
                 },
                 createdBy: function () {
-                    return this.data.find(element => element[0] === this.currentElement)[1].createdBy
+                    let result = this.data.find(element => element[0] === this.currentElement)[1].createdBy
+                    return result
                 },
-                hidden: function () {
-                    return this.data.find(element => element[0] === this.currentElement)[1].hidden
+                hiddenUsedIn: function () {
+                    let result = this.data.find(element => element[0] === this.currentElement)[1].hiddenUsedIn
+                        .map(recipe => {
+                            if (recipe.ingredientA != this.currentElement) {
+                                return { ingredientA: recipe.ingredientB, ingredientB: recipe.ingredientA, result: recipe.result }
+                            } else {
+                                return { ingredientA: recipe.ingredientA, ingredientB: recipe.ingredientB, result: recipe.result }
+                            }
+                        })
+                    return result
+                },
+                hiddenCreatedBy: function () {
+                    let result = this.data.find(element => element[0] === this.currentElement)[1].hiddenCreatedBy
+                        .map(recipe => {
+                            if (recipe.ingredientA != this.currentElement) {
+                                return { ingredientA: recipe.ingredientB, ingredientB: recipe.ingredientA, result: recipe.result }
+                            } else {
+                                return { ingredientA: recipe.ingredientA, ingredientB: recipe.ingredientB, result: recipe.result }
+                            }
+                        })
+                    return result
                 },
                 elementList: function () {
-                    let list =  this.data.map(element => element[0]).sort((a, b) => this.costs[a] - this.costs[b])
+                    let list = this.data.map(element => element[0]).sort((a, b) => this.costs[a] - this.costs[b])
                     return list.filter(x => x.toLowerCase().includes(this.searchQuery.toLowerCase()))
                 }
             },
