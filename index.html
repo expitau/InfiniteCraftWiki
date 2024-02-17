@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infinite Craft Wiki</title>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PCW5J4G9KX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-PCW5J4G9KX');
+    </script>
+
+    <!-- Load Roboto font from Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Load Vue.js from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            width: 100vw;
+            height: 100vh;
+            background-color: #191919;
+            color: #c6c7c7;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        #app {
+            padding: 1rem 5rem 3rem;
+        }
+
+        .item {
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            padding: 9px 10px 8px;
+            display: inline-block;
+            margin: 5px;
+            line-height: 1em;
+            border: 1px solid #525252;
+        }
+
+        .item:hover {
+            border: 1px solid #45505c;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <h1 style="text-align: center; cursor: pointer;" @click="currentElement = ''">Infinite Craft Wiki</h1>
+        <div v-if="currentElement">
+            <h2 style="text-align: center;">
+                <div class="item" style=" padding: 13px 15px 12px" @click="currentElement = ''">{{ icons[currentElement]
+                    }}&nbsp;{{
+                    currentElement }}</div>
+            </h2>
+            <div
+                style="display: flex; flex-direction: row; gap: 2rem; justify-content: space-evenly; text-align: center;">
+                <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+                    <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+                        <h3>Created by</h3>
+                        <table>
+                            <tr v-for="recipe in createdBy">
+                                <td class="item" @click="currentElement = recipe.ingredientA">{{
+                                    icons[recipe.ingredientA]
+                                    }}&nbsp;{{ recipe.ingredientA }}</td>
+                                <td>+</td>
+                                <td class="item" @click="currentElement = recipe.ingredientB">{{
+                                    icons[recipe.ingredientB]
+                                    }}&nbsp;{{ recipe.ingredientB }}</td>
+                                <td>=</td>
+                                <td class="item" @click="currentElement = recipe.result">{{ icons[recipe.result]
+                                    }}&nbsp;{{
+                                    recipe.result }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+                    <h3>Used in</h3>
+                    <table>
+                        <tr v-for="recipe in usedIn">
+                            <td class="item" @click="currentElement = recipe.ingredientA">{{ icons[recipe.ingredientA]
+                                }}&nbsp;{{ recipe.ingredientA }}</td>
+                            <td>+</td>
+                            <td class="item" @click="currentElement = recipe.ingredientB">{{ icons[recipe.ingredientB]
+                                }}&nbsp;{{ recipe.ingredientB }}</td>
+                            <td>=</td>
+                            <td class="item" @click="currentElement = recipe.result">{{ icons[recipe.result] }}&nbsp;{{
+                                recipe.result }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div v-else>
+            <h2 style="text-align: center;">Elements</h2>
+            <div style="display: flex; flex-wrap: wrap; justify-content: center;">
+                <div class="item" v-for="element in elementList" @click="currentElement = element">{{ icons[element]
+                    }}&nbsp;{{ element }}</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function recipesInclude(recipes, item) {
+            return recipes.some(recipe => recipe.ingredientA == item.ingredientA && recipe.ingredientB == item.ingredientB && recipe.result == item.result)
+        }
+
+        function generateData(raw) {
+            let wikiData = {}
+            for (let recipe of raw.attempted) {
+                let currentRecipe = { ingredientA: recipe.elements[0], ingredientB: recipe.elements[1], result: recipe.result }
+                for (let element of recipe.elements) {
+                    if (!wikiData[element]) {
+                        wikiData[element] = { usedIn: [], createdBy: [] }
+                    }
+                    if (!recipesInclude(wikiData[element].usedIn, currentRecipe))
+                        wikiData[element].usedIn.push(currentRecipe)
+                }
+                if (!wikiData[recipe.result]) {
+                    wikiData[recipe.result] = { usedIn: [], createdBy: [] }
+                }
+                if (!recipesInclude(wikiData[recipe.result].createdBy, currentRecipe))
+                    wikiData[recipe.result].createdBy.push(currentRecipe)
+            }
+
+            for (let element in wikiData) {
+                wikiData[element].usedIn = wikiData[element].usedIn.sort((a, b) => raw.costs[a.result] - raw.costs[b.result])
+                wikiData[element].createdBy = wikiData[element].createdBy.sort((a, b) => raw.costs[a.ingredientA] + raw.costs[a.ingredientB] - raw.costs[b.ingredientA] - raw.costs[b.ingredientB])
+            }
+            return wikiData
+        }
+        // Vue app
+        new Vue({
+            el: '#app',
+            data: {
+                data: [],
+                costs: {},
+                currentElement: "",
+                icons: {}
+            },
+            computed: {
+                usedIn: function () {
+                    return this.data.find(element => element[0] === this.currentElement)[1].usedIn
+                },
+                createdBy: function () {
+                    return this.data.find(element => element[0] === this.currentElement)[1].createdBy
+                },
+                elementList: function () {
+                    return this.data.map(element => element[0]).sort((a, b) => this.costs[a] - this.costs[b])
+                }
+            },
+            mounted() {
+                // Load recipes from JSON file
+                fetch('data.json')
+                    .then(response => { console.log(response); return response.json() })
+                    .then(data => {
+                        console.log(data)
+                        let wikiData = generateData(data)
+                        this.data = Object.entries(wikiData);
+                        this.costs = data.costs
+                        this.icons = data.icons
+                    })
+                    .catch(error => {
+                        console.error('Error loading recipes:', error);
+                    });
+            }
+        });
+    </script>
+</body>
+
+</html>
