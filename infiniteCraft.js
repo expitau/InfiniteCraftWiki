@@ -31,21 +31,22 @@ function getCosts(data) {
         for (recipe of data.attempted) {
             // console.log("Processing", recipe)
             if (costs[recipe.elements[0]] == null || costs[recipe.elements[1]] == null) {
-                //   console.log("Missing cost for", recipe.elements[0], "or", recipe.elements[1])
+                // console.log("Missing cost for", recipe.elements[0], "or", recipe.elements[1])
                 completed = false;
             } else if (!costs[recipe.result]) {
-                //   console.log("Set cost for", recipe.result, "to", costs[recipe.elements[0]] + costs[recipe.elements[1]] + 1, "(didn't exist)")
-                costs[recipe.result] = costs[recipe.elements[0]] + costs[recipe.elements[1]] + 1
+                // console.log("Set cost for", recipe.result, "to", costs[recipe.elements[0]] + costs[recipe.elements[1]], "(didn't exist)")
+                costs[recipe.result] = costs[recipe.elements[0]] + costs[recipe.elements[1]]
                 completed = false;
-            } else if (costs[recipe.result] > costs[recipe.elements[0]] + costs[recipe.elements[1]] + 1) {
-                //   console.log("Set cost for", recipe.result, "to", costs[recipe.elements[0]] + costs[recipe.elements[1]] + 1, `(${costs[recipe.result]} was higher)`)
-                costs[recipe.result] = costs[recipe.elements[0]] + costs[recipe.elements[1]] + 1
+            } else if (costs[recipe.result] > costs[recipe.elements[0]] + costs[recipe.elements[1]]) {
+                // console.log("Set cost for", recipe.result, "to", costs[recipe.elements[0]] + costs[recipe.elements[1]], `(${costs[recipe.result]} was higher)`)
+                costs[recipe.result] = costs[recipe.elements[0]] + costs[recipe.elements[1]]
                 completed = false;
             }
         }
     }
     return Object.fromEntries(Object.entries(costs).sort(([, a], [, b]) => a - b))
 }
+
 function compress(data) {
     out = []
     for (let i = 0; i < data.attempted.length; i++) {
@@ -113,7 +114,7 @@ async function getElements() {
     }
 
 
-    for (let i = 0; i < 200; i++) {
+    for (let i = 0; i < 1000; i++) {
         let [elementA, elementB] = getPair(attempted, costs)
         // let [elementA, elementB] = getSpecificPair(attempted, costs, "Dragon")
         let response = await craft(elementA, elementB)
