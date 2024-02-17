@@ -112,6 +112,11 @@
                             @click="showHiddenRecipes = true">
                             {{hidden.length}} entries hidden
                         </div>
+                        <div v-else
+                            style="text-decoration: underline; margin-top: 5px; color: #949494; cursor: pointer"
+                            @click="showHiddenRecipes = false">
+                            {{hidden.length}} entries shown
+                        </div>
                     </div>
                 </div>
 
