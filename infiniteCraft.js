@@ -11,10 +11,12 @@ async function craft(a, b) {
             "method": "GET"
         });
         if (res.status != 200) {
-            console.log("Rate limited, retrying...")
+            console.log("Rate limited, retrying in 5s...")
             await new Promise(resolve => setTimeout(resolve, 5000))
         }
     } while (res.status != 200)
+
+    // Wait 100ms to avoid rate limit
     await new Promise(resolve => setTimeout(resolve, 100))
 
     return await res.json()
@@ -35,7 +37,8 @@ function getCosts(data) {
         completed = true;
         for (recipe of data.attempted) {
             // console.log("Processing", recipe)
-            if (costs[recipe.elements[0]] == null || costs[recipe.elements[1]] == null) {
+            if (recipe.result == "Nothing") {
+            } else if (costs[recipe.elements[0]] == null || costs[recipe.elements[1]] == null) {
                 // console.log("Missing cost for", recipe.elements[0], "or", recipe.elements[1])
                 completed = false;
             } else if (!costs[recipe.result]) {
@@ -98,6 +101,20 @@ function getPair(attempted, costs, n=1) {
     }
 }
 
+function getRandomPair(attempted, costs, n=1, maxCost=15) {
+    let output = []
+    let sortedElements = Object.entries(costs).sort(([, a], [, b]) => a - b).map(x => x[0]).filter(x => costs[x] <= maxCost)
+    while (output.length < n) {
+        // Choose random sorted elements
+        let elementA = sortedElements[Math.floor(Math.random() * sortedElements.length)]
+        let elementB = sortedElements[Math.floor(Math.random() * sortedElements.length)]
+        if (!alreadyChecked(attempted, elementA, elementB) && !output.some(x => x[0] == elementA && x[1] == elementB) && !output.some(x => x[0] == elementB && x[1] == elementA)) {
+            output.push([elementA, elementB])
+        }
+    }
+    return output
+}
+
 function getSpecificPair(attempted, costs, element) {
     let sortedElements = Object.entries(costs).sort(([, a], [, b]) => a - b).map(x => x[0])
     for (let i = 0; i < sortedElements.length; i++) {
@@ -148,7 +165,7 @@ async function getElements() {
 
     for (let i = 0; i < 20; i++) {
         console.log(`Batch ${i}`)
-        for ([elementA, elementB] of getPair(attempted, costs, 100)) {
+        for ([elementA, elementB] of getRandomPair(attempted, costs, 100)) {
             let result = await process(elementA, elementB, costs)
             attempted.push({ elements: [elementA, elementB], result: result.result })
             costs[result.result] = result.cost
@@ -161,6 +178,15 @@ async function getElements() {
 
         save(attempted, costs, icons)
     }
+
+    // elementA = "Sperm"
+    // elementB = "Egg"
+    // let result = await process(elementA, elementB, costs)
+    // attempted.push({ elements: [elementA, elementB], result: result.result })
+    // costs[result.result] = result.cost
+    // if (result.icon) {
+    //     icons[result.result] = result.icon
+    // }
 
     console.log(attempted)
     console.log(attempted.length)
