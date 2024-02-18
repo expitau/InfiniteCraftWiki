@@ -15,6 +15,8 @@ async function craft(a, b) {
             await new Promise(resolve => setTimeout(resolve, 5000))
         }
     } while (res.status != 200)
+    await new Promise(resolve => setTimeout(resolve, 100))
+
     return await res.json()
 }
 
@@ -75,18 +77,22 @@ function save(attempted, costs, icons) {
         data.costs = getCosts(data)
 
         fs.writeFileSync('data.json', JSON.stringify(compress(data)), 'utf8');
-        console.log('Data has been written to file');
+        console.log(`${attempted.length} entries written to file`);
     } catch (err) {
         console.error('Error writing file:', err);
     }
 }
 
-function getPair(attempted, costs) {
+function getPair(attempted, costs, n=1) {
+    let output = []
     let sortedElements = Object.entries(costs).sort(([, a], [, b]) => a - b).map(x => x[0])
     for (let i = 0; i < sortedElements.length; i++) {
         for (let j = 0; costs[sortedElements[j]] <= costs[sortedElements[i]]; j++) {
             if (!alreadyChecked(attempted, sortedElements[i], sortedElements[j])) {
-                return [sortedElements[i], sortedElements[j]]
+                output.push([sortedElements[i], sortedElements[j]])
+            }
+            if (output.length >= n) {
+                return output
             }
         }
     }
@@ -99,6 +105,29 @@ function getSpecificPair(attempted, costs, element) {
             return [sortedElements[i], element]
         }
     }
+}
+
+async function process(elementA, elementB, costs) {
+    let response = await craft(elementA, elementB)
+    let outputResult = response.result
+    let outputCost = costs[response.result]
+    let outputIcon = null
+
+    if (response.result == "Nothing") {
+        console.log(`${elementA} + ${elementB} -> ${response.result} (not added)`)
+    } else if (Object.keys(costs).includes(response.result)) {
+        console.log(`${elementA} + ${elementB} -> ${response.result}`)
+        if (costs[response.result] > costs[elementA] + costs[elementB]) {
+            // console.log(`Reduced cost for ${response.result} from ${costs[response.result]} to ${costs[elementA] + costs[elementB]}`)
+            outputCost = costs[elementA] + costs[elementB]
+        }
+    } else {
+        console.log(`${elementA} + ${elementB} -> ${response.result} (new element)`)
+        outputCost = costs[elementA] + costs[elementB]
+        outputIcon = response.emoji
+    }
+
+    return {result: outputResult, cost: outputCost, icon: outputIcon}
 }
 
 async function getElements() {
@@ -117,29 +146,20 @@ async function getElements() {
     }
 
 
-    for (let i = 0; i < 1000; i++) {
-        let [elementA, elementB] = getPair(attempted, costs)
-        // let [elementA, elementB] = getSpecificPair(attempted, costs, "Dragon")
-        let response = await craft(elementA, elementB)
-        if (response.result == "Nothing") {
-            console.log(`${i}: ${elementA} + ${elementB} -> ${response.result} (not added)`)
-            attempted.push({ elements: [elementA, elementB], result: response.result })
-        } else if (Object.keys(costs).includes(response.result)) {
-            console.log(`${i}: ${elementA} + ${elementB} -> ${response.result}`)
-            attempted.push({ elements: [elementA, elementB], result: response.result })
-            if (costs[response.result] > costs[elementA] + costs[elementB]) {
-                // console.log(`Reduced cost for ${response.result} from ${costs[response.result]} to ${costs[elementA] + costs[elementB]}`)
-                costs[response.result] = costs[elementA] + costs[elementB]
+    for (let i = 0; i < 20; i++) {
+        console.log(`Batch ${i}`)
+        for ([elementA, elementB] of getPair(attempted, costs, 100)) {
+            let result = await process(elementA, elementB, costs)
+            attempted.push({ elements: [elementA, elementB], result: result.result })
+            costs[result.result] = result.cost
+            if (result.icon) {
+                icons[result.result] = result.icon
             }
-        } else {
-            console.log(`${i}: ${elementA} + ${elementB} -> ${response.result} (new element)`)
-            attempted.push({ elements: [elementA, elementB], result: response.result })
-            costs[response.result] = costs[elementA] + costs[elementB]
-            icons[response.result] = response.emoji
         }
+        // let [elementA, elementB] = getSpecificPair(attempted, costs, "Dragon")
 
-        if (i % 10 == 0)
-            save(attempted, costs, icons)
+
+        save(attempted, costs, icons)
     }
 
     console.log(attempted)
