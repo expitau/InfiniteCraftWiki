@@ -12,23 +12,23 @@ The data is stored in a JSON file, with a list of attemped recipes, the current 
 **Example Data**
 ```json
 {
-    attempted: ["Earth","Water","Plant","Water","Wind","Wave"],
-    costs: {
+    "attempted": ["Earth","Water","Plant","Water","Wind","Wave"],
+    "costs": {
         "Water": 1,
         "Fire": 1,
         "Wind": 1,
         "Earth": 1,
         "Plant": 2,
-        "Wave": 2
+        "Wave": 2,
     },
-    icons: {
+    "icons": {
         "Water": "💧",
         "Fire":"🔥",
         "Wind":"🌬️",
         "Earth":"🌍",
         "Plant":"🌱",
-        "Wave":"🌊"
-    }
+        "Wave":"🌊",
+    },
 }
 ```
 
