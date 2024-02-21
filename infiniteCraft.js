@@ -3,21 +3,25 @@ const fs = require('fs');
 async function craft(a, b) {
     let res;
     do {
-        res = await fetch(`https://neal.fun/api/infinite-craft/pair?first=${a}&second=${b}`, {
-            "headers": {
-                "accept": "*/*",
-                "Referer": "https://neal.fun/infinite-craft/",
-            },
-            "method": "GET"
-        });
+        try {
+            res = await fetch(`https://neal.fun/api/infinite-craft/pair?first=${a}&second=${b}`, {
+                "headers": {
+                    "accept": "*/*",
+                    "Referer": "https://neal.fun/infinite-craft/",
+                },
+                "method": "GET"
+            });
+        } catch {
+            res = {status: 500}
+        }
         if (res.status != 200) {
             console.log("Rate limited, retrying in 5s...")
             await new Promise(resolve => setTimeout(resolve, 5000))
         }
     } while (res.status != 200)
 
-    // Wait 100ms to avoid rate limit
-    await new Promise(resolve => setTimeout(resolve, 100))
+    // Wait 70ms to avoid rate limit
+    await new Promise(resolve => setTimeout(resolve, 70))
 
     return await res.json()
 }
@@ -37,17 +41,19 @@ function getCosts(data) {
     while (!completed) {
         completed = true;
         for (recipe of data.attempted) {
-            // console.log("Processing", recipe)
-            if (recipe.result == "Nothing") {
+            if (recipe.result == "Nothing" || recipe.elements[0] == "Nothing" || recipe.elements[1] == "Nothing") {
             } else if (costs[recipe.elements[0]] == null || costs[recipe.elements[1]] == null) {
-                // console.log("Missing cost for", recipe.elements[0], "or", recipe.elements[1])
+                // console.log("Processing", recipe)
+                console.log("Missing cost for", recipe.elements[0], "or", recipe.elements[1])
                 completed = false;
             } else if (!costs[recipe.result]) {
-                // console.log("Set cost for", recipe.result, "to", costs[recipe.elements[0]] + costs[recipe.elements[1]], "(didn't exist)")
+                // console.log("Processing", recipe)
+                console.log("Set cost for", recipe.result, "to", costs[recipe.elements[0]] + costs[recipe.elements[1]], "(didn't exist)")
                 costs[recipe.result] = costs[recipe.elements[0]] + costs[recipe.elements[1]]
                 completed = false;
             } else if (costs[recipe.result] > costs[recipe.elements[0]] + costs[recipe.elements[1]]) {
-                // console.log("Set cost for", recipe.result, "to", costs[recipe.elements[0]] + costs[recipe.elements[1]], `(${costs[recipe.result]} was higher)`)
+                // console.log("Processing", recipe)
+                console.log("Set cost for", recipe.result, "to", costs[recipe.elements[0]] + costs[recipe.elements[1]], `(${costs[recipe.result]} was higher)`)
                 costs[recipe.result] = costs[recipe.elements[0]] + costs[recipe.elements[1]]
                 completed = false;
             }
@@ -126,7 +132,7 @@ function getPair(attempted, costs, n = 1) {
 
 function getRandomPair(attempted, costs, n = 1, maxCost = 15) {
     let output = []
-    let sortedElements = Object.entries(costs).sort(([, a], [, b]) => a - b).map(x => x[0]).filter(x => costs[x] <= maxCost)
+    let sortedElements = Object.entries(costs).sort(([, a], [, b]) => a - b).map(x => x[0]).filter(x => costs[x] <= maxCost).filter(x => x != "Nothing" )
     while (output.length < n) {
         // Choose random sorted elements
         let elementA = sortedElements[Math.floor(Math.random() * sortedElements.length)]
@@ -186,9 +192,9 @@ async function getElements() {
     }
 
 
-    for (let i = 0; i < 1; i++) {
+    for (let i = 0; i < 200; i++) {
         console.log(`Batch ${i}`)
-        for ([elementA, elementB] of getRandomPair(attempted, costs, 3)) {
+        for ([elementA, elementB] of getRandomPair(attempted, costs, 50)) {
             let result = await process(elementA, elementB, costs)
             attempted.push({ elements: [elementA, elementB], result: result.result })
             costs[result.result] = result.cost
