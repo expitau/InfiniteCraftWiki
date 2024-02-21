@@ -30,6 +30,7 @@ function alreadyChecked(attempted, elementA, elementB) {
 }
 
 function getCosts(data) {
+    console.log("Generating costs...")
     let costs = { "Water": 1, "Fire": 1, "Wind": 1, "Earth": 1 }
 
     let completed = false;
@@ -55,22 +56,44 @@ function getCosts(data) {
     return Object.fromEntries(Object.entries(costs).sort(([, a], [, b]) => a - b))
 }
 
-function compress(data) {
-    out = []
-    for (let i = 0; i < data.attempted.length; i++) {
-        out.push(data.attempted[i].elements[0], data.attempted[i].elements[1], data.attempted[i].result)
+// Convert a number to base 64
+function toBase64(n) {
+    n = n + 1
+    let base64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+'
+    let result = ''
+    while (n > 0) {
+        result = base64[n % 64] + result
+        n = Math.floor(n / 64)
     }
-    data.attempted = out
-    return data
+    return result
+}
+
+function compress(data) {
+    console.log("Compressing...")
+    let f = {}
+    for (let i = 0; i < data.attempted.length; i++) {
+        f[data.attempted[i].elements[0]] ??= 0
+        f[data.attempted[i].elements[0]]++
+        f[data.attempted[i].elements[1]] ??= 0
+        f[data.attempted[i].elements[1]]++
+        f[data.attempted[i].result] ??= 0
+        f[data.attempted[i].result]++
+    }
+    let index = Object.entries(f).sort(([, a], [, b]) => b - a).map(([a, b], i) => [toBase64(i), [data.icons[a], a, data.costs[a]]])
+    let forward = Object.fromEntries(index)
+    let reverse = Object.fromEntries(index.map(([a, b]) => [b[1], a]))
+    let comp = data.attempted.sort((a, b) => data.costs[a.result] - data.costs[b.result]).map(recipe => {
+        return [reverse[recipe.elements[0]], reverse[recipe.elements[1]], reverse[recipe.result]].join(',')
+    }).join(';')
+    return { index: forward, data: comp }
 }
 
 function uncompress(data) {
-    out = []
-    for (let i = 0; i < data.attempted.length; i += 3) {
-        out.push({ elements: [data.attempted[i], data.attempted[i + 1]], result: data.attempted[i + 2] })
-    }
-    data.attempted = out
-    return data
+    out = {}
+    out.attempted = data.data.split(';').map(x => x.split(',').map(y => data.index[y])).map(x => { return { elements: [x[0][1], x[1][1]], result: x[2][1] } })
+    out.icons = Object.fromEntries(Object.entries(data.index).map(([a, b]) => [b[1], b[0]]))
+    out.costs = Object.fromEntries(Object.entries(data.index).map(([a, b]) => [b[1], b[2]]))
+    return out
 }
 
 function save(attempted, costs, icons) {
@@ -86,7 +109,7 @@ function save(attempted, costs, icons) {
     }
 }
 
-function getPair(attempted, costs, n=1) {
+function getPair(attempted, costs, n = 1) {
     let output = []
     let sortedElements = Object.entries(costs).sort(([, a], [, b]) => a - b).map(x => x[0])
     for (let i = 0; i < sortedElements.length; i++) {
@@ -101,7 +124,7 @@ function getPair(attempted, costs, n=1) {
     }
 }
 
-function getRandomPair(attempted, costs, n=1, maxCost=15) {
+function getRandomPair(attempted, costs, n = 1, maxCost = 15) {
     let output = []
     let sortedElements = Object.entries(costs).sort(([, a], [, b]) => a - b).map(x => x[0]).filter(x => costs[x] <= maxCost)
     while (output.length < n) {
@@ -144,7 +167,7 @@ async function process(elementA, elementB, costs) {
         outputIcon = response.emoji
     }
 
-    return {result: outputResult, cost: outputCost, icon: outputIcon}
+    return { result: outputResult, cost: outputCost, icon: outputIcon }
 }
 
 async function getElements() {
@@ -163,9 +186,9 @@ async function getElements() {
     }
 
 
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 1; i++) {
         console.log(`Batch ${i}`)
-        for ([elementA, elementB] of getRandomPair(attempted, costs, 100)) {
+        for ([elementA, elementB] of getRandomPair(attempted, costs, 3)) {
             let result = await process(elementA, elementB, costs)
             attempted.push({ elements: [elementA, elementB], result: result.result })
             costs[result.result] = result.cost
@@ -179,8 +202,8 @@ async function getElements() {
         save(attempted, costs, icons)
     }
 
-    // elementA = "Sperm"
-    // elementB = "Egg"
+    // elementA = "A"
+    // elementB = "B"
     // let result = await process(elementA, elementB, costs)
     // attempted.push({ elements: [elementA, elementB], result: result.result })
     // costs[result.result] = result.cost
