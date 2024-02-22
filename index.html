@@ -19,55 +19,11 @@
     <!-- Load Roboto font from Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 
+    <!-- Load styles from styles.css-->
+    <link rel="stylesheet" href="styles.css">
+
     <!-- Load Vue.js from CDN -->
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            width: 100vw;
-            height: 100vh;
-            background-color: #191919;
-            color: #c6c7c7;
-            margin: 0;
-            overflow-x: hidden;
-        }
-
-        #app {
-            padding: 1rem 5rem 3rem;
-        }
-
-        .item {
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            padding: 9px 10px 8px;
-            display: inline-block;
-            margin: 5px;
-            line-height: 1em;
-            border: 1px solid #525252;
-        }
-
-        .item:hover {
-            border: 1px solid #45505c;
-        }
-
-        #ingredients-flex {
-            display: flex;
-            flex-direction: row;
-            gap: 2rem;
-            text-align: center;
-        }
-
-        @media (max-width: 900px) {
-            #ingredients-flex {
-                flex-direction: column;
-            }
-
-            #app {
-                padding: 1rem 1rem 3rem;
-            }
-        }
-    </style>
 </head>
 
 <body>
@@ -76,10 +32,11 @@
         <div v-if="currentElement">
             <h2 style="text-align: center;">
                 <div class="item" style=" padding: 13px 15px 12px" @click="navigateTo('')">
-                    {{ data.index[currentElement][0] }}&nbsp;{{ data.index[currentElement][1] }}</div>
+                    {{ data.index[currentElement][0] }}&nbsp;{{ data.index[currentElement][1] }}
+                </div>
             </h2>
-            <div id="ingredients-flex">
-                <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+            <div class="ingredients-flex">
+                <div class="ingredients-list">
                     <h3>Created by</h3>
                     <table>
                         <tr v-for="recipe in currentFrom">
@@ -111,19 +68,16 @@
                         </tr>
                     </table>
                     <div v-if="currentHiddenFrom.length > 0">
-                        <div v-if="!showHiddenRecipes"
-                            style="text-decoration: underline; margin-top: 5px; color: #949494; cursor: pointer"
-                            @click="showHiddenRecipes = true">
+                        <div v-if="!showHiddenRecipes" class="text-link" @click="showHiddenRecipes = true">
                             {{currentHiddenFrom.length}} entries hidden
                         </div>
-                        <div v-else style="text-decoration: underline; margin-top: 5px; color: #949494; cursor: pointer"
-                            @click="showHiddenRecipes = false">
+                        <div v-else class="text-link" @click="showHiddenRecipes = false">
                             {{currentHiddenFrom.length}} entries shown
                         </div>
                     </div>
                 </div>
 
-                <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+                <div class="ingredients-list">
                     <h3>Used in</h3>
                     <table>
                         <tr v-for="recipe in currentTo">
@@ -156,13 +110,10 @@
                     </table>
 
                     <div v-if="currentHiddenTo.length > 0">
-                        <div v-if="!showHiddenRecipes"
-                            style="text-decoration: underline; margin-top: 5px; color: #949494; cursor: pointer"
-                            @click="showHiddenRecipes = true">
+                        <div v-if="!showHiddenRecipes" class="text-link" @click="showHiddenRecipes = true">
                             {{currentHiddenTo.length}} entries hidden
                         </div>
-                        <div v-else style="text-decoration: underline; margin-top: 5px; color: #949494; cursor: pointer"
-                            @click="showHiddenRecipes = false">
+                        <div v-else class="text-link" @click="showHiddenRecipes = false">
                             {{currentHiddenTo.length}} entries shown
                         </div>
                     </div>
@@ -170,26 +121,16 @@
             </div>
         </div>
         <div v-else style="display: flex; flex-direction: column; align-items: center;">
-            <input
-                style="border-radius: 0.5rem; height: 1.5rem; width: 80%; margin: 1rem; text-align: center; background-color: #242424; border: none; color: #c6c7c7"
-                type="text" placeholder="Search..." v-model="searchQuery"></input>
+            <input class="search-bar" type="text" placeholder="Search..." v-model="searchQuery"></input>
             <div style="display: flex; flex-wrap: wrap; justify-content: center;">
-                <div class="item" v-for="element in elementList" @click="navigateTo(element)">{{
-                    data.index[element][0]
-                    }}&nbsp;{{ data.index[element][1] }}</div>
+                <div class="item" v-for="element in elementList" @click="navigateTo(element)">
+                    {{ data.index[element][0] }}&nbsp;{{ data.index[element][1] }}
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        function recipesInclude(recipes, item) {
-            return recipes.some(recipe => recipe.ingredientA == item.ingredientA && recipe.ingredientB == item.ingredientB && recipe.result == item.result)
-        }
-
-        function isIdempotent(recipe) {
-            return recipe.ingredientA == recipe.result || recipe.ingredientB == recipe.result
-        }
-
         function compareRecipes(A, B, data, ingredientMode = false) {
             if (data.index[A.C][1] == "Nothing") {
                 return 1
@@ -256,54 +197,12 @@
                 data[recipe[2]] ??= { from: [], to: [] }
                 data[recipe[2]].from.push([recipe[0], recipe[1]])
             }
-            return { index: Object.fromEntries(Object.entries(raw.index).map(x => [x[0], [x[1][0], x[1][1]]])), costs: Object.fromEntries(Object.entries(raw.index).map(x => [x[0], x[1][2]])), data: data }
-            // return data
+            return { 
+                index: Object.fromEntries(Object.entries(raw.index).map(x => [x[0], [x[1][0], x[1][1]]])), 
+                costs: Object.fromEntries(Object.entries(raw.index).map(x => [x[0], x[1][2]])), 
+                data: data,
+            }
         }
-
-        // function generateData(raw) {
-        //     let wikiData = {}
-        //     for (let recipe of raw.attempted) {
-        //         let currentRecipe = { ingredientA: recipe.elements[0], ingredientB: recipe.elements[1], result: recipe.result }
-        //         for (let element of recipe.elements) {
-        //             if (!wikiData[element]) {
-        //                 wikiData[element] = { usedIn: [], createdBy: [], hidden: [] }
-        //             }
-        //             if (!recipesInclude(wikiData[element].usedIn, currentRecipe) && !recipesInclude(wikiData[element].hidden, currentRecipe)) {
-        //                 if (!isIdempotent(currentRecipe) && currentRecipe.result != 'Nothing') {
-        //                     wikiData[element].usedIn.push(currentRecipe)
-        //                 } else {
-        //                     wikiData[element].hidden.push(currentRecipe)
-        //                 }
-        //             }
-        //         }
-        //         if (!wikiData[recipe.result]) {
-        //             wikiData[recipe.result] = { usedIn: [], createdBy: [], hidden: [] }
-        //         }
-        //         if (!recipesInclude(wikiData[recipe.result].createdBy, currentRecipe) && !recipesInclude(wikiData[recipe.result].hidden, currentRecipe)) {
-        //             if (!isIdempotent(currentRecipe) && currentRecipe.result != 'Nothing') {
-        //                 wikiData[recipe.result].createdBy.push(currentRecipe)
-        //             } else {
-        //                 wikiData[recipe.result].hidden.push(currentRecipe)
-        //             }
-        //         }
-        //     }
-
-        //     for (let element in wikiData) {
-        //         wikiData[element].usedIn = wikiData[element].usedIn.sort((a, b) => compareRecipes(a, b, raw.costs))
-        //         wikiData[element].createdBy = wikiData[element].createdBy.sort((a, b) => compareRecipes(a, b, raw.costs))
-        //                 .map(recipe => {
-        //                     if (raw.costs[recipe.ingredientA] > raw.costs[recipe.ingredientB]) {
-        //                         return { ingredientA: recipe.ingredientB, ingredientB: recipe.ingredientA, result: recipe.result }
-        //                     } else {
-        //                         return { ingredientA: recipe.ingredientA, ingredientB: recipe.ingredientB, result: recipe.result }
-        //                     }
-        //                 })
-        //         wikiData[element].hiddenUsedIn = wikiData[element].hidden.sort((a, b) => compareRecipes(a, b, raw.costs))
-        //         wikiData[element].hiddenUsedIn = [...wikiData[element].hidden.filter(x => x.result != 'Nothing' && x.result != element), ...wikiData[element].hidden.filter(x => x.result == element), ...wikiData[element].hidden.filter(x => x.result == 'Nothing')]
-        //         wikiData[element].hiddenCreatedBy = wikiData[element].hidden.sort((a, b) => compareRecipes(a, b, raw.costs)).filter(x => x.result == element)
-        //     }
-        //     return wikiData
-        // }
 
         function setQuery(query) {
             const url = new URL(window.location.href);
