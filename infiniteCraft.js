@@ -12,7 +12,7 @@ async function craft(a, b) {
                 "method": "GET"
             });
         } catch {
-            res = {status: 500}
+            res = { status: 500 }
         }
         if (res.status != 200) {
             console.log("Rate limited, retrying in 5s...")
@@ -132,7 +132,7 @@ function getPair(attempted, costs, n = 1) {
 
 function getRandomPair(attempted, costs, n = 1, maxCost = 15) {
     let output = []
-    let sortedElements = Object.entries(costs).sort(([, a], [, b]) => a - b).map(x => x[0]).filter(x => costs[x] <= maxCost).filter(x => x != "Nothing" )
+    let sortedElements = Object.entries(costs).sort(([, a], [, b]) => a - b).map(x => x[0]).filter(x => costs[x] <= maxCost).filter(x => x != "Nothing")
     while (output.length < n) {
         // Choose random sorted elements
         let elementA = sortedElements[Math.floor(Math.random() * sortedElements.length)]
@@ -193,8 +193,18 @@ async function getElements() {
 
 
     for (let i = 0; i < 200; i++) {
-        console.log(`Batch ${i}`)
-        for ([elementA, elementB] of getRandomPair(attempted, costs, 50)) {
+        // console.log(`Batch ${i}`)
+        // for ([elementA, elementB] of getRandomPair(attempted, costs, 50)) {
+        //     let result = await process(elementA, elementB, costs)
+        //     attempted.push({ elements: [elementA, elementB], result: result.result })
+        //     costs[result.result] = result.cost
+        //     if (result.icon) {
+        //         icons[result.result] = result.icon
+        //     }
+        // }
+        for (let j = 0; j < 150; j++) {
+            let [elementA, elementB] = getSpecificPair(attempted, costs, "Dragon")
+    
             let result = await process(elementA, elementB, costs)
             attempted.push({ elements: [elementA, elementB], result: result.result })
             costs[result.result] = result.cost
@@ -202,8 +212,6 @@ async function getElements() {
                 icons[result.result] = result.icon
             }
         }
-        // let [elementA, elementB] = getSpecificPair(attempted, costs, "Dragon")
-
 
         save(attempted, costs, icons)
     }

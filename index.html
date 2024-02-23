@@ -28,7 +28,41 @@
 
 <body>
     <div id="app">
+
+        <a id="github-link" href="https://github.com/expitau/InfiniteCraftWiki" target="_blank">
+            <span class="sr-only">Follow me on Github</span>
+            <svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" fill="currentColor">
+                <path fill="currentColor"
+                    d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z">
+                </path>
+            </svg>
+        </a>
         <h1 style="text-align: center; cursor: pointer;" @click="navigateTo('')">Infinite Craft Wiki</h1>
+
+        <div id="toast" v-if="showToast">
+            <div id="toast-body">
+                <h2 style="margin: 0;">Enjoying my site?</h2>
+                <p>Help me out by starring the project on Github</p>
+                <br>
+                <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                    <button
+                        style="background-color: #347d39; color:#c6c7c7; text-decoration: none; border-radius: 0.5rem; padding: 0.5rem 1rem; cursor: pointer; display: flex; flex-direction: row; align-items: center; gap: 1rem; border: none"
+                        onclick="window.open('https://github.com/expitau/InfiniteCraftWiki', '_blank').focus()">
+                        <span>Sure!</span>
+                        <svg viewBox="0 0 16 16" aria-hidden="true" width="24" height="24" fill="currentColor">
+                            <path fill="currentColor"
+                                d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z">
+                            </path>
+                        </svg>
+                    </button>
+                    <button
+                        style="text-decoration: underline; background: none; color: #949494; border: none; cursor: pointer;"
+                        onclick="localStorage.setItem('showToast', false)" @click="showToast=false">
+                        Go away! Never show again
+                    </button>
+                </div>
+            </div>
+        </div>
         <div v-if="currentElement">
             <h2 style="text-align: center;">
                 <div class="item" style=" padding: 13px 15px 12px" @click="navigateTo('')">
@@ -131,60 +165,48 @@
     </div>
 
     <script>
-        function compareRecipes(A, B, data, ingredientMode = false) {
-            if (data.index[A.C][1] == "Nothing") {
+        function compareRecipes(A, B, data) {
+            if (data.index[A.C][1] == "Nothing")
                 return 1
-            }
-            if (data.index[B.C][1] == "Nothing") {
+            if (data.index[B.C][1] == "Nothing")
                 return -1
-            }
-            if (ingredientMode) {
-                if (data.costs[A.A] + data.costs[A.B] > data.costs[B.A] + data.costs[B.B]) {
-                    return 1
-                }
-                if (data.costs[A.A] + data.costs[A.B] < data.costs[B.A] + data.costs[B.B]) {
-                    return -1
-                }
 
-                if (data.costs[A.C] > data.costs[B.C]) {
-                    return 1
-                }
-                if (data.costs[A.C] < data.costs[B.C]) {
-                    return -1
-                }
-    
-                if (data.index[A.C][1] > data.index[B.C][1]) {
-                    return 1
-                }
-                if (data.index[A.C][1] < data.index[B.C][1]) {
-                    return -1
-                }
-    
-                return 0
-            } else {
-                if (data.costs[A.C] > data.costs[B.C]) {
-                    return 1
-                }
-                if (data.costs[A.C] < data.costs[B.C]) {
-                    return -1
-                }
-    
-                if (data.index[A.C][1] > data.index[B.C][1]) {
-                    return 1
-                }
-                if (data.index[A.C][1] < data.index[B.C][1]) {
-                    return -1
-                }
-    
-                if (data.costs[A.A] + data.costs[A.B] > data.costs[B.A] + data.costs[B.B]) {
-                    return 1
-                }
-                if (data.costs[A.A] + data.costs[A.B] < data.costs[B.A] + data.costs[B.B]) {
-                    return -1
-                }
-    
-                return 0
-            }
+            if (data.costs[A.C] > data.costs[B.C])
+                return 1
+            if (data.costs[A.C] < data.costs[B.C])
+                return -1
+
+            if (data.index[A.C][1] > data.index[B.C][1])
+                return 1
+            if (data.index[A.C][1] < data.index[B.C][1])
+                return -1
+
+            if (data.costs[A.A] + data.costs[A.B] > data.costs[B.A] + data.costs[B.B])
+                return 1
+            if (data.costs[A.A] + data.costs[A.B] < data.costs[B.A] + data.costs[B.B])
+                return -1
+
+            if (data.costs[A.A] > data.costs[B.A])
+                return 1
+            if (data.costs[A.A] < data.costs[B.A])
+                return -1
+
+            if (data.index[A.A][1] > data.index[B.A][1])
+                return 1
+            if (data.index[A.A][1] < data.index[B.A][1])
+                return -1
+
+            if (data.costs[A.B] > data.costs[B.B])
+                return 1
+            if (data.costs[A.B] < data.costs[B.B])
+                return -1
+
+            if (data.index[A.B][1] > data.index[B.B][1])
+                return 1
+            if (data.index[A.B][1] < data.index[B.B][1])
+                return -1
+
+            return 0
         }
 
         function generateData(raw) {
@@ -197,11 +219,7 @@
                 data[recipe[2]] ??= { from: [], to: [] }
                 data[recipe[2]].from.push([recipe[0], recipe[1]])
             }
-            return { 
-                index: Object.fromEntries(Object.entries(raw.index).map(x => [x[0], [x[1][0], x[1][1]]])), 
-                costs: Object.fromEntries(Object.entries(raw.index).map(x => [x[0], x[1][2]])), 
-                data: data,
-            }
+            return { index: Object.fromEntries(Object.entries(raw.index).map(x => [x[0], [x[1][0], x[1][1]]])), costs: Object.fromEntries(Object.entries(raw.index).map(x => [x[0], x[1][2]])), data: data }
         }
 
         function setQuery(query) {
@@ -232,19 +250,20 @@
                 data: { index: {}, costs: {}, data: {} },
                 currentElement: "",
                 showHiddenRecipes: false,
-                searchQuery: ""
+                searchQuery: "",
+                showToast: true
             },
             computed: {
                 currentTo: function () {
-                    console.log(this.data.data[this.currentElement])
+                    // console.log(this.data.data[this.currentElement])
                     let result = this.data.data[this.currentElement].to
                         .map(recipe => {
                             return { A: this.currentElement, B: recipe[0], C: recipe[1] }
                         })
-                    return result.filter(x => x.A != x.C && x.B != x.C && this.data.index[x.C][1] != 'Nothing').sort((a, b) => compareRecipes(a, b, this.data, false))
+                    return result.filter(x => x.A != x.C && x.B != x.C && this.data.index[x.C][1] != 'Nothing').sort((a, b) => compareRecipes(a, b, this.data))
                 },
                 currentFrom: function () {
-                    console.log(this.data.data[this.currentElement])
+                    // console.log(this.data.data[this.currentElement])
                     let result = this.data.data[this.currentElement].from
                         .map(recipe => {
                             if (this.data.costs[recipe[0]] > this.data.costs[recipe[1]]) {
@@ -252,18 +271,18 @@
                             }
                             return { A: recipe[0], B: recipe[1], C: this.currentElement }
                         })
-                    return result.filter(x => x.A != x.C && x.B != x.C && this.data.index[x.C][1] != 'Nothing').sort((a, b) => compareRecipes(a, b, this.data, true))
+                    return result.filter(x => x.A != x.C && x.B != x.C && this.data.index[x.C][1] != 'Nothing').sort((a, b) => compareRecipes(a, b, this.data))
                 },
                 currentHiddenTo: function () {
-                    console.log(this.data.data[this.currentElement])
+                    // console.log(this.data.data[this.currentElement])
                     let result = this.data.data[this.currentElement].to
                         .map(recipe => {
                             return { A: this.currentElement, B: recipe[0], C: recipe[1] }
                         })
-                    return result.filter(x => !(x.A != x.C && x.B != x.C && this.data.index[x.C][1] != 'Nothing')).sort((a, b) => compareRecipes(a, b, this.data, false))
+                    return result.filter(x => !(x.A != x.C && x.B != x.C && this.data.index[x.C][1] != 'Nothing')).sort((a, b) => compareRecipes(a, b, this.data))
                 },
                 currentHiddenFrom: function () {
-                    console.log(this.data.data[this.currentElement])
+                    // console.log(this.data.data[this.currentElement])
                     let result = this.data.data[this.currentElement].from
                         .map(recipe => {
                             if (this.data.costs[recipe[0]] > this.data.costs[recipe[1]]) {
@@ -271,7 +290,7 @@
                             }
                             return { A: recipe[0], B: recipe[1], C: this.currentElement }
                         })
-                    return result.filter(x => !(x.A != x.C && x.B != x.C && this.data.index[x.C][1] != 'Nothing')).sort((a, b) => compareRecipes(a, b, this.data, true))
+                    return result.filter(x => !(x.A != x.C && x.B != x.C && this.data.index[x.C][1] != 'Nothing')).sort((a, b) => compareRecipes(a, b, this.data))
                 },
                 createdBy: function () {
                     let result = this.data.find(element => element[0] === this.currentElement)[1].createdBy
@@ -300,7 +319,7 @@
                     return result
                 },
                 elementList: function () {
-                    console.log(this.data.index)
+                    // console.log(this.data.index)
                     let list = Object.keys(this.data.index).sort((a, b) => this.data.costs[a] - this.data.costs[b]).filter(x => this.data.index[x][1] != "Nothing")
                     return list.filter(x => this.data.index[x][1].toLowerCase().includes(this.searchQuery.toLowerCase()))
                 }
@@ -314,12 +333,13 @@
                 }
             },
             mounted() {
+                this.showToast = JSON.parse(localStorage.getItem("showToast")) ?? true
                 // Load recipes from JSON file
                 fetch('data.json')
                     .then(response => { console.log(response); return response.json() })
                     .then(data => {
                         let wikiData = generateData(data)
-                        console.log(wikiData)
+                        // console.log(wikiData)
                         this.data = wikiData;
                         this.currentElement = getQuery().element || ""
                     })
