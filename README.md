@@ -27,3 +27,5 @@ The data is stored in a JSON file, with two keys "index" and "data". The "index"
 (This corresponds to three recipes, Wind + Earth = Dust, Fire + Earth = Lava, and Fire + Fire = Volcano. The costs are the minimal costs for each item.)
 
 See [data.json](data.json) for the current data, and the bottom of [index.html](index.html) for a way to parse it into a dictionary of recipes and backlinks. 
+
+This project is not owned or operated by neal.fun, nor does it represent the official opinions of neal.fun.
