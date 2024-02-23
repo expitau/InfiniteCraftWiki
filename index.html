@@ -67,12 +67,118 @@
                 padding: 1rem 1rem 3rem;
             }
         }
+
+        #github {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: #242424;
+            color: #c6c7c7;
+            padding: 1rem;
+            text-align: center;
+            margin: 1rem;
+            border-radius: 0.5rem;
+        }
+
+        #toast {
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #000000aa;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #toast-body {
+            background-color: #242424;
+            border-radius: 0.5rem;
+            padding: 3rem 4rem 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sr-only {
+            border: 0;
+            padding: 0;
+            margin: 0;
+            position: absolute !important;
+            height: 1px;
+            width: 1px;
+            overflow: hidden;
+            clip: rect(1px 1px 1px 1px);
+            clip: rect(1px, 1px, 1px, 1px);
+            clip-path: inset(50%);
+            white-space: nowrap;
+        }
+
+
+		#github-link {
+			color: #c6c7c7;
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin: 2rem;
+		}
+
+		#github-link:hover {
+			color: #949494;
+			transition: color var(--transition-s) ease;
+		}
+
+
+        @media (max-width: 480px) {
+            #toast-body {
+                text-align: center;
+            }
+            #github-link {
+                position: static;
+                margin: 0
+            }
+        }
     </style>
 </head>
 
 <body>
     <div id="app">
+
+        <a id="github-link" href="https://github.com/expitau" target="_blank">
+            <span class="sr-only">Follow me on Github</span>
+            <svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" fill="currentColor">
+                <path fill="currentColor"
+                    d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z">
+                </path>
+            </svg>
+        </a>
         <h1 style="text-align: center; cursor: pointer;" @click="navigateTo('')">Infinite Craft Wiki</h1>
+
+        <div id="toast" v-if="showToast">
+            <div id="toast-body">
+                <h2 style="margin: 0;">Enjoying my site?</h2>
+                <p>Help me out by starring my Github repository</p>
+                <br>
+                <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                    <button
+                        style="background-color: #347d39; color:#c6c7c7; text-decoration: none; border-radius: 0.5rem; padding: 0.5rem 1rem; cursor: pointer; display: flex; flex-direction: row; align-items: center; gap: 1rem; border: none"
+                        onclick="window.open('https://github.com/expitau/InfiniteCraftWiki', '_blank').focus()">
+                        <span>Sure!</span>
+                        <svg viewBox="0 0 16 16" aria-hidden="true" width="24" height="24" fill="currentColor">
+                            <path fill="currentColor"
+                                d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z">
+                            </path>
+                        </svg>
+                    </button>
+                    <button
+                        style="text-decoration: underline; background: none; color: #949494; border: none; cursor: pointer;"
+                        onclick="localStorage.setItem('showToast', false)" @click="showToast=false">
+                        Go away! Never show again
+                    </button>
+                </div>
+            </div>
+        </div>
         <div v-if="currentElement">
             <h2 style="text-align: center;">
                 <div class="item" style=" padding: 13px 15px 12px" @click="navigateTo('')">
@@ -211,14 +317,14 @@
                 if (data.costs[A.C] < data.costs[B.C]) {
                     return -1
                 }
-    
+
                 if (data.index[A.C][1] > data.index[B.C][1]) {
                     return 1
                 }
                 if (data.index[A.C][1] < data.index[B.C][1]) {
                     return -1
                 }
-    
+
                 return 0
             } else {
                 if (data.costs[A.C] > data.costs[B.C]) {
@@ -227,21 +333,21 @@
                 if (data.costs[A.C] < data.costs[B.C]) {
                     return -1
                 }
-    
+
                 if (data.index[A.C][1] > data.index[B.C][1]) {
                     return 1
                 }
                 if (data.index[A.C][1] < data.index[B.C][1]) {
                     return -1
                 }
-    
+
                 if (data.costs[A.A] + data.costs[A.B] > data.costs[B.A] + data.costs[B.B]) {
                     return 1
                 }
                 if (data.costs[A.A] + data.costs[A.B] < data.costs[B.A] + data.costs[B.B]) {
                     return -1
                 }
-    
+
                 return 0
             }
         }
@@ -333,7 +439,8 @@
                 data: { index: {}, costs: {}, data: {} },
                 currentElement: "",
                 showHiddenRecipes: false,
-                searchQuery: ""
+                searchQuery: "",
+                showToast: true
             },
             computed: {
                 currentTo: function () {
@@ -415,6 +522,7 @@
                 }
             },
             mounted() {
+                this.showToast = JSON.parse(localStorage.getItem("showToast")) ?? true
                 // Load recipes from JSON file
                 fetch('data.json')
                     .then(response => { console.log(response); return response.json() })
