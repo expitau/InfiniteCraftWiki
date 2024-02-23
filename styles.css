@@ -72,19 +72,7 @@ body {
     }
 }
 
-#github {
-    position: absolute;
-    top: 0;
-    left: 0;
-    background-color: #242424;
-    color: #c6c7c7;
-    padding: 1rem;
-    text-align: center;
-    margin: 1rem;
-    border-radius: 0.5rem;
-}
-
-#toast {
+.toast {
     position: fixed;
     top: 0;
     left: 0;
@@ -97,7 +85,7 @@ body {
     justify-content: center;
 }
 
-#toast-body {
+.toast-body {
     background-color: #242424;
     border-radius: 0.5rem;
     padding: 3rem 4rem 2rem;
@@ -119,8 +107,7 @@ body {
     white-space: nowrap;
 }
 
-
-#github-link {
+.github-link {
     color: #c6c7c7;
     position: absolute;
     top: 0;
@@ -128,18 +115,17 @@ body {
     margin: 2rem;
 }
 
-#github-link:hover {
+.github-link:hover {
     color: #949494;
     transition: color var(--transition-s) ease;
 }
 
-
 @media (max-width: 480px) {
-    #toast-body {
+    .toast-body {
         text-align: center;
     }
 
-    #github-link {
+    .github-link {
         position: static;
         margin: 0
     }

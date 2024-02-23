@@ -29,7 +29,7 @@
 <body>
     <div id="app">
 
-        <a id="github-link" href="https://github.com/expitau/InfiniteCraftWiki" target="_blank">
+        <a class="github-link" href="https://github.com/expitau/InfiniteCraftWiki" target="_blank">
             <span class="sr-only">Follow me on Github</span>
             <svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" fill="currentColor">
                 <path fill="currentColor"
@@ -39,8 +39,8 @@
         </a>
         <h1 style="text-align: center; cursor: pointer;" @click="navigateTo('')">Infinite Craft Wiki</h1>
 
-        <div id="toast" v-if="showToast">
-            <div id="toast-body">
+        <div class="toast" v-if="showToast">
+            <div class="toast-body">
                 <h2 style="margin: 0;">Enjoying my site?</h2>
                 <p>Help me out by starring the project on Github</p>
                 <br>
