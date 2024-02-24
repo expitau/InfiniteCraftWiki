@@ -38,10 +38,35 @@
                 </svg>
                 <div class="github-link-text">Star my repo!</div>
             </a>
+
             <button
                 style="background-color: #347d39; color:#c6c7c7; text-decoration: none; border-radius: 0.5rem; padding: 0.5rem 1rem; cursor: pointer;  border: none; position: absolute; top: 0; right: 0; margin: 1rem"
-                @click="clearSaveData()" v-if="saveData.length > 0">Clear save data</button>
-            <h1 style="text-align: center; cursor: pointer;" @click="navigateTo('')">Infinite Craft Wiki</h1>
+                @click="clearSaveData()" v-if="saveData.length > 0">
+                Clear save data
+            </button>
+
+            <h1 style="text-align: center; cursor: pointer; margin-bottom: 0px;" @click="navigateTo('')">
+                Infinite Craft Wiki
+            </h1>
+            
+            <h3 class="sub-header">
+                {{
+                !Object.keys(data.index).length ?
+                "#####" :
+                (Object.keys(data.index).length - 1).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                }}
+                elements -
+                {{
+                !Object.keys(data.index).length ?
+                "#####" :
+                data.recipeCount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                }}
+                recipes
+            </h3>
+
+            <div class="search-bar-wrapper">
+                <input class="search-bar" type="text" placeholder="Search..." v-model="searchQuery" @click="navigateTo('')"></input>
+            </div>
 
             <div class="toast" v-if="showToast">
                 <div class="toast-body">
@@ -67,50 +92,55 @@
                     </div>
                 </div>
             </div>
-            <div v-if="currentElement">
-                <h2 style="text-align: center;">
-                    <div class="item" style=" padding: 13px 15px 12px" @click="navigateTo('')">
-                        {{ data.index[currentElement][0] }}&nbsp;{{ data.index[currentElement][1] }}
-                    </div>
-                </h2>
+            <transition name="slide-up" mode="out-in">
+            <div key=0 v-if="currentElement">
+                <transition :name="slideTransition" mode="out-in">
+                    <h2 :key="currentElement" style="text-align: center;">
+                        <div class="item" style=" padding: 13px 15px 12px">
+                            {{ data.index[currentElement][0] }}&nbsp;{{ data.index[currentElement][1] }}
+                        </div>
+                    </h2>
+                </transition>
                 <div class="ingredients-flex">
                     <div class="ingredients-list">
                         <h3>Created by</h3>
-                        <table>
-                            <tr v-for="recipe in currentFrom">
-                                <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
-                                    @click="navigateTo(recipe.A)">
-                                    {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
-                                </td>
-                                <td>+</td>
-                                <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
-                                    @click="navigateTo(recipe.B)">
-                                    {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
-                                </td>
-                                <td>=</td>
-                                <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
-                                    @click="navigateTo(recipe.C)">
-                                    {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
-                                </td>
-                            </tr>
+                        <transition :name="slideTransition" mode="out-in">
+                            <table :key="currentElement">
+                                <tr v-for="recipe in currentFrom">
+                                    <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
+                                        @click="navigateTo(recipe.A); slideTransition='slide-right';">
+                                        {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
+                                    </td>
+                                    <td>+</td>
+                                    <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
+                                        @click="navigateTo(recipe.B); slideTransition='slide-right';">
+                                        {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
+                                    </td>
+                                    <td>=</td>
+                                    <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
+                                        @click="navigateTo(recipe.C); slideTransition='slide-right';">
+                                        {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
+                                    </td>
+                                </tr>
 
-                            <tr v-for="recipe in currentHiddenFrom" v-if="showHiddenRecipes">
-                                <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
-                                    @click="navigateTo(recipe.A)">
-                                    {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
-                                </td>
-                                <td>+</td>
-                                <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
-                                    @click="navigateTo(recipe.B)">
-                                    {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
-                                </td>
-                                <td>=</td>
-                                <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
-                                    @click="navigateTo(recipe.C)">
-                                    {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
-                                </td>
-                            </tr>
-                        </table>
+                                <tr v-for="recipe in currentHiddenFrom" v-if="showHiddenRecipes">
+                                    <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
+                                        @click="navigateTo(recipe.A); slideTransition='slide-right';">
+                                        {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
+                                    </td>
+                                    <td>+</td>
+                                    <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
+                                        @click="navigateTo(recipe.B); slideTransition='slide-right';">
+                                        {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
+                                    </td>
+                                    <td>=</td>
+                                    <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
+                                        @click="navigateTo(recipe.C); slideTransition='slide-right';">
+                                        {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
+                                    </td>
+                                </tr>
+                            </table>
+                        </transition>
                         <div v-if="currentHiddenFrom.length > 0">
                             <div v-if="!showHiddenRecipes" class="text-link" @click="showHiddenRecipes = true">
                                 {{currentHiddenFrom.length}} entries hidden
@@ -123,42 +153,44 @@
 
                     <div class="ingredients-list">
                         <h3>Used in</h3>
-                        <table>
-                            <tr v-for="recipe in currentTo">
-                                <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
-                                    @click="navigateTo(recipe.A)">
-                                    {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
-                                </td>
-                                <td>+</td>
-                                <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
-                                    @click="navigateTo(recipe.B)">
-                                    {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
-                                </td>
-                                <td>=</td>
-                                <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
-                                    @click="navigateTo(recipe.C)">
-                                    {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
-                                </td>
-                            </tr>
+                        <transition :name="slideTransition" mode="out-in">
+                            <table :key="currentElement">
+                                <tr v-for="recipe in currentTo">
+                                    <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
+                                        @click="navigateTo(recipe.A); slideTransition='slide-left';">
+                                        {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
+                                    </td>
+                                    <td>+</td>
+                                    <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
+                                        @click="navigateTo(recipe.B); slideTransition='slide-left';">
+                                        {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
+                                    </td>
+                                    <td>=</td>
+                                    <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
+                                        @click="navigateTo(recipe.C); slideTransition='slide-left';">
+                                        {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
+                                    </td>
+                                </tr>
 
-                            <tr v-for="recipe in currentHiddenTo" v-if="showHiddenRecipes">
-                                <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
-                                    @click="navigateTo(recipe.A)">
-                                    {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
-                                </td>
-                                <td>+</td>
-                                <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
-                                    @click="navigateTo(recipe.B)">
-                                    {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
-                                </td>
-                                <td>=</td>
-                                <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
-                                    @click="navigateTo(recipe.C)">
-                                    {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
-                                </td>
-                            </tr>
-                        </table>
+                                <tr v-for="recipe in currentHiddenTo" v-if="showHiddenRecipes">
+                                    <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
+                                        @click="navigateTo(recipe.A); slideTransition='slide-left';">
+                                        {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
+                                    </td>
+                                    <td>+</td>
+                                    <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
+                                        @click="navigateTo(recipe.B); slideTransition='slide-left';">
+                                        {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
+                                    </td>
+                                    <td>=</td>
+                                    <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
+                                        @click="navigateTo(recipe.C); slideTransition='slide-left';">
+                                        {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
+                                    </td>
+                                </tr>
+                            </table>
 
+                        </transition>
                         <div v-if="currentHiddenTo.length > 0">
                             <div v-if="!showHiddenRecipes" class="text-link" @click="showHiddenRecipes = true">
                                 {{currentHiddenTo.length}} entries hidden
@@ -170,16 +202,16 @@
                     </div>
                 </div>
             </div>
-            <div v-else style="display: flex; flex-direction: column; align-items: center;">
-                <input class="search-bar" type="text" placeholder="Search..." v-model="searchQuery"></input>
+            <div key=1 v-else>
                 <div style="display: flex; flex-wrap: wrap; justify-content: center;">
-                    <div v-if="Object.keys(data.data).length == 0" style="font-weight: bold;">Loading data...</div>
-                    <div class="item" :class="{'item-used': !saveData.includes(element)}"
-                        v-for="element in elementList" @click="navigateTo(element)">
+                    <div v-if="Object.keys(data.data).length == 0" style="font-weight: bold; padding-top: 5px;">Loading data...</div>
+                    <div class="item" :class="{'item-used': !saveData.includes(element)}" v-for="element in elementList"
+                        @click="navigateTo(element)">
                         {{ data.index[element][0] }}&nbsp;{{ data.index[element][1] }}
                     </div>
                 </div>
             </div>
+            </transition>
             <div id="scroll-end"></div>
         </div>
     </div>
@@ -231,7 +263,9 @@
 
         function generateData(raw) {
             let data = {}
+            let recipeCount = 0;
             for (let recipe of raw.data.split(";").map(x => x.split(","))) {
+                recipeCount++;
                 data[recipe[0]] ??= { from: [], to: [] }
                 data[recipe[0]].to.push([recipe[1], recipe[2]])
                 data[recipe[1]] ??= { from: [], to: [] }
@@ -239,7 +273,12 @@
                 data[recipe[2]] ??= { from: [], to: [] }
                 data[recipe[2]].from.push([recipe[0], recipe[1]])
             }
-            return { index: Object.fromEntries(Object.entries(raw.index).map(x => [x[0], [x[1][0], x[1][1]]])), costs: Object.fromEntries(Object.entries(raw.index).map(x => [x[0], x[1][2]])), data: data }
+            return {
+                index: Object.fromEntries(Object.entries(raw.index).map(x => [x[0], [x[1][0], x[1][1]]])),
+                costs: Object.fromEntries(Object.entries(raw.index).map(x => [x[0], x[1][2]])),
+                data: data,
+                recipeCount: recipeCount
+            };
         }
 
         function setQuery(query) {
@@ -271,13 +310,14 @@
         const app = new Vue({
             el: '#app',
             data: {
-                data: { index: {}, costs: {}, data: {} },
+                data: { index: {}, costs: {}, data: {}, recipeCount: 0 },
                 currentElement: "",
                 showHiddenRecipes: false,
                 searchQuery: "",
                 showToast: true,
                 saveData: [],
-                loaded: 1000
+                loaded: 1000,
+                slideTransition: "slide-right",
             },
             computed: {
                 currentTo: function () {

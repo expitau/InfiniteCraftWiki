@@ -1,3 +1,7 @@
+:root {
+    color-scheme: dark;
+}
+
 body {
     font-family: "Roboto", sans-serif;
     width: 100vw;
@@ -77,6 +81,12 @@ body {
     color: #c6c7c7;
 }
 
+.search-bar-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 @media (max-width: 900px) {
     .ingredients-flex {
         flex-direction: column;
@@ -135,6 +145,12 @@ body {
     text-decoration: none;
 }
 
+.sub-header {
+    text-align: center; 
+    margin-top: 4px; 
+    color: gray;
+}
+
 @media (max-width: 800px) {
     .github-link-text {
         display: none
@@ -155,4 +171,40 @@ body {
         position: static;
         margin: 0
     }
+}
+
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition: all 0.12s;
+}
+
+.slide-up-enter, 
+.slide-up-leave-to {
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.slide-up-leave-from,
+.slide-left-leave-from,
+.slide-right-leave-from {
+  opacity: 0;
+}
+
+.slide-left-enter-active,
+.slide-left-leave-active,
+.slide-right-enter-active,
+.slide-right-leave-active {
+  transition: all 0.08s ease;
+}
+
+.slide-side-enter,
+.slide-right-leave-to {
+    opacity: 0;
+    transform: translateX(10px);
+}
+
+.slide-left-leave-to,
+.slide-right-enter {
+    opacity: 0;
+    transform: translateX(-10px);
 }
