@@ -50,18 +50,7 @@
             </h1>
             
             <h3 class="sub-header">
-                {{
-                !Object.keys(data.index).length ?
-                "#####" :
-                (Object.keys(data.index).length - 1).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-                }}
-                elements -
-                {{
-                !Object.keys(data.index).length ?
-                "#####" :
-                data.recipeCount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-                }}
-                recipes
+                {{ elementAndRecipeCount }}
             </h3>
 
             <div class="search-bar-wrapper">
@@ -389,24 +378,38 @@
                     let list = Object.keys(this.data.index).sort((a, b) => this.data.costs[a] - this.data.costs[b]).filter(x => this.data.index[x][1] != "Nothing")
                     return list.filter(x => this.data.index[x][1].toLowerCase().includes(this.searchQuery.toLowerCase())).slice(0, this.loaded)
                 },
+                elementAndRecipeCount: function() {
+                    let elementCount = "#####";
+                    let recipeCount = "######";
+
+                    if(Object.keys(this.data.index).length != 0){
+                        elementCount = this.formatNumAsString(Object.keys(this.data.index).length - 1);
+                        recipeCount = this.formatNumAsString(this.data.recipeCount);
+                    }
+
+                    return `${elementCount} elements - ${recipeCount} recipes`;
+                }
             },
             methods: {
+                formatNumAsString: function(number){
+                    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                },
                 navigateTo: function (element) {
-                    this.currentElement = element
-                    this.showHiddenRecipes = false
-                    setQuery({ e: this.currentElement })
-                    return this.currentElement ? this.currentElement : ""
+                    this.currentElement = element;
+                    this.showHiddenRecipes = false;
+                    setQuery({ e: this.currentElement });
+                    return this.currentElement ? this.currentElement : "";
                 },
                 addScrollPage: function () {
-                    this.loaded += 500
+                    this.loaded += 500;
                 },
                 clearSaveData: function () {
-                    this.saveData = []
-                    localStorage.setItem("saveData", "")
+                    this.saveData = [];
+                    localStorage.setItem("saveData", "");
                 }
             },
             mounted() {
-                this.showToast = JSON.parse(localStorage.getItem("showToast")) ?? true
+                this.showToast = JSON.parse(localStorage.getItem("showToast")) ?? true;
                 // Load recipes from JSON file
                 fetch('data.json')
                     .then(response => { console.log(response); return response.json() })
@@ -429,7 +432,7 @@
                     var pageOffset = window.pageYOffset + window.innerHeight;
 
                     if (pageOffset > lastDivOffset - 20) {
-                        app.addScrollPage()
+                        app.addScrollPage();
                     }
                 });
             }
