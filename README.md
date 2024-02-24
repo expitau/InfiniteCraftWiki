@@ -4,6 +4,16 @@ This is a webpage that provides a guide on how to craft various items in neal.fu
 
 Visit the [live site](https://expitau.github.io/InfiniteCraftWiki/) to see it in action!
 
+## Importing Save Files
+
+This site has support for importing your crafted elements from Infinite Craft. To do this, go to https://neal.fun/infinite-craft/, right click -> Inspect element -> Console, and paste the following code:
+
+```javascript
+fetch("https://raw.githubusercontent.com/expitau/InfiniteCraftWiki/main/data.json").then(res => res.json()).then(data => { index = Object.fromEntries(Object.entries(data.index).map(x => [x[1][1], x[0]])); window.location.href = `https://expitau.github.io/InfiniteCraftWiki?s=${JSON.parse(localStorage.getItem('infinite-craft-data')).elements.map(a => index[a.text]).filter(x => x).join(",")}` })
+```
+
+This will automatically redirect and load your data.
+
 ## Developers
 
 ### Data Format
