@@ -65,7 +65,7 @@
                     <div style="display: flex; flex-direction: row; justify-content: space-between;">
                         <button
                             style="background-color: #347d39; color:#c6c7c7; text-decoration: none; border-radius: 0.5rem; padding: 0.5rem 1rem; cursor: pointer; display: flex; flex-direction: row; align-items: center; gap: 1rem; border: none"
-                            onclick="window.open('https://github.com/expitau/InfiniteCraftWiki', '_blank').focus()">
+                            onclick="window.open('github.com/expitau/InfiniteCraftWiki', '_blank').focus()">
                             <span>Sure!</span>
                             <svg viewBox="0 0 16 16" aria-hidden="true" width="24" height="24" fill="currentColor">
                                 <path fill="currentColor"
@@ -96,36 +96,60 @@
                         <transition :name="slideTransition" mode="out-in">
                             <table :key="currentElement">
                                 <tr v-for="recipe in currentFrom">
-                                    <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
-                                        @click="navigateTo(recipe.A); slideTransition='slide-right';">
-                                        {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
+                                    <td class="table-cell">
+                                        <div class="item item-wrapper" :class="{'item-used': !saveData.includes(recipe.A)}"
+                                            @click="navigateTo(recipe.A); slideTransition='slide-right';">
+                                            <div class="item-emoji">{{ data.index[recipe.A][0] }}</div>
+                                            &nbsp;
+                                            <div class="item-text">{{ data.index[recipe.A][1] }}</div>
+                                        </div>
                                     </td>
                                     <td>+</td>
-                                    <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
-                                        @click="navigateTo(recipe.B); slideTransition='slide-right';">
-                                        {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
+                                    <td class="table-cell">
+                                        <div class="item item-wrapper" :class="{'item-used': !saveData.includes(recipe.B)}"
+                                            @click="navigateTo(recipe.B); slideTransition='slide-right';">
+                                            <div class="item-emoji">{{ data.index[recipe.B][0] }}</div>
+                                            &nbsp;
+                                            <div class="item-text">{{ data.index[recipe.B][1] }}</div>
+                                        </div>
                                     </td>
                                     <td>=</td>
-                                    <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
-                                        @click="navigateTo(recipe.C); slideTransition='slide-right';">
-                                        {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
+                                    <td class="table-cell">
+                                        <div class="item item-wrapper" :class="{'item-used': !saveData.includes(recipe.C)}"
+                                            @click="navigateTo(recipe.C); slideTransition='slide-right';">
+                                            <div class="item-emoji">{{ data.index[recipe.C][0] }}</div>
+                                            &nbsp;
+                                            <div class="item-text">{{ data.index[recipe.C][1] }}</div>
+                                        </div>
                                     </td>
                                 </tr>
 
                                 <tr v-for="recipe in currentHiddenFrom" v-if="showHiddenRecipes">
-                                    <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
-                                        @click="navigateTo(recipe.A); slideTransition='slide-right';">
-                                        {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
+                                    <td class="table-cell">
+                                        <div class="item item-wrapper" :class="{'item-used': !saveData.includes(recipe.A)}"
+                                            @click="navigateTo(recipe.A); slideTransition='slide-right';">
+                                            <div class="item-emoji">{{ data.index[recipe.A][0] }}</div>
+                                            &nbsp;
+                                            <div class="item-text">{{ data.index[recipe.A][1] }}</div>
+                                        </div>
                                     </td>
                                     <td>+</td>
-                                    <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
-                                        @click="navigateTo(recipe.B); slideTransition='slide-right';">
-                                        {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
+                                    <td class="table-cell">
+                                        <div class="item item-wrapper" :class="{'item-used': !saveData.includes(recipe.B)}"
+                                            @click="navigateTo(recipe.B); slideTransition='slide-right';">
+                                            <div class="item-emoji">{{ data.index[recipe.B][0] }}</div>
+                                            &nbsp;
+                                            <div class="item-text">{{ data.index[recipe.B][1] }}</div>
+                                        </div>
                                     </td>
                                     <td>=</td>
-                                    <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
-                                        @click="navigateTo(recipe.C); slideTransition='slide-right';">
-                                        {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
+                                    <td class="table-cell">
+                                        <div class="item item-wrapper" :class="{'item-used': !saveData.includes(recipe.C)}"
+                                            @click="navigateTo(recipe.C); slideTransition='slide-right';">
+                                            <div class="item-emoji">{{ data.index[recipe.C][0] }}</div>
+                                            &nbsp;
+                                            <div class="item-text">{{ data.index[recipe.C][1] }}</div>
+                                        </div>
                                     </td>
                                 </tr>
                             </table>
@@ -145,36 +169,60 @@
                         <transition :name="slideTransition" mode="out-in">
                             <table :key="currentElement">
                                 <tr v-for="recipe in currentTo">
-                                    <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
-                                        @click="navigateTo(recipe.A); slideTransition='slide-left';">
-                                        {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
+                                    <td class="table-cell">
+                                        <div class="item item-wrapper" :class="{'item-used': !saveData.includes(recipe.A)}"
+                                            @click="navigateTo(recipe.A); slideTransition='slide-right';">
+                                            <div class="item-emoji">{{ data.index[recipe.A][0] }}</div>
+                                            &nbsp;
+                                            <div class="item-text">{{ data.index[recipe.A][1] }}</div>
+                                        </div>
                                     </td>
                                     <td>+</td>
-                                    <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
-                                        @click="navigateTo(recipe.B); slideTransition='slide-left';">
-                                        {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
+                                    <td class="table-cell">
+                                        <div class="item item-wrapper" :class="{'item-used': !saveData.includes(recipe.B)}"
+                                            @click="navigateTo(recipe.B); slideTransition='slide-right';">
+                                            <div class="item-emoji">{{ data.index[recipe.B][0] }}</div>
+                                            &nbsp;
+                                            <div class="item-text">{{ data.index[recipe.B][1] }}</div>
+                                        </div>
                                     </td>
                                     <td>=</td>
-                                    <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
-                                        @click="navigateTo(recipe.C); slideTransition='slide-left';">
-                                        {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
+                                    <td class="table-cell">
+                                        <div class="item item-wrapper" :class="{'item-used': !saveData.includes(recipe.C)}"
+                                            @click="navigateTo(recipe.C); slideTransition='slide-right';">
+                                            <div class="item-emoji">{{ data.index[recipe.C][0] }}</div>
+                                            &nbsp;
+                                            <div class="item-text">{{ data.index[recipe.C][1] }}</div>
+                                        </div>
                                     </td>
                                 </tr>
 
                                 <tr v-for="recipe in currentHiddenTo" v-if="showHiddenRecipes">
-                                    <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
-                                        @click="navigateTo(recipe.A); slideTransition='slide-left';">
-                                        {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
+                                    <td class="table-cell">
+                                        <div class="item item-wrapper" :class="{'item-used': !saveData.includes(recipe.A)}"
+                                            @click="navigateTo(recipe.A); slideTransition='slide-right';">
+                                            <div class="item-emoji">{{ data.index[recipe.A][0] }}</div>
+                                            &nbsp;
+                                            <div class="item-text">{{ data.index[recipe.A][1] }}</div>
+                                        </div>
                                     </td>
                                     <td>+</td>
-                                    <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
-                                        @click="navigateTo(recipe.B); slideTransition='slide-left';">
-                                        {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
+                                    <td class="table-cell">
+                                        <div class="item item-wrapper" :class="{'item-used': !saveData.includes(recipe.B)}"
+                                            @click="navigateTo(recipe.B); slideTransition='slide-right';">
+                                            <div class="item-emoji">{{ data.index[recipe.B][0] }}</div>
+                                            &nbsp;
+                                            <div class="item-text">{{ data.index[recipe.B][1] }}</div>
+                                        </div>
                                     </td>
                                     <td>=</td>
-                                    <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
-                                        @click="navigateTo(recipe.C); slideTransition='slide-left';">
-                                        {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
+                                    <td class="table-cell">
+                                        <div class="item item-wrapper" :class="{'item-used': !saveData.includes(recipe.C)}"
+                                            @click="navigateTo(recipe.C); slideTransition='slide-right';">
+                                            <div class="item-emoji">{{ data.index[recipe.C][0] }}</div>
+                                            &nbsp;
+                                            <div class="item-text">{{ data.index[recipe.C][1] }}</div>
+                                        </div>
                                     </td>
                                 </tr>
                             </table>

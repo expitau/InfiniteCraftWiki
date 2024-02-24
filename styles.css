@@ -27,6 +27,30 @@ body {
     border: 1px solid #525252;
 }
 
+table {
+    display: block;
+}
+
+.item-wrapper  {
+    flex-direction: row;
+    display: flex;
+    align-items: center;
+}
+
+.item-text {
+    display: inline-block;
+    overflow-wrap: break-word;
+}
+
+.item-emoji {
+    /*white-space: nowrap;*/
+}
+
+.table-cell {
+    display: flex;
+	justify-content: center;
+}
+
 .showUnavailableElements .item.item-used {
     filter: brightness(50%)
 }
