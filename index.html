@@ -28,137 +28,156 @@
 
 <body>
     <div id="app">
-
-        <a class="github-link" href="https://github.com/expitau/InfiniteCraftWiki" target="_blank">
-            <span class="sr-only">Follow me on Github</span>
-            <svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" fill="currentColor">
-                <path fill="currentColor"
-                    d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z">
-                </path>
-            </svg>
-        </a>
-        <h1 style="text-align: center; cursor: pointer;" @click="navigateTo('')">Infinite Craft Wiki</h1>
-
-        <div class="toast" v-if="showToast">
-            <div class="toast-body">
-                <h2 style="margin: 0;">Enjoying my site?</h2>
-                <p>Help me out by starring the project on Github</p>
-                <br>
-                <div style="display: flex; flex-direction: row; justify-content: space-between;">
-                    <button
-                        style="background-color: #347d39; color:#c6c7c7; text-decoration: none; border-radius: 0.5rem; padding: 0.5rem 1rem; cursor: pointer; display: flex; flex-direction: row; align-items: center; gap: 1rem; border: none"
-                        onclick="window.open('https://github.com/expitau/InfiniteCraftWiki', '_blank').focus()">
-                        <span>Sure!</span>
-                        <svg viewBox="0 0 16 16" aria-hidden="true" width="24" height="24" fill="currentColor">
-                            <path fill="currentColor"
-                                d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z">
-                            </path>
-                        </svg>
-                    </button>
-                    <button
-                        style="text-decoration: underline; background: none; color: #949494; border: none; cursor: pointer;"
-                        onclick="localStorage.setItem('showToast', false)" @click="showToast=false">
-                        Go away! Never show again
-                    </button>
-                </div>
+        <div id="container" :class="{'showUnavailableElements': !showUnavailableElements}">
+            <a class="github-link" href="https://github.com/expitau/InfiniteCraftWiki" target="_blank">
+                <span class="sr-only">Follow me on Github</span>
+                <svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" fill="currentColor">
+                    <path fill="currentColor"
+                        d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z">
+                    </path>
+                </svg>
+            </a>
+            <div class="visibility-toggle" style="display: none">
+                Show unavailable elements
+                <input type="checkbox" v-model="showUnavailableElements">
             </div>
-        </div>
-        <div v-if="currentElement">
-            <h2 style="text-align: center;">
-                <div class="item" style=" padding: 13px 15px 12px" @click="navigateTo('')">
-                    {{ data.index[currentElement][0] }}&nbsp;{{ data.index[currentElement][1] }}
-                </div>
-            </h2>
-            <div class="ingredients-flex">
-                <div class="ingredients-list">
-                    <h3>Created by</h3>
-                    <table>
-                        <tr v-for="recipe in currentFrom">
-                            <td class="item" @click="navigateTo(recipe.A)">
-                                {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
-                            </td>
-                            <td>+</td>
-                            <td class="item" @click="navigateTo(recipe.B)">
-                                {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
-                            </td>
-                            <td>=</td>
-                            <td class="item" @click="navigateTo(recipe.C)">
-                                {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
-                            </td>
-                        </tr>
+            <h1 style="text-align: center; cursor: pointer;" @click="navigateTo('')">Infinite Craft Wiki</h1>
 
-                        <tr v-for="recipe in currentHiddenFrom" v-if="showHiddenRecipes">
-                            <td class="item" @click="navigateTo(recipe.A)">
-                                {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
-                            </td>
-                            <td>+</td>
-                            <td class="item" @click="navigateTo(recipe.B)">
-                                {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
-                            </td>
-                            <td>=</td>
-                            <td class="item" @click="navigateTo(recipe.C)">
-                                {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
-                            </td>
-                        </tr>
-                    </table>
-                    <div v-if="currentHiddenFrom.length > 0">
-                        <div v-if="!showHiddenRecipes" class="text-link" @click="showHiddenRecipes = true">
-                            {{currentHiddenFrom.length}} entries hidden
-                        </div>
-                        <div v-else class="text-link" @click="showHiddenRecipes = false">
-                            {{currentHiddenFrom.length}} entries shown
-                        </div>
-                    </div>
-                </div>
-
-                <div class="ingredients-list">
-                    <h3>Used in</h3>
-                    <table>
-                        <tr v-for="recipe in currentTo">
-                            <td class="item" @click="navigateTo(recipe.A)">
-                                {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
-                            </td>
-                            <td>+</td>
-                            <td class="item" @click="navigateTo(recipe.B)">
-                                {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
-                            </td>
-                            <td>=</td>
-                            <td class="item" @click="navigateTo(recipe.C)">
-                                {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
-                            </td>
-                        </tr>
-
-                        <tr v-for="recipe in currentHiddenTo" v-if="showHiddenRecipes">
-                            <td class="item" @click="navigateTo(recipe.A)">
-                                {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
-                            </td>
-                            <td>+</td>
-                            <td class="item" @click="navigateTo(recipe.B)">
-                                {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
-                            </td>
-                            <td>=</td>
-                            <td class="item" @click="navigateTo(recipe.C)">
-                                {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
-                            </td>
-                        </tr>
-                    </table>
-
-                    <div v-if="currentHiddenTo.length > 0">
-                        <div v-if="!showHiddenRecipes" class="text-link" @click="showHiddenRecipes = true">
-                            {{currentHiddenTo.length}} entries hidden
-                        </div>
-                        <div v-else class="text-link" @click="showHiddenRecipes = false">
-                            {{currentHiddenTo.length}} entries shown
-                        </div>
+            <div class="toast" v-if="showToast">
+                <div class="toast-body">
+                    <h2 style="margin: 0;">Enjoying my site?</h2>
+                    <p>Help me out by starring the project on Github</p>
+                    <br>
+                    <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                        <button
+                            style="background-color: #347d39; color:#c6c7c7; text-decoration: none; border-radius: 0.5rem; padding: 0.5rem 1rem; cursor: pointer; display: flex; flex-direction: row; align-items: center; gap: 1rem; border: none"
+                            onclick="window.open('https://github.com/expitau/InfiniteCraftWiki', '_blank').focus()">
+                            <span>Sure!</span>
+                            <svg viewBox="0 0 16 16" aria-hidden="true" width="24" height="24" fill="currentColor">
+                                <path fill="currentColor"
+                                    d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z">
+                                </path>
+                            </svg>
+                        </button>
+                        <button
+                            style="text-decoration: underline; background: none; color: #949494; border: none; cursor: pointer;"
+                            onclick="localStorage.setItem('showToast', false)" @click="showToast=false">
+                            Go away! Never show again
+                        </button>
                     </div>
                 </div>
             </div>
-        </div>
-        <div v-else style="display: flex; flex-direction: column; align-items: center;">
-            <input class="search-bar" type="text" placeholder="Search..." v-model="searchQuery"></input>
-            <div style="display: flex; flex-wrap: wrap; justify-content: center;">
-                <div class="item" v-for="element in elementList" @click="navigateTo(element)">
-                    {{ data.index[element][0] }}&nbsp;{{ data.index[element][1] }}
+            <div v-if="currentElement">
+                <h2 style="text-align: center;">
+                    <div class="item" style=" padding: 13px 15px 12px" @click="navigateTo('')">
+                        {{ data.index[currentElement][0] }}&nbsp;{{ data.index[currentElement][1] }}
+                    </div>
+                </h2>
+                <div class="ingredients-flex">
+                    <div class="ingredients-list">
+                        <h3>Created by</h3>
+                        <table>
+                            <tr v-for="recipe in currentFrom">
+                                <td class="item" :class="{'item-used': !saveData.elements.includes(recipe.A)}"
+                                    @click="navigateTo(recipe.A)">
+                                    {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
+                                </td>
+                                <td>+</td>
+                                <td class="item" :class="{'item-used': !saveData.elements.includes(recipe.B)}"
+                                    @click="navigateTo(recipe.B)">
+                                    {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
+                                </td>
+                                <td>=</td>
+                                <td class="item" :class="{'item-used': !saveData.elements.includes(recipe.C)}"
+                                    @click="navigateTo(recipe.C)">
+                                    {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
+                                </td>
+                            </tr>
+
+                            <tr v-for="recipe in currentHiddenFrom" v-if="showHiddenRecipes">
+                                <td class="item" :class="{'item-used': !saveData.elements.includes(recipe.A)}"
+                                    @click="navigateTo(recipe.A)">
+                                    {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
+                                </td>
+                                <td>+</td>
+                                <td class="item" :class="{'item-used': !saveData.elements.includes(recipe.B)}"
+                                    @click="navigateTo(recipe.B)">
+                                    {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
+                                </td>
+                                <td>=</td>
+                                <td class="item" :class="{'item-used': !saveData.elements.includes(recipe.C)}"
+                                    @click="navigateTo(recipe.C)">
+                                    {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
+                                </td>
+                            </tr>
+                        </table>
+                        <div v-if="currentHiddenFrom.length > 0">
+                            <div v-if="!showHiddenRecipes" class="text-link" @click="showHiddenRecipes = true">
+                                {{currentHiddenFrom.length}} entries hidden
+                            </div>
+                            <div v-else class="text-link" @click="showHiddenRecipes = false">
+                                {{currentHiddenFrom.length}} entries shown
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ingredients-list">
+                        <h3>Used in</h3>
+                        <table>
+                            <tr v-for="recipe in currentTo">
+                                <td class="item" :class="{'item-used': !saveData.elements.includes(recipe.A)}"
+                                    @click="navigateTo(recipe.A)">
+                                    {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
+                                </td>
+                                <td>+</td>
+                                <td class="item" :class="{'item-used': !saveData.elements.includes(recipe.B)}"
+                                    @click="navigateTo(recipe.B)">
+                                    {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
+                                </td>
+                                <td>=</td>
+                                <td class="item" :class="{'item-used': !saveData.elements.includes(recipe.C)}"
+                                    @click="navigateTo(recipe.C)">
+                                    {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
+                                </td>
+                            </tr>
+
+                            <tr v-for="recipe in currentHiddenTo" v-if="showHiddenRecipes">
+                                <td class="item" :class="{'item-used': !saveData.elements.includes(recipe.A)}"
+                                    @click="navigateTo(recipe.A)">
+                                    {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
+                                </td>
+                                <td>+</td>
+                                <td class="item" :class="{'item-used': !saveData.elements.includes(recipe.B)}"
+                                    @click="navigateTo(recipe.B)">
+                                    {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
+                                </td>
+                                <td>=</td>
+                                <td class="item" :class="{'item-used': !saveData.elements.includes(recipe.C)}"
+                                    @click="navigateTo(recipe.C)">
+                                    {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
+                                </td>
+                            </tr>
+                        </table>
+
+                        <div v-if="currentHiddenTo.length > 0">
+                            <div v-if="!showHiddenRecipes" class="text-link" @click="showHiddenRecipes = true">
+                                {{currentHiddenTo.length}} entries hidden
+                            </div>
+                            <div v-else class="text-link" @click="showHiddenRecipes = false">
+                                {{currentHiddenTo.length}} entries shown
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div v-else style="display: flex; flex-direction: column; align-items: center;">
+                <input class="search-bar" type="text" placeholder="Search..." v-model="searchQuery"></input>
+                <div style="display: flex; flex-wrap: wrap; justify-content: center;">
+                    <div v-if="Object.keys(data.data).length == 0" style="font-weight: bold;">Loading data...</div>
+                    <div class="item" :class="{'item-used': !saveData.elements.includes(element)}"
+                        v-for="element in elementList" @click="navigateTo(element)">
+                        {{ data.index[element][0] }}&nbsp;{{ data.index[element][1] }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -225,7 +244,11 @@
         function setQuery(query) {
             const url = new URL(window.location.href);
             for (let key in query) {
-                url.searchParams.set(key, query[key]);
+                if (query[key] === "") {
+                    url.searchParams.delete(key);
+                } else {
+                    url.searchParams.set(key, query[key]);
+                }
             }
 
             window.history.pushState({}, '', url);
@@ -251,7 +274,9 @@
                 currentElement: "",
                 showHiddenRecipes: false,
                 searchQuery: "",
-                showToast: true
+                showToast: true,
+                saveData: {},
+                showUnavailableElements: true
             },
             computed: {
                 currentTo: function () {
@@ -328,7 +353,7 @@
                 navigateTo: function (element) {
                     this.currentElement = element
                     this.showHiddenRecipes = false
-                    setQuery({ element: this.currentElement })
+                    setQuery({ e: this.currentElement })
                     return this.currentElement ? this.currentElement : ""
                 }
             },
@@ -341,12 +366,15 @@
                         let wikiData = generateData(data)
                         // console.log(wikiData)
                         this.data = wikiData;
-                        this.currentElement = getQuery().element || ""
+                        this.currentElement = getQuery().e || ""
                     })
                     .catch(error => {
                         console.error('Error loading recipes:', error);
                     });
-                addEventListener("popstate", (event) => this.currentElement = getQuery().element || "");
+                addEventListener("popstate", (event) => this.currentElement = getQuery().e || "");
+                this.saveData.elements = (getQuery().s || localStorage.getItem("saveData") || "").split(",").filter(x => x)
+                localStorage.setItem("saveData", this.saveData.elements.join(","))
+                setQuery({ s: "" })
             }
         });
     </script>

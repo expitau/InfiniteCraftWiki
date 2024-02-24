@@ -23,6 +23,21 @@ body {
     border: 1px solid #525252;
 }
 
+.showUnavailableElements .item.item-used {
+    filter: brightness(50%)
+}
+
+.visibility-toggle {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1rem;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
 .item:hover {
     border: 1px solid #45505c;
 }

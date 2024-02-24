@@ -160,7 +160,7 @@ async function process(elementA, elementB, costs) {
     let outputIcon = null
 
     if (response.result == "Nothing") {
-        console.log(`${elementA} + ${elementB} -> ${response.result} (not added)`)
+        console.log(`${elementA} + ${elementB} -> ${response.result}`)
     } else if (Object.keys(costs).includes(response.result)) {
         console.log(`${elementA} + ${elementB} -> ${response.result}`)
         if (costs[response.result] > costs[elementA] + costs[elementB]) {
@@ -168,7 +168,7 @@ async function process(elementA, elementB, costs) {
             outputCost = costs[elementA] + costs[elementB]
         }
     } else {
-        console.log(`${elementA} + ${elementB} -> ${response.result} (new element)`)
+        console.log(`=== ${elementA} + ${elementB} -> ${response.result} ===`)
         outputCost = costs[elementA] + costs[elementB]
         outputIcon = response.emoji
     }
@@ -192,9 +192,27 @@ async function getElements() {
     }
 
 
-    for (let i = 0; i < 200; i++) {
-        // console.log(`Batch ${i}`)
-        // for ([elementA, elementB] of getRandomPair(attempted, costs, 50)) {
+    for (let i = 0; i < 2000; i++) {
+        console.log(`Batch ${i}`)
+        let processing = []
+        for ([elementA, elementB] of getRandomPair(attempted, costs, 50)) {
+            processing.push(process(elementA, elementB, costs))
+            
+            if (processing.length >= 1) {
+                let results = await Promise.all(processing)
+                for (result of results) {
+                    attempted.push({ elements: [elementA, elementB], result: result.result })
+                    costs[result.result] = result.cost
+                    if (result.icon) {
+                        icons[result.result] = result.icon
+                    }
+                }
+                processing = []
+            }
+        }
+        // for (let j = 0; j < 150; j++) {
+        //     let [elementA, elementB] = getSpecificPair(attempted, costs, "Dragon")
+    
         //     let result = await process(elementA, elementB, costs)
         //     attempted.push({ elements: [elementA, elementB], result: result.result })
         //     costs[result.result] = result.cost
@@ -202,16 +220,6 @@ async function getElements() {
         //         icons[result.result] = result.icon
         //     }
         // }
-        for (let j = 0; j < 150; j++) {
-            let [elementA, elementB] = getSpecificPair(attempted, costs, "Dragon")
-    
-            let result = await process(elementA, elementB, costs)
-            attempted.push({ elements: [elementA, elementB], result: result.result })
-            costs[result.result] = result.cost
-            if (result.icon) {
-                icons[result.result] = result.icon
-            }
-        }
 
         save(attempted, costs, icons)
     }
