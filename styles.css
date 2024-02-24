@@ -175,7 +175,7 @@ body {
 
 .slide-up-enter-active,
 .slide-up-leave-active {
-  transition: all 0.12s;
+  transition: all 0.12s ease;
 }
 
 .slide-up-enter, 
@@ -185,25 +185,20 @@ body {
 }
 
 .slide-up-leave-from,
-.slide-left-leave-from,
 .slide-right-leave-from {
   opacity: 0;
 }
 
-.slide-left-enter-active,
-.slide-left-leave-active,
 .slide-right-enter-active,
 .slide-right-leave-active {
   transition: all 0.08s ease;
 }
 
-.slide-side-enter,
 .slide-right-leave-to {
     opacity: 0;
     transform: translateX(10px);
 }
 
-.slide-left-leave-to,
 .slide-right-enter {
     opacity: 0;
     transform: translateX(-10px);
