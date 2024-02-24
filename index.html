@@ -180,6 +180,7 @@
                     </div>
                 </div>
             </div>
+            <div id="scroll-end"></div>
         </div>
     </div>
 
@@ -276,7 +277,8 @@
                 searchQuery: "",
                 showToast: true,
                 saveData: {},
-                showUnavailableElements: true
+                showUnavailableElements: true,
+                loaded: 1000
             },
             computed: {
                 currentTo: function () {
@@ -346,7 +348,7 @@
                 elementList: function () {
                     // console.log(this.data.index)
                     let list = Object.keys(this.data.index).sort((a, b) => this.data.costs[a] - this.data.costs[b]).filter(x => this.data.index[x][1] != "Nothing")
-                    return list.filter(x => this.data.index[x][1].toLowerCase().includes(this.searchQuery.toLowerCase()))
+                    return list.filter(x => this.data.index[x][1].toLowerCase().includes(this.searchQuery.toLowerCase())).slice(0, this.loaded)
                 }
             },
             methods: {
@@ -355,6 +357,9 @@
                     this.showHiddenRecipes = false
                     setQuery({ e: this.currentElement })
                     return this.currentElement ? this.currentElement : ""
+                },
+                addScrollPage: function () {
+                    this.loaded += 500
                 }
             },
             mounted() {
@@ -375,6 +380,15 @@
                 this.saveData.elements = (getQuery().s || localStorage.getItem("saveData") || "").split(",").filter(x => x)
                 localStorage.setItem("saveData", this.saveData.elements.join(","))
                 setQuery({ s: "" })
+                document.addEventListener("scroll", function (event) {
+                    var lastDiv = document.querySelector("#scroll-end");
+                    var lastDivOffset = lastDiv.offsetTop + lastDiv.clientHeight;
+                    var pageOffset = window.pageYOffset + window.innerHeight;
+
+                    if (pageOffset > lastDivOffset - 20) {
+                        app.addScrollPage()
+                    }
+                });
             }
         });
     </script>
