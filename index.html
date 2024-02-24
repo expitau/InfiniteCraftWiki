@@ -28,7 +28,7 @@
 
 <body>
     <div id="app">
-        <div id="container" :class="{'showUnavailableElements': !showUnavailableElements}">
+        <div id="container" :class="{'showUnavailableElements': saveData.length > 0}">
             <a class="github-link" href="https://github.com/expitau/InfiniteCraftWiki" target="_blank">
                 <span class="sr-only">Follow me on Github</span>
                 <svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" fill="currentColor">
@@ -38,10 +38,9 @@
                 </svg>
                 <div class="github-link-text">Star my repo!</div>
             </a>
-            <div class="visibility-toggle" style="display: none">
-                Show unavailable elements
-                <input type="checkbox" v-model="showUnavailableElements">
-            </div>
+            <button
+                style="background-color: #347d39; color:#c6c7c7; text-decoration: none; border-radius: 0.5rem; padding: 0.5rem 1rem; cursor: pointer;  border: none; position: absolute; top: 0; right: 0; margin: 1rem"
+                @click="clearSaveData()" v-if="saveData.length > 0">Clear save data</button>
             <h1 style="text-align: center; cursor: pointer;" @click="navigateTo('')">Infinite Craft Wiki</h1>
 
             <div class="toast" v-if="showToast">
@@ -79,34 +78,34 @@
                         <h3>Created by</h3>
                         <table>
                             <tr v-for="recipe in currentFrom">
-                                <td class="item" :class="{'item-used': !saveData.elements.includes(recipe.A)}"
+                                <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
                                     @click="navigateTo(recipe.A)">
                                     {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
                                 </td>
                                 <td>+</td>
-                                <td class="item" :class="{'item-used': !saveData.elements.includes(recipe.B)}"
+                                <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
                                     @click="navigateTo(recipe.B)">
                                     {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
                                 </td>
                                 <td>=</td>
-                                <td class="item" :class="{'item-used': !saveData.elements.includes(recipe.C)}"
+                                <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
                                     @click="navigateTo(recipe.C)">
                                     {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
                                 </td>
                             </tr>
 
                             <tr v-for="recipe in currentHiddenFrom" v-if="showHiddenRecipes">
-                                <td class="item" :class="{'item-used': !saveData.elements.includes(recipe.A)}"
+                                <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
                                     @click="navigateTo(recipe.A)">
                                     {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
                                 </td>
                                 <td>+</td>
-                                <td class="item" :class="{'item-used': !saveData.elements.includes(recipe.B)}"
+                                <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
                                     @click="navigateTo(recipe.B)">
                                     {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
                                 </td>
                                 <td>=</td>
-                                <td class="item" :class="{'item-used': !saveData.elements.includes(recipe.C)}"
+                                <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
                                     @click="navigateTo(recipe.C)">
                                     {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
                                 </td>
@@ -126,34 +125,34 @@
                         <h3>Used in</h3>
                         <table>
                             <tr v-for="recipe in currentTo">
-                                <td class="item" :class="{'item-used': !saveData.elements.includes(recipe.A)}"
+                                <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
                                     @click="navigateTo(recipe.A)">
                                     {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
                                 </td>
                                 <td>+</td>
-                                <td class="item" :class="{'item-used': !saveData.elements.includes(recipe.B)}"
+                                <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
                                     @click="navigateTo(recipe.B)">
                                     {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
                                 </td>
                                 <td>=</td>
-                                <td class="item" :class="{'item-used': !saveData.elements.includes(recipe.C)}"
+                                <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
                                     @click="navigateTo(recipe.C)">
                                     {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
                                 </td>
                             </tr>
 
                             <tr v-for="recipe in currentHiddenTo" v-if="showHiddenRecipes">
-                                <td class="item" :class="{'item-used': !saveData.elements.includes(recipe.A)}"
+                                <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
                                     @click="navigateTo(recipe.A)">
                                     {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
                                 </td>
                                 <td>+</td>
-                                <td class="item" :class="{'item-used': !saveData.elements.includes(recipe.B)}"
+                                <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
                                     @click="navigateTo(recipe.B)">
                                     {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
                                 </td>
                                 <td>=</td>
-                                <td class="item" :class="{'item-used': !saveData.elements.includes(recipe.C)}"
+                                <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
                                     @click="navigateTo(recipe.C)">
                                     {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
                                 </td>
@@ -175,7 +174,7 @@
                 <input class="search-bar" type="text" placeholder="Search..." v-model="searchQuery"></input>
                 <div style="display: flex; flex-wrap: wrap; justify-content: center;">
                     <div v-if="Object.keys(data.data).length == 0" style="font-weight: bold;">Loading data...</div>
-                    <div class="item" :class="{'item-used': !saveData.elements.includes(element)}"
+                    <div class="item" :class="{'item-used': !saveData.includes(element)}"
                         v-for="element in elementList" @click="navigateTo(element)">
                         {{ data.index[element][0] }}&nbsp;{{ data.index[element][1] }}
                     </div>
@@ -277,8 +276,7 @@
                 showHiddenRecipes: false,
                 searchQuery: "",
                 showToast: true,
-                saveData: {},
-                showUnavailableElements: true,
+                saveData: [],
                 loaded: 1000
             },
             computed: {
@@ -350,7 +348,7 @@
                     // console.log(this.data.index)
                     let list = Object.keys(this.data.index).sort((a, b) => this.data.costs[a] - this.data.costs[b]).filter(x => this.data.index[x][1] != "Nothing")
                     return list.filter(x => this.data.index[x][1].toLowerCase().includes(this.searchQuery.toLowerCase())).slice(0, this.loaded)
-                }
+                },
             },
             methods: {
                 navigateTo: function (element) {
@@ -361,6 +359,10 @@
                 },
                 addScrollPage: function () {
                     this.loaded += 500
+                },
+                clearSaveData: function () {
+                    this.saveData = []
+                    localStorage.setItem("saveData", "")
                 }
             },
             mounted() {
@@ -378,8 +380,8 @@
                         console.error('Error loading recipes:', error);
                     });
                 addEventListener("popstate", (event) => this.currentElement = getQuery().e || "");
-                this.saveData.elements = (getQuery().s || localStorage.getItem("saveData") || "").split(",").filter(x => x)
-                localStorage.setItem("saveData", this.saveData.elements.join(","))
+                this.saveData = (getQuery().s || localStorage.getItem("saveData") || "").split(",").filter(x => x)
+                localStorage.setItem("saveData", this.saveData.join(","))
                 setQuery({ s: "" })
                 document.addEventListener("scroll", function (event) {
                     var lastDiv = document.querySelector("#scroll-end");
