@@ -4,7 +4,6 @@
 
 body {
     font-family: "Roboto", sans-serif;
-    width: 100vw;
     height: 100vh;
     background-color: #191919;
     color: #c6c7c7;
@@ -46,11 +45,21 @@ body {
     border: 1px solid #45505c;
 }
 
+.details-wrapper {
+    display: flex; 
+    flex-direction: column; 
+    align-items: center;
+}
+
 .ingredients-flex {
     display: flex;
     flex-direction: row;
     gap: 2rem;
     text-align: center;
+    background: #202020; 
+    padding: 20px; 
+    border-radius: 10px;
+    margin: 20px;
 }
 
 .ingredients-list {
@@ -87,13 +96,13 @@ body {
     align-items: center;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
     .ingredients-flex {
         flex-direction: column;
     }
 
     #app {
-        padding: 1rem 1rem 3rem;
+        padding: 1rem 1rem 1rem;
     }
 }
 
