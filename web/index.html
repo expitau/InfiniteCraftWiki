@@ -398,6 +398,11 @@
                     this.currentElement = element;
                     this.loaded = 1000
                     this.loadedElements = 100
+                    window.scroll({
+                        top: 0, 
+                        left: 0,
+                        behavior: 'smooth' 
+                    });
                     return this.currentElement ? this.currentElement : "";
                 },
                 addScrollPage: function () {
