@@ -45,28 +45,18 @@ body {
     border: 1px solid #45505c;
 }
 
-.details-wrapper {
-    display: flex; 
-    flex-direction: column; 
-    align-items: center;
-}
-
-.ingredients-flex {
-    display: flex;
-    flex-direction: row;
-    gap: 2rem;
-    text-align: center;
-    background: #202020; 
-    padding: 20px; 
-    border-radius: 10px;
-    margin: 20px;
-}
-
 .ingredients-list {
     width: 100%; 
     display: flex; 
     flex-direction: column; 
     align-items: center;
+    height: min-content;
+}
+
+@media (max-width) { 
+    #element { 
+        flex-direction: column-reverse 
+    }
 }
 
 .text-link {
@@ -97,10 +87,6 @@ body {
 }
 
 @media (max-width: 1000px) {
-    .ingredients-flex {
-        flex-direction: column;
-    }
-
     #app {
         padding: 1rem 1rem 1rem;
     }
@@ -212,3 +198,49 @@ body {
     opacity: 0;
     transform: translateX(-10px);
 }
+
+.slider-container {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 80vh; /* Adjust based on your needs */
+  }
+  
+  .slider {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+  }
+  
+  .panel {
+    flex: 0 0 500px;
+    opacity: 0.5;
+    transition: opacity 0.5s ease-in-out;
+    text-align: center;
+    background: #202020; 
+    border-radius: 10px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    height: min-content;
+    margin: 20px;
+  }
+  
+  .center-panel {
+    opacity: 1;
+  }
+  
+  .controls {
+    position: fixed;
+	top: 400px;
+	left: 0px;
+	right: 0px;
+	display: flex;
+	width: 100%;
+	gap: 520px;
+	flex-direction: row;
+	justify-content: center;
+  }
+  
+  .controls button {
+    padding: 10px;
+    font-size: 20px;
+  }
