@@ -76,18 +76,9 @@ function toBase64(n) {
 
 function compress(data) {
     console.log("Compressing...")
-    let f = {}
-    for (let i = 0; i < data.attempted.length; i++) {
-        f[data.attempted[i].elements[0]] ??= 0
-        f[data.attempted[i].elements[0]]++
-        f[data.attempted[i].elements[1]] ??= 0
-        f[data.attempted[i].elements[1]]++
-        f[data.attempted[i].result] ??= 0
-        f[data.attempted[i].result]++
-    }
-    let index = Object.entries(f).sort(([, a], [, b]) => b - a).map(([a, b], i) => [toBase64(i), [data.icons[a], a, data.costs[a]]])
-    let forward = Object.fromEntries(index)
-    let reverse = Object.fromEntries(index.map(([a, b]) => [b[1], a]))
+    let index = Object.keys(data.costs).sort((a,b) => data.costs[a] - data.costs[b]).filter(x => x != "Nothing").map((a, i) => [toBase64(i), [data.icons[a], a, data.costs[a]]])
+    let forward = {...Object.fromEntries(index), "A": ["", "Nothing", undefined]}
+    let reverse = Object.fromEntries(Object.entries(forward).map(x => [x[1][1], x[0]]))
     let comp = data.attempted.sort((a, b) => data.costs[a.result] - data.costs[b.result]).map(recipe => {
         return [reverse[recipe.elements[0]], reverse[recipe.elements[1]], reverse[recipe.result]].join(',')
     }).join(';')
@@ -108,7 +99,7 @@ function save(attempted, costs, icons) {
 
         data.costs = getCosts(data)
 
-        fs.writeFileSync('data.json', JSON.stringify(compress(data)), 'utf8');
+        fs.writeFileSync('data/data.json', JSON.stringify(compress(data)), 'utf8');
         console.log(`${attempted.length} entries written to file`);
     } catch (err) {
         console.error('Error writing file:', err);
@@ -116,10 +107,12 @@ function save(attempted, costs, icons) {
 }
 
 function getPair(attempted, costs, n = 1) {
+    console.log("Generating pairs...")
     let output = []
-    let sortedElements = Object.entries(costs).sort(([, a], [, b]) => a - b).map(x => x[0])
-    for (let i = 0; i < sortedElements.length; i++) {
-        for (let j = 0; costs[sortedElements[j]] <= costs[sortedElements[i]]; j++) {
+    let sortedElements = Object.entries(costs).sort(([, a], [, b]) => a - b).map(x => x[0]).filter(x => x != "Nothing")
+    for (let i = 140; i < sortedElements.length; i++) {
+        console.log(i, sortedElements[i])
+        for (let j = 0; j <= i; j++) {
             if (!alreadyChecked(attempted, sortedElements[i], sortedElements[j])) {
                 output.push([sortedElements[i], sortedElements[j]])
             }
@@ -182,7 +175,7 @@ async function getElements() {
     let costs = { "Water": 1, "Fire": 1, "Wind": 1, "Earth": 1 }
 
     try {
-        const data = fs.readFileSync('data.json', 'utf8');
+        const data = fs.readFileSync('data/data.json', 'utf8');
         const parsedData = uncompress(JSON.parse(data));
         attempted = parsedData.attempted;
         icons = parsedData.icons;
@@ -191,7 +184,7 @@ async function getElements() {
         console.error('Error reading file:', err);
     }
 
-
+    save(attempted, costs, icons)
     for (let i = 0; i < 2000; i++) {
         console.log(`Batch ${i}`)
         let processing = []
