@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infinite Craft Wiki</title>
+    <meta name="description" content="Explore over 50,000 crafting recipes from Infinite Craft!">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PCW5J4G9KX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-PCW5J4G9KX');
+    </script>
+
+    <!-- Load Roboto font from Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Load styles from styles.css-->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Load Vue.js from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div id="container" :class="{'showUnavailableElements': saveData.length > 0}">
+            <a class="github-link" href="https://github.com/expitau/InfiniteCraftWiki" target="_blank">
+                <span class="sr-only">Follow me on Github</span>
+                <svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" fill="currentColor">
+                    <path fill="currentColor"
+                        d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z">
+                    </path>
+                </svg>
+                <div class="github-link-text">Star my repo!</div>
+            </a>
+
+            <button
+                style="background-color: #347d39; color:#c6c7c7; text-decoration: none; border-radius: 0.5rem; padding: 0.5rem 1rem; cursor: pointer;  border: none; position: absolute; top: 0; right: 0; margin: 1rem"
+                @click="clearSaveData()" v-if="saveData.length > 0">
+                Clear save data
+            </button>
+
+            <h1 style="text-align: center; cursor: pointer; margin-bottom: 0px;"
+                @click="navigateTo(''); searchQuery='';">
+                Infinite Craft Wiki
+            </h1>
+
+            <h3 class="sub-header">
+                {{ formatNumber(elementCount) }} elements -- {{ formatNumber(data.metadata.recipeCount) }} recipes
+            </h3>
+
+            <div class="search-bar-wrapper">
+                <input class="search-bar" type="text" placeholder="Search..." v-model="searchQuery"
+                    @click="navigateTo('')"></input>
+            </div>
+
+            <div class="toast" v-if="showToast">
+                <div class="toast-body">
+                    <h2 style="margin: 0;">Enjoying my site?</h2>
+                    <p>Help me out by starring the project on Github</p>
+                    <br>
+                    <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                        <button
+                            style="background-color: #347d39; color:#c6c7c7; text-decoration: none; border-radius: 0.5rem; padding: 0.5rem 1rem; cursor: pointer; display: flex; flex-direction: row; align-items: center; gap: 1rem; border: none"
+                            onclick="window.open('https://github.com/expitau/InfiniteCraftWiki', '_blank').focus()">
+                            <span>Sure!</span>
+                            <svg viewBox="0 0 16 16" aria-hidden="true" width="24" height="24" fill="currentColor">
+                                <path fill="currentColor"
+                                    d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z">
+                                </path>
+                            </svg>
+                        </button>
+                        <button
+                            style="text-decoration: underline; background: none; color: #949494; border: none; cursor: pointer;"
+                            onclick="localStorage.setItem('showToast', false)" @click="showToast=false">
+                            Go away! Never show again
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <transition name="slide-up" mode="out-in">
+                <div v-if="currentElement">
+                    <transition name="slide-right" mode="out-in">
+                        <h2 style="text-align: center;" @click="navigateTo('')">
+                            <div class="item" style=" padding: 13px 15px 12px">
+                                {{ data.index[currentElement][0] }}&nbsp;{{ data.index[currentElement][1] }}
+                            </div>
+                        </h2>
+                    </transition>
+                    <div class="ingredients-flex">
+                        <div class="ingredients-list">
+                            <h3>Created by</h3>
+                            <transition name="slide-right" mode="out-in">
+                                <table>
+                                    <tr v-for="recipe in currentFrom">
+                                        <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
+                                            @click="navigateTo(recipe.A);">
+                                            {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
+                                        </td>
+                                        <td>+</td>
+                                        <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
+                                            @click="navigateTo(recipe.B);">
+                                            {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
+                                        </td>
+                                        <td>=</td>
+                                        <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
+                                            @click="navigateTo(recipe.C);">
+                                            {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
+                                        </td>
+                                    </tr>
+
+                                    <tr v-for="recipe in currentHiddenFrom" v-if="showHiddenRecipes">
+                                        <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
+                                            @click="navigateTo(recipe.A);">
+                                            {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
+                                        </td>
+                                        <td>+</td>
+                                        <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
+                                            @click="navigateTo(recipe.B);">
+                                            {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
+                                        </td>
+                                        <td>=</td>
+                                        <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
+                                            @click="navigateTo(recipe.C);">
+                                            {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </transition>
+                            <div v-if="currentHiddenFromLength > 0">
+                                <div v-if="!showHiddenRecipes" class="text-link" @click="showHiddenRecipes = true">
+                                    {{currentHiddenFromLength}} entries hidden
+                                </div>
+                                <div v-else class="text-link" @click="showHiddenRecipes = false">
+                                    {{currentHiddenFromLength}} entries shown
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ingredients-list">
+                            <h3>Used in</h3>
+                            <transition name="slide-right" mode="out-in">
+                                <table>
+                                    <tr v-for="recipe in currentTo">
+                                        <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
+                                            @click="navigateTo(recipe.A);">
+                                            {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
+                                        </td>
+                                        <td>+</td>
+                                        <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
+                                            @click="navigateTo(recipe.B);">
+                                            {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
+                                        </td>
+                                        <td>=</td>
+                                        <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
+                                            @click="navigateTo(recipe.C);">
+                                            {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
+                                        </td>
+                                    </tr>
+
+                                    <tr v-for="recipe in currentHiddenTo" v-if="showHiddenRecipes">
+                                        <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
+                                            @click="navigateTo(recipe.A);">
+                                            {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
+                                        </td>
+                                        <td>+</td>
+                                        <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
+                                            @click="navigateTo(recipe.B);">
+                                            {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
+                                        </td>
+                                        <td>=</td>
+                                        <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
+                                            @click="navigateTo(recipe.C);">
+                                            {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
+                                        </td>
+                                    </tr>
+                                </table>
+
+                            </transition>
+                            <div v-if="currentHiddenToLength > 0">
+                                <div v-if="!showHiddenRecipes" class="text-link" @click="showHiddenRecipes = true">
+                                    {{currentHiddenToLength}} entries hidden
+                                </div>
+                                <div v-else class="text-link" @click="showHiddenRecipes = false">
+                                    {{currentHiddenToLength}} entries shown
+                                </div>
+                            </div>
+                        </div>
+                        <div id="element-scroll-end"></div>
+                    </div>
+                </div>
+                <div v-else>
+                    <div style="display: flex; flex-wrap: wrap; justify-content: center;">
+                        <div v-if="Object.keys(data.index).length == 0" style="font-weight: bold; padding-top: 5px;">
+                            Loading data...</div>
+                        <div class="item" :class="{'item-used': !saveData.includes(element)}"
+                            v-for="element in elementList" @click="navigateTo(element)">
+                            {{ data.index[element][0] }}&nbsp;{{ data.index[element][1] }}
+                        </div>
+                    </div>
+                    <div id="scroll-end"></div>
+                </div>
+            </transition>
+        </div>
+    </div>
+
+    <script>
+        function compareRecipes(A, B, data) {
+            if (data.index[A.C][1] == "Nothing")
+                return 1
+            if (data.index[B.C][1] == "Nothing")
+                return -1
+
+            if (data.costs[A.C] > data.costs[B.C])
+                return 1
+            if (data.costs[A.C] < data.costs[B.C])
+                return -1
+
+            if (data.index[A.C][1] > data.index[B.C][1])
+                return 1
+            if (data.index[A.C][1] < data.index[B.C][1])
+                return -1
+
+            if (data.costs[A.A] + data.costs[A.B] > data.costs[B.A] + data.costs[B.B])
+                return 1
+            if (data.costs[A.A] + data.costs[A.B] < data.costs[B.A] + data.costs[B.B])
+                return -1
+
+            if (data.costs[A.A] > data.costs[B.A])
+                return 1
+            if (data.costs[A.A] < data.costs[B.A])
+                return -1
+
+            if (data.index[A.A][1] > data.index[B.A][1])
+                return 1
+            if (data.index[A.A][1] < data.index[B.A][1])
+                return -1
+
+            if (data.costs[A.B] > data.costs[B.B])
+                return 1
+            if (data.costs[A.B] < data.costs[B.B])
+                return -1
+
+            if (data.index[A.B][1] > data.index[B.B][1])
+                return 1
+            if (data.index[A.B][1] < data.index[B.B][1])
+                return -1
+
+            return 0
+        }
+
+        function generateData(raw) {
+            let data = {}
+            for (let recipe of raw.data.split(";").map(x => x.split(","))) {
+                data[recipe[0]] ??= { from: [], to: [] }
+                data[recipe[0]].to.push([recipe[1], recipe[2]])
+                data[recipe[1]] ??= { from: [], to: [] }
+                data[recipe[1]].to.push([recipe[0], recipe[2]])
+                data[recipe[2]] ??= { from: [], to: [] }
+                data[recipe[2]].from.push([recipe[0], recipe[1]])
+            }
+            return {
+                index: Object.fromEntries(Object.entries(raw.index).map(x => [x[0], [x[1][0], x[1][1]]])),
+                costs: Object.fromEntries(Object.entries(raw.index).map(x => [x[0], x[1][2]])),
+                data: data,
+            };
+        }
+
+        function setQuery(query) {
+            const url = new URL(window.location.href);
+            for (let key in query) {
+                if (query[key] === "") {
+                    url.searchParams.delete(key);
+                } else {
+                    url.searchParams.set(key, query[key]);
+                }
+            }
+
+            window.history.pushState({}, '', url);
+        }
+
+        function getQuery() {
+            const params = new URLSearchParams(window.location.search);
+            const queryParams = {};
+
+            // Iterate over each query parameter
+            for (const [key, value] of params.entries()) {
+                queryParams[key] = value;
+            }
+
+            return queryParams;
+        }
+
+        // Decode base64 value mod 1000
+        function getChunk(value) {
+            let base64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+'
+            let result = 0
+            for (let i = 0; i < value.length; i++) {
+                result = (result * 64 + base64.indexOf(value[i]))
+            }
+            return Math.floor(result / 1000)
+        }
+
+        const DATA_PREFIX = '/data/'
+
+        // Vue app
+        const app = new Vue({
+            el: '#app',
+            data: {
+                data: { index: {}, list: [], costs: {}, data: {}, metadata: { recipeCount: 0, loadedChunks: [] } },
+                currentElement: "",
+                showHiddenRecipes: false,
+                searchQuery: "",
+                showToast: true,
+                saveData: [],
+                loaded: 1000,
+                loadedElements: 100
+            },
+            computed: {
+                currentTo: function () {
+                    console.log("(computed) currentTo")
+                    this.data.loadedChunks
+                    if (!this.data.data[this.currentElement]) {
+                        return []
+                    }
+                    // console.log(this.data.data[this.currentElement])
+                    let result = this.data.data[this.currentElement].to
+                        .map(recipe => {
+                            return { A: this.currentElement, B: recipe[0], C: recipe[1] }
+                        })
+                    return result.slice(0, this.loadedElements)
+                },
+                currentFrom: function () {
+                    console.log("(computed) currentFrom")
+                    if (!this.data.data[this.currentElement]) {
+                        return []
+                    }
+                    // console.log(this.data.data[this.currentElement])
+                    let result = this.data.data[this.currentElement].from
+                        .map(recipe => {
+                            return { A: recipe[0], B: recipe[1], C: this.currentElement }
+                        })
+                    return result.slice(0, this.loadedElements)
+                },
+                currentHiddenTo: function () {
+                    console.log("(computed) currentHiddenTo")
+                    if (!this.data.data[this.currentElement]) {
+                        return []
+                    }
+                    // console.log(this.data.data[this.currentElement])
+                    let result = this.data.data[this.currentElement].hiddenTo
+                        .map(recipe => {
+                            return { A: this.currentElement, B: recipe[0], C: recipe[1] }
+                        })
+                    return result.slice(0, 100)
+                },
+                currentHiddenFrom: function () {
+                    console.log("(computed) currentHiddenFrom")
+                    if (!this.data.data[this.currentElement]) {
+                        return []
+                    }
+                    // console.log(this.data.data[this.currentElement])
+                    let result = this.data.data[this.currentElement].hiddenFrom
+                        .map(recipe => {
+                            return { A: recipe[0], B: recipe[1], C: this.currentElement }
+                        })
+                    return result.slice(0, 100)
+                },
+                currentHiddenFromLength: function () {
+                    return this.data.data[this.currentElement]?.hiddenFrom.length || 0
+                },
+                currentHiddenToLength: function () {
+                    return this.data.data[this.currentElement]?.hiddenTo.length || 0
+                },
+                elementList: function () {
+                    console.log("(computed) elementList")
+                    // console.log(this.data.index)
+                    let query = this.searchQuery.toLowerCase()
+                    return this.data.list.filter(x => x[1].toLowerCase().includes(query)).map(x => x[0]).slice(0, this.loaded)
+                },
+                elementCount: function () {
+                    console.log("(computed) elementCount")
+                    return Object.keys(this.data.index).length - 1;
+                },
+            },
+            methods: {
+                navigateTo: function (element) {
+                    if (!this.data.data[element] && element != "") {
+                        this.loadChunk(getChunk(element))
+                    }
+                    setQuery({ e: this.currentElement });
+                    this.showHiddenRecipes = false;
+                    this.currentElement = element;
+                    this.loaded = 1000
+                    this.loadedElements = 100
+                    return this.currentElement ? this.currentElement : "";
+                },
+                addScrollPage: function () {
+                    this.loaded *= 2;
+                },
+                addElementScrollPage: function () {
+                    this.loadedElements *= 2;
+                },
+                clearSaveData: function () {
+                    this.saveData = [];
+                    localStorage.setItem("saveData", "");
+                },
+                formatNumber: function (n) {
+                    if (n === undefined) {
+                        return "#####"
+                    }
+                    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                },
+                loadChunk: function (chunk) {
+                    fetch(DATA_PREFIX + `chunk-${chunk}.json`)
+                        .then(response => { console.log("Loaded chunk", chunk); return response.json() })
+                        .then(data => {
+                            this.data.data = Object.freeze(Object.assign({}, this.data.data, data))
+                            this.data.metadata.loadedChunks.push(chunk)
+                            console.log(this.data.data)
+                        })
+                }
+            },
+            mounted() {
+                this.showToast = JSON.parse(localStorage.getItem("showToast")) ?? true;
+                // Load recipes from JSON file
+                fetch(DATA_PREFIX + 'index.json')
+                    .then(response => { console.log(response); return response.json() })
+                    .then(index => {
+                        this.data.index = Object.freeze(Object.fromEntries(Object.entries(index).map(x => [x[0], [x[1][0], x[1][1]]])))
+                        this.data.list = Object.freeze(Object.entries(index).sort((a, b) => a[1][2] - b[1][2]).filter(x => x[1][1] != "Nothing").map(x => [x[0], x[1][1]]))
+                        this.data.costs = Object.freeze(Object.fromEntries(Object.entries(index).map(x => [x[0], x[1][2]])))
+                    })
+                    .catch(error => {
+                        console.error('Error loading recipes:', error);
+                    });
+                fetch(DATA_PREFIX + 'metadata.json')
+                    .then(response => { console.log(response); return response.json() })
+                    .then(metadata => {
+                        this.data.metadata.recipeCount = metadata.recipeCount
+                    })
+                    .catch(error => {
+                        console.error('Error loading metadata:', error);
+                    });
+                addEventListener("popstate", (event) => this.currentElement = getQuery().e || "");
+                this.saveData = (getQuery().s || localStorage.getItem("saveData") || "").split(",").filter(x => x)
+                localStorage.setItem("saveData", this.saveData.join(","))
+                setQuery({ s: "" })
+                document.addEventListener("scroll", function (event) {
+                    var lastDiv = document.querySelector("#scroll-end");
+                    if (!lastDiv) return;
+                    var lastDivOffset = lastDiv.offsetTop + lastDiv.clientHeight;
+                    var pageOffset = window.pageYOffset + window.innerHeight;
+
+                    if (pageOffset > lastDivOffset - 20) {
+                        app.addScrollPage();
+                    }
+                });
+
+                document.addEventListener("scroll", function (event) {
+                    var lastDiv = document.querySelector("#element-scroll-end");
+                    if (!lastDiv) return;
+                    var lastDivOffset = lastDiv.offsetTop + lastDiv.clientHeight;
+                    var pageOffset = window.pageYOffset + window.innerHeight;
+
+                    if (pageOffset > lastDivOffset - 20) {
+                        app.addElementScrollPage();
+                    }
+                });
+
+                // Preload initial chunks
+                for (let i = 0; i < 5; i++){
+                    this.loadChunk(i)
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
