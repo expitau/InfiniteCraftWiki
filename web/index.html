@@ -84,9 +84,9 @@
                 </div>
             </div>
             <transition name="slide-up" mode="out-in">
-                <div v-if="currentElement">
+                <div key=0 v-if="currentElement">
                     <transition name="slide-right" mode="out-in">
-                        <h2 style="text-align: center;" @click="navigateTo('')">
+                        <h2 :key="currentElement" style="text-align: center;" @click="navigateTo('')">
                             <div class="item" style=" padding: 13px 15px 12px">
                                 {{ data.index[currentElement][0] }}&nbsp;{{ data.index[currentElement][1] }}
                             </div>
@@ -96,7 +96,7 @@
                         <div class="ingredients-list">
                             <h3>Created by</h3>
                             <transition name="slide-right" mode="out-in">
-                                <table>
+                                <table :key="currentElement">
                                     <tr v-for="recipe in currentFrom">
                                         <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
                                             @click="navigateTo(recipe.A);">
@@ -145,7 +145,7 @@
                         <div class="ingredients-list">
                             <h3>Used in</h3>
                             <transition name="slide-right" mode="out-in">
-                                <table>
+                                <table :key="currentElement">
                                     <tr v-for="recipe in currentTo">
                                         <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
                                             @click="navigateTo(recipe.A);">
@@ -194,7 +194,7 @@
                         <div id="element-scroll-end"></div>
                     </div>
                 </div>
-                <div v-else>
+                <div key=1 v-else>
                     <div style="display: flex; flex-wrap: wrap; justify-content: center;">
                         <div v-if="Object.keys(data.index).length == 0" style="font-weight: bold; padding-top: 5px;">
                             Loading data...</div>
@@ -306,7 +306,7 @@
             return Math.floor(result / 1000)
         }
 
-        const DATA_PREFIX = 'data/'
+        const DATA_PREFIX = '/data/';
 
         // Vue app
         const app = new Vue({
@@ -411,7 +411,7 @@
                     localStorage.setItem("saveData", "");
                 },
                 formatNumber: function (n) {
-                    if (n === undefined) {
+                    if (n === undefined || n <= 0) {
                         return "#####"
                     }
                     return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
