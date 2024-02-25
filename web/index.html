@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Infinite Craft Wiki</title>
-    <meta name="description" content="Explore over 50,000 crafting recipes from Infinite Craft!">
+    <meta name="description" content="Explore over 2M crafting recipes from Infinite Craft!">
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-PCW5J4G9KX"></script>
     <script>
@@ -303,7 +303,7 @@
             for (let i = 0; i < value.length; i++) {
                 result = (result * 64 + base64.indexOf(value[i]))
             }
-            return Math.floor(result / 1000)
+            return Math.floor(result / 100)
         }
 
         const DATA_PREFIX = 'data/';
@@ -316,7 +316,7 @@
                 currentElement: "",
                 showHiddenRecipes: false,
                 searchQuery: "",
-                showToast: true,
+                showToast: false,
                 saveData: [],
                 loaded: 1000,
                 loadedElements: 100
@@ -427,7 +427,17 @@
                 }
             },
             mounted() {
-                this.showToast = JSON.parse(localStorage.getItem("showToast")) ?? true;
+                if (localStorage.getItem("showToast") === null || localStorage.getItem("showToast") === true) {
+                    counter = localStorage.getItem("siteVisitedCounter") ?? 0
+                    counter++
+                    if (counter == 3) {
+                        localStorage.setItem("showToast", false)
+                        this.showToast = true
+                    }
+                    localStorage.setItem("siteVisitedCounter", counter)
+                } else {
+                    this.showToast = false;
+                }
                 // Load recipes from JSON file
                 fetch(DATA_PREFIX + 'index.json')
                     .then(response => { console.log(response); return response.json() })
@@ -474,7 +484,7 @@
                 });
 
                 // Preload initial chunks
-                for (let i = 0; i < 5; i++){
+                for (let i = 0; i < 50; i++){
                     this.loadChunk(i)
                 }
             }

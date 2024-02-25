@@ -37,3 +37,8 @@ The data is stored in a JSON file, with two keys "index" and "data". The "index"
 (This corresponds to three recipes, Wind + Earth = Dust, Fire + Earth = Lava, and Fire + Fire = Volcano. The costs are the minimal costs for each item.)
 
 See [data.json](data.json) for the current data, and the bottom of [index.html](index.html) for a way to parse it into a dictionary of recipes and backlinks. 
+
+## Acknowledgements
+- [Neal Agarwal](https://neal.fun/) for creating Infinite Craft
+- [Reu Zuidema](https://github.com/reumarks) For various contributions and PRs
+- [fan87](https://github.com/fan87) For providing an additional dataset

@@ -245,7 +245,7 @@ function getChunk(value) {
     for (let i = 0; i < value.length; i++) {
         result = (result * 64 + base64.indexOf(value[i]))
     }
-    return Math.floor(result / 1000)
+    return Math.floor(result / 100)
 }
 
 async function main() {
