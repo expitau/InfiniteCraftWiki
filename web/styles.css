@@ -72,7 +72,7 @@ body {
     padding: 10px;
     font-weight: bold;
     line-height: 1em;
-    width: 80%;
+    width: 100%;
     margin: 1rem;
     text-align: center;
     background-color: #242424;
@@ -82,8 +82,9 @@ body {
 
 .search-bar-wrapper {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
+    width: 100%;
 }
 
 @media (max-width: 1000px) {
@@ -129,15 +130,9 @@ body {
 
 .github-link {
     color: #c6c7c7;
-    position: absolute;
-    top: 0;
-    left: 0;
-    margin: 2rem;
-    display: flex;
-    flex-direction: row;
-    gap: 0.5rem;
-    align-items: center;
-    text-decoration: none;
+	display: flex;
+	align-items: center;
+	text-decoration: none;
 }
 
 .sub-header {
@@ -170,56 +165,55 @@ body {
 
 .slide-up-enter-active,
 .slide-up-leave-active {
-    transition: all 0.12s ease;
+    transition: all 0.12s ease !important;
 }
 
 .slide-up-enter,
 .slide-up-leave-to {
-    opacity: 0;
-    transform: translateY(30px);
+    opacity: 0 !important;
+    transform: translateY(30px) !important;
 }
 
 .slide-up-leave-from,
 .slide-right-leave-from {
-    opacity: 0;
+    opacity: 0 !important;
 }
 
 .slide-right-enter-active,
 .slide-right-leave-active {
-    transition: all 0.08s ease;
+    transition: all 0.08s ease !important;
 }
 
 .slide-right-leave-to {
-    opacity: 0;
-    transform: translateX(10px);
+    opacity: 0 !important;
+    transform: translateX(10px) !important;
 }
 
 .slide-right-enter {
-    opacity: 0;
-    transform: translateX(-10px);
+    opacity: 0 !important;
+    transform: translateX(-10px) !important;
 }
 
 .slider-container {
+    transition: transform 0.2s ease-in-out;
     position: relative;
     width: 100%;
 }
 
 .slider {
     display: flex;
-    transition: transform 0.5s ease-in-out;
+    transition: transform 0.2s ease-in-out;
 }
 
 .panel {
     flex: 0 0 500px;
     opacity: 0.5;
     text-align: center;
-    background: #202020;
     border-radius: 10px;
-    padding: 20px;
     height: min-content;
-    margin: 30px;
+    margin: 20px;
     transform-origin: top;
-    transition: all 0.5s ease-in-out;
+    transition: all 0.2s ease-in-out;
 }
 
 .panel:not(.center-panel) {
@@ -232,16 +226,14 @@ body {
 
 .controls {
     position: absolute;
-    padding-top: 100px;
 	width: calc(50% - 290px);
-	top: 300px;
 	min-height: 100%;
 	display: flex;
 	justify-content: center;
 	cursor: pointer;
 	background: transparent;
 	border: none;
-	z-index: 1;
+	z-index: 2;
 }
 
 .right-arrow {
@@ -252,17 +244,6 @@ body {
 .left-arrow {
     left: 0px;
     justify-content: flex-end;
-}
-
-.controls svg {
-    transition: all 0.1s ease;
-    transform: scale(3.2);
-    fill: rgba(255, 255, 255, 0.675);
-}
-
-.controls:hover svg {
-    transform: scale(3.7);
-    fill: white;
 }
 
 .nav-bar {
@@ -297,11 +278,6 @@ body {
 
 @media (min-width: 1100px) {
     .nav-bar {
-        display: none;
-    }
-}
-@media (max-width: 1099px){
-    .controls {
         display: none;
     }
 }
