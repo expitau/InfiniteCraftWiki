@@ -63,7 +63,7 @@ body {
     text-decoration: underline;
     margin-top: 5px;
     color: #949494;
-    cursor: pointer
+    cursor: pointer;
 }
 
 .search-bar {
@@ -202,7 +202,6 @@ body {
 .slider-container {
     position: relative;
     width: 100%;
-    height: 80vh;
 }
 
 .slider {
@@ -216,16 +215,15 @@ body {
     text-align: center;
     background: #202020;
     border-radius: 10px;
-    padding-top: 20px;
-    padding-bottom: 20px;
+    padding: 20px;
     height: min-content;
-    margin: 50px;
+    margin: 30px;
     transform-origin: top;
     transition: all 0.5s ease-in-out;
 }
 
 .panel:not(.center-panel) {
-    transform: scale(0.8);
+    transform: scale(0.9);
 }
 
 .center-panel {
@@ -234,20 +232,76 @@ body {
 
 .controls {
     position: absolute;
-    top: 460px;
-    left: 0px;
-    right: 0px;
-    display: flex;
-    width: 100%;
-    gap: 520px;
-    flex-direction: row;
-    justify-content: center;
+    padding-top: 100px;
+	width: calc(50% - 290px);
+	top: 300px;
+	min-height: 100%;
+	display: flex;
+	justify-content: center;
+	cursor: pointer;
+	background: transparent;
+	border: none;
+	z-index: 1;
 }
 
-.controls button {
-    transform: scale(4);
-    background: transparent;
-    border: none;
+.right-arrow {
+    right: 0px;
+    justify-content: flex-start;
+}
+
+.left-arrow {
+    left: 0px;
+    justify-content: flex-end;
+}
+
+.controls svg {
+    transition: all 0.1s ease;
+    transform: scale(3.2);
+    fill: rgba(255, 255, 255, 0.675);
+}
+
+.controls:hover svg {
+    transform: scale(3.7);
     fill: white;
+}
+
+.nav-bar {
+    display: flex;
+	background: #2b2b2b;
+	position: fixed;
+	height: 50px;
+	bottom: 0px;
+	width: 100%;
+    left: 0px;
+}
+
+.nav-bar-link {
+    transition: all 0.1s ease;
+	width: 100%;
+	color: #a9a9a9;
+	display: flex;
+	justify-content: center;
+	align-items: center;
     cursor: pointer;
+    font-weight: bold;
+}
+
+.nav-bar-link:hover {
+    color:rgba(59, 196, 166, 0.478);
+}
+
+.selected-link {
+    color:rgb(59 196 167);
+    font-weight: bold;
+}
+
+@media (min-width: 1100px) {
+    .nav-bar {
+        display: none;
+    }
+}
+@media (max-width: 1099px){
+    .controls {
+        display: none;
+    }
 }

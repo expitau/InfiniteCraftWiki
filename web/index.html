@@ -54,7 +54,7 @@
                 {{ formatNumber(elementCount) }} elements -- {{ formatNumber(data.metadata.recipeCount) }} recipes
             </h3>
 
-            <div class="search-bar-wrapper">
+            <div id="search-bar" class="search-bar-wrapper">
                 <input class="search-bar" type="text" placeholder="Search..." v-model="searchQuery"
                     @click="navigateTo('')"></input>
             </div>
@@ -85,6 +85,16 @@
             </div>
             <transition name="slide-up" mode="out-in">
                 <div key=0 v-if="currentElement">
+                    <button class="controls left-arrow" @click="slideLeft">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
+                            <path d="M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z"/>
+                        </svg>
+                    </button>
+                    <button class="controls right-arrow" @click="slideRight">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
+                            <path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/>
+                        </svg>
+                    </button>
                     <h2 style="text-align: center;" @click="navigateTo('')">
                         <div class="item" style=" padding: 13px 15px 12px">
                             {{ data.index[currentElement][0] }}&nbsp;{{ data.index[currentElement][1] }}
@@ -143,9 +153,9 @@
                                 </div>
                             </div>
                             <div class="panel" :key=1 :class="{ 'center-panel': currentPanelIndex === 0 }">
-                                <div v-if="craftingTreeData.length > 0 && craftingTreeReady" class="ingredients-list">
+                                <div class="ingredients-list">
                                     <h3>Crafting Recipe</h3>
-                                    <table>
+                                    <table v-if="craftingTreeData.length > 0 && craftingTreeReady">
                                         <tr v-for="recipe in craftingTreeData">
                                             <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
                                                 @click="navigateTo(recipe.A);">
@@ -163,6 +173,12 @@
                                             </td>
                                         </tr>
                                     </table>
+                                    
+                                    <div v-else>
+                                        <div class="item" :class="{'item-used': !saveData.includes(currentElement)}">
+                                            {{ data.index[currentElement][0] }}&nbsp;{{ data.index[currentElement][1] }}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="panel" :key=2 :class="{ 'center-panel': currentPanelIndex === 1 }">
@@ -218,17 +234,16 @@
                             </div>
                         </div>
                     </div>
-                    <div class="controls">
-                        <button @click="slideLeft">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
-                                <path d="M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z"/>
-                            </svg>
-                        </button>
-                        <button @click="slideRight">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
-                                <path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/>
-                            </svg>
-                        </button>
+                    <div class="nav-bar">
+                        <div class="nav-bar-link" :class="{ 'selected-link': currentPanelIndex === -1 }" @click="currentPanelIndex = -1">
+                            Created By
+                        </div>
+                        <div class="nav-bar-link" :class="{ 'selected-link': currentPanelIndex === 0 }" @click="currentPanelIndex = 0">
+                            Crafting Recipe
+                        </div>
+                        <div class="nav-bar-link" :class="{ 'selected-link': currentPanelIndex === 1 }" @click="currentPanelIndex = 1">
+                            Used In
+                        </div>
                     </div>
                 </div>
                 <div key=1 v-else>
@@ -245,6 +260,7 @@
             </transition>
         </div>
     </div>
+
 
     <script>
         function compareRecipes(A, B, data) {
@@ -448,19 +464,21 @@
                         this.calcCraftingTree(element).then(result => {
                             this.craftingTreeData = result;
                             this.craftingTreeReady = true;
+                            setQuery({ e: element });
+                            this.smoothScrollTo(120);
+                            this.currentPanelIndex = 0;
+                            this.showHiddenRecipes = false;
+                            this.currentElement = element;
+                            this.loaded = 1000;
+                            this.loadedElements = 100;
                         });
+                    } else {
+                        this.smoothScrollTo(0);
+                        setQuery({ e: element });
+                        this.currentElement = '';
+                        this.loaded = 1000;
+                        this.loadedElements = 100;
                     }
-                    setQuery({ e: element });
-                    this.showHiddenRecipes = false;
-                    this.currentElement = element;
-                    this.loaded = 1000
-                    this.loadedElements = 100
-                    window.scroll({
-                        top: 0,
-                        left: 0,
-                        behavior: 'smooth'
-                    });
-                    return this.currentElement ? this.currentElement : "";
                 },
                 slideLeft() {
                     this.currentPanelIndex = (this.currentPanelIndex + 3) % 3 - 1;
@@ -473,6 +491,29 @@
                 },
                 addElementScrollPage: function () {
                     this.loadedElements *= 2;
+                },
+                smoothScrollTo(position = 0) {
+                    const duration = 500;
+                    const start = window.pageYOffset;
+                    const startTime = performance.now();
+
+                    const easeInOutQuad = (t, b, c, d) => {
+                        t /= d / 2;
+                        if (t < 1) return c / 2 * t * t + b;
+                        t--;
+                        return -c / 2 * (t * (t - 2) - 1) + b;
+                    };
+
+                    const animateScroll = (currentTime) => {
+                        const timeElapsed = currentTime - startTime;
+                        const run = easeInOutQuad(timeElapsed, start, position-start, duration);
+
+                        window.scrollTo(0, run);
+
+                        if (timeElapsed < duration) requestAnimationFrame(animateScroll);
+                    };
+
+                    requestAnimationFrame(animateScroll);
                 },
                 clearSaveData: function () {
                     this.saveData = [];
@@ -564,7 +605,7 @@
                 this.saveData = (getQuery().s || localStorage.getItem("saveData") || "").split(",").filter(x => x)
                 localStorage.setItem("saveData", this.saveData.join(","))
                 setQuery({ s: "" })
-                document.addEventListener("scroll", function (event) {
+                window.addEventListener("scroll", function (event) {
                     var lastDiv = document.querySelector("#scroll-end");
                     if (!lastDiv) return;
                     var lastDivOffset = lastDiv.offsetTop + lastDiv.clientHeight;
