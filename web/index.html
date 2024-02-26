@@ -91,7 +91,7 @@
                         </div>
                     </h2>
                     <div class="slider-container">
-                        <div class="slider" :style="{ transform: `translateX(calc(${-currentPanelIndex * 540}px + 50% - 810px))` }">
+                        <div class="slider" :style="{ transform: `translateX(calc(${-currentPanelIndex * 600}px + 50% - 900px))` }">
                             <div class="panel" :key=0 :class="{ 'center-panel': currentPanelIndex === -1 }">
                                 <div class="ingredients-list">
                                     <h3>Created by</h3>
@@ -219,8 +219,16 @@
                         </div>
                     </div>
                     <div class="controls">
-                        <button @click="slideLeft">←</button>
-                        <button @click="slideRight">→</button>
+                        <button @click="slideLeft">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
+                                <path d="M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z"/>
+                            </svg>
+                        </button>
+                        <button @click="slideRight">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
+                                <path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
                 <div key=1 v-else>
