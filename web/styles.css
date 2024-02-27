@@ -131,9 +131,9 @@ body {
 
 .github-link {
     color: #c6c7c7;
-	display: flex;
-	align-items: center;
-	text-decoration: none;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
 }
 
 .sub-header {
@@ -227,14 +227,14 @@ body {
 
 .controls {
     position: absolute;
-	width: calc(50% - 290px);
-	min-height: 100%;
-	display: flex;
-	justify-content: center;
-	cursor: pointer;
-	background: transparent;
-	border: none;
-	z-index: 2;
+    width: calc(50% - 290px);
+    min-height: 100%;
+    display: flex;
+    justify-content: center;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    z-index: 2;
 }
 
 .right-arrow {
@@ -249,31 +249,31 @@ body {
 
 .nav-bar {
     display: flex;
-	background: #2b2b2b;
-	position: fixed;
-	height: 50px;
-	bottom: 0px;
-	width: 100%;
+    background: #2b2b2b;
+    position: fixed;
+    height: 50px;
+    bottom: 0px;
+    width: 100%;
     left: 0px;
 }
 
 .nav-bar-link {
     transition: all 0.1s ease;
-	width: 100%;
-	color: #a9a9a9;
-	display: flex;
-	justify-content: center;
-	align-items: center;
+    width: 100%;
+    color: #a9a9a9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     cursor: pointer;
     font-weight: bold;
 }
 
 .nav-bar-link:hover {
-    color:rgba(59, 196, 166, 0.478);
+    color: rgba(59, 196, 166, 0.478);
 }
 
 .selected-link {
-    color:rgb(59 196 167);
+    color: rgb(59 196 167);
     font-weight: bold;
 }
 

@@ -84,8 +84,10 @@
             </div>
             <transition name="slide-up" mode="out-in">
                 <div key=0 v-if="currentElement">
-                    <button class="controls left-arrow" :style="`top:max(${scroll}px, 300px);`" @click="slideLeft"></button>
-                    <button class="controls right-arrow" :style="`top:max(${scroll}px, 300px);`" @click="slideRight"></button>
+                    <button class="controls left-arrow" :style="`top:max(${scroll}px, 300px);`"
+                        @click="slideLeft"></button>
+                    <button class="controls right-arrow" :style="`top:max(${scroll}px, 300px);`"
+                        @click="slideRight"></button>
                     <transition name="slide-right" mode="out-in">
                         <h2 :key="currentElement" style="text-align: center;" @click="navigateTo('')">
                             <div class="item" style=" padding: 13px 15px 12px">
@@ -94,7 +96,8 @@
                         </h2>
                     </transition>
                     <div class="slider-container">
-                        <div class="slider" :style="{ transform: `translateX(calc(${-currentPanelIndex * 540}px + 50% - 810px))` }">
+                        <div class="slider"
+                            :style="{ transform: `translateX(calc(${-currentPanelIndex * 540}px + 50% - 810px))` }">
                             <div class="panel" :class="{ 'center-panel': currentPanelIndex === -1 }">
                                 <div class="ingredients-list">
                                     <h3>Created by</h3>
@@ -138,7 +141,8 @@
                                         No recipes found
                                     </div>
                                     <div v-if="currentHiddenFromLength > 0">
-                                        <div v-if="!showHiddenRecipes" class="text-link" @click="showHiddenRecipes = true">
+                                        <div v-if="!showHiddenRecipes" class="text-link"
+                                            @click="showHiddenRecipes = true">
                                             {{currentHiddenFromLength}} entries hidden
                                         </div>
                                         <div v-else class="text-link" @click="showHiddenRecipes = false">
@@ -154,32 +158,37 @@
                                         <div :key="currentElement">
                                             <table>
                                                 <tr v-for="recipe in craftingTreeData">
-                                                    <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
+                                                    <td class="item"
+                                                        :class="{'item-used': !saveData.includes(recipe.A)}"
                                                         @click="navigateTo(recipe.A);">
                                                         {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
                                                     </td>
                                                     <td>+</td>
-                                                    <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
+                                                    <td class="item"
+                                                        :class="{'item-used': !saveData.includes(recipe.B)}"
                                                         @click="navigateTo(recipe.B);">
                                                         {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
                                                     </td>
                                                     <td>=</td>
-                                                    <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
+                                                    <td class="item"
+                                                        :class="{'item-used': !saveData.includes(recipe.C)}"
                                                         @click="navigateTo(recipe.C);">
                                                         {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
                                                     </td>
                                                 </tr>
                                             </table>
                                             <div v-if="craftingTreeData.length == 0 && craftingTreeReady">
-                                                <div class="item" :class="{'item-used': !saveData.includes(currentElement)}">
-                                                    {{ data.index[currentElement][0] }}&nbsp;{{ data.index[currentElement][1] }}
+                                                <div class="item"
+                                                    :class="{'item-used': !saveData.includes(currentElement)}">
+                                                    {{ data.index[currentElement][0] }}&nbsp;{{
+                                                    data.index[currentElement][1] }}
                                                 </div>
                                             </div>
                                         </div>
                                     </transition>
                                 </div>
                             </div>
-                            <div class="panel":class="{ 'center-panel': currentPanelIndex === 1 }">
+                            <div class="panel" :class="{ 'center-panel': currentPanelIndex === 1 }">
                                 <div class="ingredients-list">
                                     <h3>Used in</h3>
                                     <transition name="slide-right" mode="out-in" v-if="currentToLength > 0">
@@ -222,7 +231,8 @@
                                         No recipes found
                                     </div>
                                     <div v-if="currentHiddenToLength > 0">
-                                        <div v-if="!showHiddenRecipes" class="text-link" @click="showHiddenRecipes = true">
+                                        <div v-if="!showHiddenRecipes" class="text-link"
+                                            @click="showHiddenRecipes = true">
                                             {{currentHiddenToLength}} entries hidden
                                         </div>
                                         <div v-else class="text-link" @click="showHiddenRecipes = false">
@@ -235,13 +245,16 @@
                         </div>
                     </div>
                     <div class="nav-bar">
-                        <div class="nav-bar-link" :class="{ 'selected-link': currentPanelIndex === -1 }" @click="currentPanelIndex = -1">
+                        <div class="nav-bar-link" :class="{ 'selected-link': currentPanelIndex === -1 }"
+                            @click="currentPanelIndex = -1">
                             Created By
                         </div>
-                        <div class="nav-bar-link" :class="{ 'selected-link': currentPanelIndex === 0 }" @click="currentPanelIndex = 0">
+                        <div class="nav-bar-link" :class="{ 'selected-link': currentPanelIndex === 0 }"
+                            @click="currentPanelIndex = 0">
                             Crafting Recipe
                         </div>
-                        <div class="nav-bar-link" :class="{ 'selected-link': currentPanelIndex === 1 }" @click="currentPanelIndex = 1">
+                        <div class="nav-bar-link" :class="{ 'selected-link': currentPanelIndex === 1 }"
+                            @click="currentPanelIndex = 1">
                             Used In
                         </div>
                     </div>
@@ -466,7 +479,7 @@
                             this.craftingTreeData = result;
                             setQuery({ e: element });
                             this.smoothScrollTo(120);
-                            if(this.currentElement == ""){
+                            if (this.currentElement == "") {
                                 this.currentPanelIndex = 0;
                             }
                             this.showHiddenRecipes = false;
@@ -508,7 +521,7 @@
 
                     const animateScroll = (currentTime) => {
                         const timeElapsed = currentTime - startTime;
-                        const run = easeInOutQuad(timeElapsed, start, position-start, duration);
+                        const run = easeInOutQuad(timeElapsed, start, position - start, duration);
 
                         window.scrollTo(0, run);
 
@@ -607,12 +620,12 @@
                     .catch(error => {
                         console.error('Error loading metadata:', error);
                     });
-                    
+
                 addEventListener("popstate", (event) => this.navigateTo(getQuery().e || ""));
                 this.navigateTo(getQuery().e || "");
                 this.saveData = (getQuery().s || localStorage.getItem("saveData") || "").split(",").filter(x => x)
                 localStorage.setItem("saveData", this.saveData.join(","))
-                
+
                 document.addEventListener("scroll", function (event) {
                     var lastDiv = document.querySelector("#scroll-end");
                     if (!lastDiv) return;
