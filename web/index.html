@@ -635,11 +635,6 @@
                 window.addEventListener("scroll", (event) => {
                     this.scroll = window.pageYOffset;
                 });
-
-                // Preload initial chunks
-                for (let i = 0; i < 10; i++) {
-                    this.loadChunk(i)
-                }
             }
         });
     </script>

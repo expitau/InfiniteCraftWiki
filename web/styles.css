@@ -12,6 +12,7 @@ body {
 }
 
 #app {
+    overflow: hidden;
     padding: 1rem 5rem 3rem;
 }
 
