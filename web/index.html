@@ -261,7 +261,6 @@
         </div>
     </div>
 
-
     <script>
         function compareRecipes(A, B, data) {
             if (data.index[A.C][1] == "Nothing")
@@ -596,6 +595,7 @@
                     .catch(error => {
                         console.error('Error loading recipes:', error);
                     });
+
                 fetch(DATA_PREFIX + 'metadata.json')
                     .then(response => { console.log(response); return response.json() })
                     .then(metadata => {
@@ -604,10 +604,12 @@
                     .catch(error => {
                         console.error('Error loading metadata:', error);
                     });
-                addEventListener("popstate", (event) => this.currentElement = getQuery().e || "");
+                    
+                addEventListener("popstate", (event) => this.navigateTo(getQuery().e || ""));
+                this.navigateTo(getQuery().e || "");
                 this.saveData = (getQuery().s || localStorage.getItem("saveData") || "").split(",").filter(x => x)
                 localStorage.setItem("saveData", this.saveData.join(","))
-                setQuery({ s: "" })
+                
                 document.addEventListener("scroll", function (event) {
                     var lastDiv = document.querySelector("#scroll-end");
                     if (!lastDiv) return;
