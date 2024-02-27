@@ -559,14 +559,17 @@
                             await this.loadChunk(getChunk(thisElement));
                         }
 
-                        result.unshift({ A: this.data.data[thisElement].from[0][0], B: this.data.data[thisElement].from[0][1], C: thisElement });
+                        let left = this.data.data[thisElement].from[0][0];
+                        let right = this.data.data[thisElement].from[0][1];
 
-                        if (this.data.costs[this.data.data[thisElement].from[0][0]] != 1) {
-                            craftingList.push(this.data.data[thisElement].from[0][0]);
+                        result.unshift({ A: left, B: right, C: thisElement });
+
+                        if (this.data.costs[left] != 1) {
+                            craftingList.push(left);
                         }
 
-                        if (this.data.costs[this.data.data[thisElement].from[0][1]] != 1) {
-                            craftingList.push(this.data.data[thisElement].from[0][1]);
+                        if (this.data.costs[right] != 1) {
+                            craftingList.push(right);
                         }
                     }
                     return result;
