@@ -47,6 +47,7 @@ function compareRecipes(A, B, data) {
 
 function generateData(raw) {
     let data = {}
+    let costs = Object.fromEntries(Object.entries(raw.index).map(x => [x[0], x[1][2]]))
     for (let recipe of raw.data.split(";").map(x => x.split(","))) {
         data[recipe[0]] ??= { from: [], to: [] }
         data[recipe[0]].to.push([recipe[1], recipe[2]])
@@ -55,9 +56,14 @@ function generateData(raw) {
         data[recipe[2]] ??= { from: [], to: [] }
         data[recipe[2]].from.push([recipe[0], recipe[1]])
     }
+    data = Object.fromEntries(Object.entries(data).map(x => {
+        let from = x[1].from.sort((a, b) => costs[a[0]] + costs[a[1]] - costs[b[0]] - costs[b[1]])
+        let to = x[1].to.sort((a, b) => costs[a[1]] - costs[b[1]])
+        return [x[0], { from: from, to: to }]
+    }))
     return {
         index: Object.fromEntries(Object.entries(raw.index).map(x => [x[0], [x[1][0], x[1][1], x[1][2]]])),
-        costs: Object.fromEntries(Object.entries(raw.index).map(x => [x[0], x[1][2]])),
+        costs: costs,
         data: data,
     };
 }
@@ -77,7 +83,7 @@ async function main() {
     let icons = { "Water": "💧", "Fire": "🔥", "Wind": "🌬️", "Earth": "🌍" }
     let costs = { "Water": 1, "Fire": 1, "Wind": 1, "Earth": 1 }
 
-    fileContents = fs.readFileSync('data/data.json', 'utf8');
+    fileContents = fs.readFileSync('web/data/data.json', 'utf8');
     parsedData = JSON.parse(fileContents);
 
     let data = generateData(parsedData)
@@ -86,14 +92,14 @@ async function main() {
         let value = chunks[key].map(e => {
             let currentElement = e[0]
             // console.log("Processing from")
-            let from = e[1].from.map(x => data.costs[x[1]] > data.costs[x[0]] ? [x[1], x[0]] : [x[0], x[1]]).filter(x => x[0] != currentElement && x[1] != currentElement && data.index[currentElement][1] != 'Nothing').sort((a, b) => compareRecipes({ A: a[0], B: a[1], C: currentElement }, { A: b[0], B: b[1], C: currentElement }, data))
+            let from = e[1].from.filter(x => x[0] != currentElement && x[1] != currentElement && data.index[currentElement][1] != 'Nothing').sort((a, b) => compareRecipes({ A: a[0], B: a[1], C: currentElement }, { A: b[0], B: b[1], C: currentElement }, data))
             // console.log("Processing to")
             let to = e[1].to.filter(x => currentElement != x[1] && x[0] != x[1] && data.index[x[1]][1] != 'Nothing').sort((a, b) => compareRecipes({ A: currentElement, B: a[0], C: a[1] }, { A: currentElement, B: b[0], C: b[1] }, data))
             // console.log("Processing hidden from")
             let hiddenFrom = e[1].from.map(x => data.costs[x[1]] > data.costs[x[0]] ? [x[1], x[0]] : [x[0], x[1]]).filter(x => !(x[0] != currentElement && x[1] != currentElement && data.index[currentElement][1] != 'Nothing')).sort((a, b) => compareRecipes({ A: a[0], B: a[1], C: currentElement }, { A: b[0], B: b[1], C: currentElement }, data))
             // console.log("Processing hidden to")
             let hiddenTo = e[1].to.filter(x => !(currentElement != x[1] && x[0] != x[1] && data.index[x[1]][1] != 'Nothing')).sort((a, b) => compareRecipes({ A: currentElement, B: a[0], C: a[1] }, { A: currentElement, B: b[0], C: b[1] }, data))
-            return [e[0], { from, to, hiddenFrom, hiddenTo }]
+            return [e[0], `${from.map(x => x.join(";")).join(";;")};;;${to.map(x => x.join(";")).join(";;")};;;${hiddenFrom.map(x => x.join(";")).join(";;")};;;${hiddenTo.map(x => x.join(";")).join(";;")}`]
         })
         // .map(x =>
         //     [x[0], {
@@ -113,11 +119,14 @@ async function main() {
         //             hiddenFrom: [],
         //             hiddenTo: []
         //         }])
-        fs.writeFileSync('data/chunk-' + key + '.json', JSON.stringify(Object.fromEntries(value)), 'utf8');
+        fs.writeFileSync('web/data/chunk-' + key + '.json', JSON.stringify(Object.fromEntries(value)), 'utf8');
     }
+    data.index = Object.fromEntries(Object.entries(data.index).map(e => {
+        return [e[0], [e[1][0], e[1][1], e[1][2], data.data[e[0]].from[0][0], data.data[e[0]].from[0][1]]]
+    }))
     // console.log(chunks)
-    fs.writeFileSync('data/index.json', JSON.stringify(data.index), 'utf8');
-    fs.writeFileSync('data/metadata.json', JSON.stringify({ recipeCount: Object.entries(data.data).reduce((acc, [key, value]) => acc + value.from.length, 0) }), 'utf8');
+    fs.writeFileSync('web/data/index.json', JSON.stringify(data.index), 'utf8');
+    fs.writeFileSync('web/data/metadata.json', JSON.stringify({ recipeCount: Object.entries(data.data).reduce((acc, [key, value]) => acc + value.from.length, 0) }), 'utf8');
 
     // save(attempted, costs, icons)
 }

@@ -390,7 +390,7 @@
         const app = new Vue({
             el: '#app',
             data: {
-                data: { index: {}, list: [], costs: {}, data: {}, metadata: { recipeCount: 0, loadedChunks: [] } },
+                data: { index: {}, list: [], costs: {}, craftingCache: {}, data: {}, metadata: { recipeCount: 0, loadedChunks: [] } },
                 craftingTreeData: [],
                 currentElement: "",
                 showHiddenRecipes: false,
@@ -549,7 +549,15 @@
                             return response.json()
                         })
                         .then(data => {
-                            this.data.data = Object.freeze(Object.assign({}, this.data.data, data))
+                            chunkData = Object.fromEntries(Object.entries(data).map(x => {
+                                let [from, to, hiddenFrom, hiddenTo]= x[1].split(";;;")
+                                from = from.split(";;").map(x => x.split(";"))
+                                to = to.split(";;").map(x => x.split(";"))
+                                hiddenFrom = hiddenFrom.split(";;").map(x => x.split(";"))
+                                hiddenTo = hiddenTo.split(";;").map(x => x.split(";"))
+                                return [x[0], {from, to, hiddenFrom, hiddenTo}]
+                            }))
+                            this.data.data = Object.freeze(Object.assign({}, this.data.data, chunkData))
                             this.data.metadata.loadedChunks.push(chunk)
                         });
                 },
@@ -570,12 +578,7 @@
                         }
                         usedElements.add(thisElement);
 
-                        if (!this.data.data[thisElement] && thisElement != "") {
-                            await this.loadChunk(getChunk(thisElement));
-                        }
-
-                        let left = this.data.data[thisElement].from[0][0];
-                        let right = this.data.data[thisElement].from[0][1];
+                        let [left, right] = this.data.craftingCache[thisElement]
 
                         result.unshift({ A: left, B: right, C: thisElement });
 
@@ -607,6 +610,7 @@
                     .then(response => { console.log(response); return response.json() })
                     .then(index => {
                         this.data.index = Object.freeze(Object.fromEntries(Object.entries(index).map(x => [x[0], [x[1][0], x[1][1]]])))
+                        this.data.craftingCache = Object.freeze(Object.fromEntries(Object.entries(index).map(x => [x[0], [x[1][3], x[1][4]]])))
                         this.data.list = Object.freeze(Object.entries(index).sort((a, b) => a[1][2] - b[1][2]).filter(x => x[1][1] != "Nothing").map(x => [x[0], x[1][1]]))
                         this.data.costs = Object.freeze(Object.fromEntries(Object.entries(index).map(x => [x[0], x[1][2]])))
                     })
