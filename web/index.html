@@ -95,7 +95,7 @@
                 </div>
             </div>
             <transition name="slide-up" mode="out-in">
-                <div v-if="currentElement">
+                <div key=0 v-if="currentElement">
                     <button class="controls left-arrow" :style="`top:max(${scroll}px, 300px); outline: none`"
                         @click="slideLeft"></button>
                     <button class="controls right-arrow" :style="`top:max(${scroll}px, 300px); outline: none`"
@@ -107,6 +107,7 @@
                             </div>
                         </h2>
                     </transition>
+                    
                     <div class="slider-container">
                         <div class="slider"
                             :style="{ transform: `translateX(calc(${-currentPanelIndex * 540}px + 50% - 810px))` }">
@@ -404,7 +405,6 @@
             },
             computed: {
                 currentTo: function () {
-                    this.data.loadedChunks
                     if (!this.data.data[this.currentElement]) {
                         return []
                     }
@@ -462,7 +462,7 @@
                     return this.data.list.filter(x => x[1].toLowerCase().includes(query)).map(x => x[0]).slice(0, this.loaded)
                 },
                 craftingTree: function () {
-                    if (this.currentElement == "") {
+                    if (this.currentElement == "" || !this.data.data[this.currentElement]) {
                         return [];
                     }
                     if (this.data.costs[this.currentElement] == 1) {
@@ -629,6 +629,8 @@
                         this.data.craftingCache = Object.freeze(Object.fromEntries(Object.entries(index).map(x => [x[0], [x[1][3], x[1][4]]])))
                         this.data.list = Object.freeze(Object.entries(index).sort((a, b) => a[1][2] - b[1][2]).filter(x => x[1][1] != "Nothing").map(x => [x[0], x[1][1]]))
                         this.data.costs = Object.freeze(Object.fromEntries(Object.entries(index).map(x => [x[0], x[1][2]])))
+
+                        this.navigateTo(getQuery().e || "");
                     })
                     .catch(error => {
                         console.error('Error loading recipes:', error);
@@ -644,7 +646,6 @@
                     });
 
                 addEventListener("popstate", (event) => this.navigateTo(getQuery().e || ""));
-                this.navigateTo(getQuery().e || "");
                 this.saveData = (getQuery().s || localStorage.getItem("saveData") || "").split(",").filter(x => x)
                 localStorage.setItem("saveData", this.saveData.join(","))
 
