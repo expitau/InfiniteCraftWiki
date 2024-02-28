@@ -99,7 +99,7 @@ async function main() {
             let hiddenFrom = e[1].from.map(x => data.costs[x[1]] > data.costs[x[0]] ? [x[1], x[0]] : [x[0], x[1]]).filter(x => !(x[0] != currentElement && x[1] != currentElement && data.index[currentElement][1] != 'Nothing')).sort((a, b) => compareRecipes({ A: a[0], B: a[1], C: currentElement }, { A: b[0], B: b[1], C: currentElement }, data))
             // console.log("Processing hidden to")
             let hiddenTo = e[1].to.filter(x => !(currentElement != x[1] && x[0] != x[1] && data.index[x[1]][1] != 'Nothing')).sort((a, b) => compareRecipes({ A: currentElement, B: a[0], C: a[1] }, { A: currentElement, B: b[0], C: b[1] }, data))
-            return [e[0], `${from.map(x => x.join(";")).join(";;")};;;${to.map(x => x.join(";")).join(";;")};;;${hiddenFrom.map(x => x.join(";")).join(";;")};;;${hiddenTo.map(x => x.join(";")).join(";;")}`]
+            return [e[0], `${from.map(x => x.join("::a")).join("::b")}::c${to.map(x => x.join("::a")).join("::b")}::c${hiddenFrom.map(x => x.join("::a")).join("::b")}::c${hiddenTo.map(x => x.join("::a")).join("::b")}`]
         })
         // .map(x =>
         //     [x[0], {

@@ -46,7 +46,8 @@
                 </h3>
             </div>
 
-            <a class="github-link" style="position: absolute; top: 40px; left: 40px" href="https://github.com/expitau/InfiniteCraftWiki" target="_blank">
+            <a class="github-link" style="position: absolute; top: 40px; left: 40px"
+                href="https://github.com/expitau/InfiniteCraftWiki" target="_blank">
                 <span class="sr-only">Follow me on Github</span>
                 <svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" fill="currentColor">
                     <path fill="currentColor"
@@ -94,7 +95,7 @@
                 </div>
             </div>
             <transition name="slide-up" mode="out-in">
-                <div key=0 v-if="currentElement">
+                <div v-if="currentElement">
                     <button class="controls left-arrow" :style="`top:max(${scroll}px, 300px); outline: none`"
                         @click="slideLeft"></button>
                     <button class="controls right-arrow" :style="`top:max(${scroll}px, 300px); outline: none`"
@@ -168,7 +169,7 @@
                                     <transition name="slide-right" mode="out-in">
                                         <div :key="currentElement">
                                             <table>
-                                                <tr v-for="recipe in craftingTreeData">
+                                                <tr v-for="recipe in craftingTree">
                                                     <td class="item"
                                                         :class="{'item-used': !saveData.includes(recipe.A)}"
                                                         @click="navigateTo(recipe.A);">
@@ -188,7 +189,7 @@
                                                     </td>
                                                 </tr>
                                             </table>
-                                            <div v-if="craftingTreeData.length == 0 && craftingTreeReady">
+                                            <div v-if="craftingTree.length == 0">
                                                 <div class="item"
                                                     :class="{'item-used': !saveData.includes(currentElement)}">
                                                     {{ data.index[currentElement][0] }}&nbsp;{{
@@ -391,7 +392,6 @@
             el: '#app',
             data: {
                 data: { index: {}, list: [], costs: {}, craftingCache: {}, data: {}, metadata: { recipeCount: 0, loadedChunks: [] } },
-                craftingTreeData: [],
                 currentElement: "",
                 showHiddenRecipes: false,
                 searchQuery: "",
@@ -400,7 +400,6 @@
                 loaded: 1000,
                 loadedElements: 100,
                 currentPanelIndex: 0,
-                craftingTreeReady: false,
                 scroll: 0,
             },
             computed: {
@@ -462,6 +461,43 @@
                     let query = this.searchQuery.toLowerCase()
                     return this.data.list.filter(x => x[1].toLowerCase().includes(query)).map(x => x[0]).slice(0, this.loaded)
                 },
+                craftingTree: function () {
+                    if (this.currentElement == "") {
+                        return [];
+                    }
+                    if (this.data.costs[this.currentElement] == 1) {
+                        return [];
+                    }
+
+                    let craftingList = [];
+                    let usedElements = new Set();
+                    let result = [];
+                    craftingList.push(this.currentElement);
+
+                    while (craftingList.length > 0) {
+                        let thisElement = craftingList.shift();
+                        if (usedElements.has(thisElement)) {
+                            continue;
+                        }
+                        usedElements.add(thisElement);
+
+                        if (Object.keys(this.data.craftingCache).length == 0 || !this.data.craftingCache[thisElement]) {
+                            return []
+                        }
+                        let [left, right] = this.data.craftingCache[thisElement]
+
+                        result.unshift({ A: left, B: right, C: thisElement });
+
+                        if (this.data.costs[left] != 1) {
+                            craftingList.push(left);
+                        }
+
+                        if (this.data.costs[right] != 1) {
+                            craftingList.push(right);
+                        }
+                    }
+                    return result.toReversed();
+                },
                 elementCount: function () {
                     return Object.keys(this.data.index).length - 1;
                 },
@@ -475,20 +511,14 @@
                         if (!this.data.data[element]) {
                             this.loadChunk(getChunk(element));
                         }
-                        this.craftingTreeData = [];
-                        this.craftingTreeReady = false;
-                        this.calcCraftingTree(element).then(result => {
-                            this.craftingTreeReady = true;
-                            this.craftingTreeData = result;
-                            setQuery({ e: element });
-                            if (this.currentElement == "") {
-                                this.currentPanelIndex = 0;
-                            }
-                            this.showHiddenRecipes = false;
-                            this.currentElement = element;
-                            this.loaded = 1000;
-                            this.loadedElements = 100;
-                        });
+                        setQuery({ e: element });
+                        if (this.currentElement == "") {
+                            this.currentPanelIndex = 0;
+                        }
+                        this.showHiddenRecipes = false;
+                        this.currentElement = element;
+                        this.loaded = 1000;
+                        this.loadedElements = 100;
                     } else {
                         setQuery({ e: element });
                         this.currentElement = '';
@@ -549,49 +579,35 @@
                             return response.json()
                         })
                         .then(data => {
+                            [sep1, sep2, sep3] = ["::c", "::b", "::a"]
                             chunkData = Object.fromEntries(Object.entries(data).map(x => {
-                                let [from, to, hiddenFrom, hiddenTo]= x[1].split(";;;")
-                                from = from.split(";;").map(x => x.split(";"))
-                                to = to.split(";;").map(x => x.split(";"))
-                                hiddenFrom = hiddenFrom.split(";;").map(x => x.split(";"))
-                                hiddenTo = hiddenTo.split(";;").map(x => x.split(";"))
-                                return [x[0], {from, to, hiddenFrom, hiddenTo}]
+                                let [from, to, hiddenFrom, hiddenTo] = x[1].split(sep1)
+                                if (from == "") {
+                                    from = []
+                                } else {
+                                    from = from.split(sep2).map(x => x.split(sep3))
+                                }
+                                if (to == "") {
+                                    to = []
+                                } else {
+                                    to = to.split(sep2).map(x => x.split(sep3))
+                                }
+                                if (hiddenFrom == "") {
+                                    hiddenFrom = []
+                                } else {
+                                    hiddenFrom = hiddenFrom.split(sep2).map(x => x.split(sep3))
+                                }
+                                if (hiddenTo == "") {
+                                    hiddenTo = []
+                                } else {
+                                    hiddenTo = hiddenTo.split(sep2).map(x => x.split(sep3))
+                                }
+                                return [x[0], { from, to, hiddenFrom, hiddenTo }]
                             }))
                             this.data.data = Object.freeze(Object.assign({}, this.data.data, chunkData))
                             this.data.metadata.loadedChunks.push(chunk)
                         });
                 },
-                calcCraftingTree: async function (element) {
-                    if (this.data.costs[element] == 1) {
-                        return [];
-                    }
-
-                    let craftingList = [];
-                    let usedElements = new Set();
-                    let result = [];
-                    craftingList.push(element);
-
-                    while (craftingList.length > 0) {
-                        let thisElement = craftingList.shift();
-                        if (usedElements.has(thisElement)) {
-                            continue;
-                        }
-                        usedElements.add(thisElement);
-
-                        let [left, right] = this.data.craftingCache[thisElement]
-
-                        result.unshift({ A: left, B: right, C: thisElement });
-
-                        if (this.data.costs[left] != 1) {
-                            craftingList.push(left);
-                        }
-
-                        if (this.data.costs[right] != 1) {
-                            craftingList.push(right);
-                        }
-                    }
-                    return result.toReversed();
-                }
             },
             mounted() {
                 if (localStorage.getItem("showToast") === null || localStorage.getItem("showToast") === true) {
@@ -640,7 +656,7 @@
                     if (lastDiv) {
                         var lastDivOffset = lastDiv.offsetTop + lastDiv.clientHeight;
                         var pageOffset = window.pageYOffset + window.innerHeight;
-    
+
                         if (pageOffset > lastDivOffset - 20) {
                             app.addScrollPage();
                         }
@@ -651,7 +667,7 @@
                     if (lastDiv) {
                         var lastDivOffset = lastDiv.offsetTop + lastDiv.clientHeight;
                         var pageOffset = window.pageYOffset + window.innerHeight;
-    
+
                         if (pageOffset > lastDivOffset - 20) {
                             app.addElementScrollPage();
                         }
@@ -660,7 +676,7 @@
 
                 document.addEventListener("wheel", (event) => {
                     window.lastScrollTime ??= Date.now();
-                    if (this.currentElement && window.lastScrollTime + 200 < Date.now()){
+                    if (this.currentElement && window.lastScrollTime + 200 < Date.now()) {
                         if (event.deltaX > 20) {
                             this.slideRight()
                         }
