@@ -35,7 +35,6 @@ jobs:
       - name: Build
         run: |
           cp -r web/ dist/
-          cp -r data/ dist/data/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
