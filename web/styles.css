@@ -13,7 +13,7 @@ body {
 
 #app {
     overflow: hidden;
-    padding: 1rem 5rem 3rem;
+    padding: 1rem 3rem 3rem;
 }
 
 .item {
@@ -130,14 +130,16 @@ body {
 }
 
 .github-link {
-    position: absolute;
     color: #c6c7c7;
     display: flex;
     align-items: center;
     text-decoration: none;
     gap: 10px;
-    top: 40px;
-	margin-left: 20px;
+    position: relative;
+    top: 0px;
+    margin-left: 0px;
+    margin-right: 10px;
+    text-wrap: nowrap;
 }
 
 .github-link-text {
@@ -163,11 +165,6 @@ body {
     }
     .github-link-text {
         display: none
-    }
-    .github-link {
-        position: relative;
-        top: 0px;
-        margin-left: 0px;
     }
 }
 
@@ -226,7 +223,7 @@ body {
 }
 
 .panel:not(.center-panel) {
-    transform: scale(0.9);
+    transform: scale(0.9, 0.95);
 }
 
 .center-panel {

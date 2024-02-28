@@ -35,25 +35,35 @@
                 Clear save data
             </button>
 
-            <h1 style="text-align: center; cursor: pointer; margin-bottom: 0px;"
-                @click="navigateTo(''); searchQuery='';">
-                Infinite Craft Wiki
-            </h1>
+            <div v-if="!currentElement">
+                <h1 style="text-align: center; cursor: pointer; margin-bottom: 0px;"
+                    @click="navigateTo(''); searchQuery='';">
+                    Infinite Craft Wiki
+                </h1>
 
-            <h3 class="sub-header">
-                {{ formatNumber(elementCount) }} elements -- {{ formatNumber(data.metadata.recipeCount) }} recipes
-            </h3>
+                <h3 class="sub-header">
+                    {{ formatNumber(elementCount) }} elements · {{ formatNumber(data.metadata.recipeCount) }} recipes
+                </h3>
+            </div>
 
-            
+            <a class="github-link" style="position: absolute; top: 40px; left: 40px" href="https://github.com/expitau/InfiniteCraftWiki" target="_blank" v-if="!currentElement">
+                <span class="sr-only">Follow me on Github</span>
+                <svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" fill="currentColor">
+                    <path fill="currentColor"
+                        d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z">
+                    </path>
+                </svg>
+                <div class="github-link-text">Star my repo!</div>
+            </a>
+
             <div id="search-bar" class="search-bar-wrapper">
-                <a class="github-link" href="https://github.com/expitau/InfiniteCraftWiki" target="_blank">
+                <a class="github-link" href="https://github.com/expitau/InfiniteCraftWiki" target="_blank" v-if="currentElement">
                     <span class="sr-only">Follow me on Github</span>
                     <svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" fill="currentColor">
                         <path fill="currentColor"
                             d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z">
                         </path>
                     </svg>
-                    <div class="github-link-text">Star my repo!</div>
                 </a>
                 <input class="search-bar" type="text" placeholder="Search..." v-model="searchQuery"
                     @click="navigateTo('')"></input>
@@ -85,9 +95,9 @@
             </div>
             <transition name="slide-up" mode="out-in">
                 <div key=0 v-if="currentElement">
-                    <button class="controls left-arrow" :style="`top:max(${scroll}px, 300px);`"
+                    <button class="controls left-arrow" :style="`top:max(${scroll}px, 300px); outline: none`"
                         @click="slideLeft"></button>
-                    <button class="controls right-arrow" :style="`top:max(${scroll}px, 300px);`"
+                    <button class="controls right-arrow" :style="`top:max(${scroll}px, 300px); outline: none`"
                         @click="slideRight"></button>
                     <transition name="slide-right" mode="out-in">
                         <h2 :key="currentElement" style="text-align: center;" @click="navigateTo('')">
@@ -395,12 +405,10 @@
             },
             computed: {
                 currentTo: function () {
-                    console.log("(computed) currentTo")
                     this.data.loadedChunks
                     if (!this.data.data[this.currentElement]) {
                         return []
                     }
-                    // console.log(this.data.data[this.currentElement])
                     let result = this.data.data[this.currentElement].to
                         .map(recipe => {
                             return { A: this.currentElement, B: recipe[0], C: recipe[1] }
@@ -408,11 +416,9 @@
                     return result.slice(0, this.loadedElements)
                 },
                 currentFrom: function () {
-                    console.log("(computed) currentFrom")
                     if (!this.data.data[this.currentElement]) {
                         return []
                     }
-                    // console.log(this.data.data[this.currentElement])
                     let result = this.data.data[this.currentElement].from
                         .map(recipe => {
                             return { A: recipe[0], B: recipe[1], C: this.currentElement }
@@ -420,11 +426,9 @@
                     return result.slice(0, this.loadedElements)
                 },
                 currentHiddenTo: function () {
-                    console.log("(computed) currentHiddenTo")
                     if (!this.data.data[this.currentElement]) {
                         return []
                     }
-                    // console.log(this.data.data[this.currentElement])
                     let result = this.data.data[this.currentElement].hiddenTo
                         .map(recipe => {
                             return { A: this.currentElement, B: recipe[0], C: recipe[1] }
@@ -432,7 +436,6 @@
                     return result.slice(0, 100)
                 },
                 currentHiddenFrom: function () {
-                    console.log("(computed) currentHiddenFrom")
                     if (!this.data.data[this.currentElement]) {
                         return []
                     }
@@ -456,13 +459,10 @@
                     return this.currentTo.length + (this.data.data[this.currentElement]?.hiddenTo.length || 0);
                 },
                 elementList: function () {
-                    console.log("(computed) elementList")
-                    // console.log(this.data.index)
                     let query = this.searchQuery.toLowerCase()
                     return this.data.list.filter(x => x[1].toLowerCase().includes(query)).map(x => x[0]).slice(0, this.loaded)
                 },
                 elementCount: function () {
-                    console.log("(computed) elementCount")
                     return Object.keys(this.data.index).length - 1;
                 },
                 isDefaultElement: function () {
@@ -481,7 +481,6 @@
                             this.craftingTreeReady = true;
                             this.craftingTreeData = result;
                             setQuery({ e: element });
-                            this.smoothScrollTo(120);
                             if (this.currentElement == "") {
                                 this.currentPanelIndex = 0;
                             }
@@ -491,17 +490,17 @@
                             this.loadedElements = 100;
                         });
                     } else {
-                        this.smoothScrollTo(0);
                         setQuery({ e: element });
                         this.currentElement = '';
                         this.loaded = 1000;
                         this.loadedElements = 100;
                     }
+                    this.smoothScrollTo(0);
                 },
-                slideLeft() {
+                slideLeft: function () {
                     this.currentPanelIndex = (this.currentPanelIndex + 3) % 3 - 1;
                 },
-                slideRight() {
+                slideRight: function () {
                     this.currentPanelIndex = (this.currentPanelIndex + 2) % 3 - 1;
                 },
                 addScrollPage: function () {
@@ -510,7 +509,7 @@
                 addElementScrollPage: function () {
                     this.loadedElements *= 2;
                 },
-                smoothScrollTo(position = 0) {
+                smoothScrollTo: function (position = 0) {
                     const duration = 500;
                     const start = window.pageYOffset;
                     const startTime = performance.now();
@@ -588,7 +587,7 @@
                             craftingList.push(right);
                         }
                     }
-                    return result;
+                    return result.toReversed();
                 }
             },
             mounted() {
@@ -629,31 +628,45 @@
                 this.saveData = (getQuery().s || localStorage.getItem("saveData") || "").split(",").filter(x => x)
                 localStorage.setItem("saveData", this.saveData.join(","))
 
-                document.addEventListener("scroll", function (event) {
-                    var lastDiv = document.querySelector("#scroll-end");
-                    if (!lastDiv) return;
-                    var lastDivOffset = lastDiv.offsetTop + lastDiv.clientHeight;
-                    var pageOffset = window.pageYOffset + window.innerHeight;
-
-                    if (pageOffset > lastDivOffset - 20) {
-                        app.addScrollPage();
-                    }
-                });
-
-                document.addEventListener("scroll", function (event) {
-                    var lastDiv = document.querySelector("#element-scroll-end");
-                    if (!lastDiv) return;
-                    var lastDivOffset = lastDiv.offsetTop + lastDiv.clientHeight;
-                    var pageOffset = window.pageYOffset + window.innerHeight;
-
-                    if (pageOffset > lastDivOffset - 20) {
-                        app.addElementScrollPage();
-                    }
-                });
-
-                window.addEventListener("scroll", (event) => {
+                document.addEventListener("scroll", (event) => {
                     this.scroll = window.pageYOffset;
+
+                    // For main body lazy scrolling
+                    var lastDiv = document.querySelector("#scroll-end");
+                    if (lastDiv) {
+                        var lastDivOffset = lastDiv.offsetTop + lastDiv.clientHeight;
+                        var pageOffset = window.pageYOffset + window.innerHeight;
+    
+                        if (pageOffset > lastDivOffset - 20) {
+                            app.addScrollPage();
+                        }
+                    }
+
+                    // For specific element lazy scrolling
+                    var lastDiv = document.querySelector("#element-scroll-end");
+                    if (lastDiv) {
+                        var lastDivOffset = lastDiv.offsetTop + lastDiv.clientHeight;
+                        var pageOffset = window.pageYOffset + window.innerHeight;
+    
+                        if (pageOffset > lastDivOffset - 20) {
+                            app.addElementScrollPage();
+                        }
+                    }
                 });
+
+                document.addEventListener("wheel", (event) => {
+                    window.lastScrollTime ??= Date.now();
+                    if (this.currentElement && window.lastScrollTime + 200 < Date.now()){
+                        if (event.deltaX > 15) {
+                            this.slideRight()
+                        }
+                        if (event.deltaX < -15) {
+                            this.slideLeft()
+                        }
+                        window.lastScrollTime = Date.now();
+                    }
+                });
+
             }
         });
     </script>
