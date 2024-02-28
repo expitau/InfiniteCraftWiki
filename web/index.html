@@ -29,7 +29,24 @@
 <body>
     <div id="app">
         <div id="container" :class="{'showUnavailableElements': saveData.length > 0}">
-            <a class="github-link" href="https://github.com/expitau/InfiniteCraftWiki" target="_blank">
+            <button
+                style="background-color: #347d39; color:#c6c7c7; text-decoration: none; border-radius: 0.5rem; padding: 0.5rem 1rem; cursor: pointer;  border: none; position: absolute; top: 0; right: 0; margin: 1rem"
+                @click="clearSaveData()" v-if="saveData.length > 0">
+                Clear save data
+            </button>
+
+            <div v-if="!currentElement">
+                <h1 style="text-align: center; cursor: pointer; margin-bottom: 0px;"
+                    @click="navigateTo(''); searchQuery='';">
+                    Infinite Craft Wiki
+                </h1>
+
+                <h3 class="sub-header">
+                    {{ formatNumber(elementCount) }} elements · {{ formatNumber(data.metadata.recipeCount) }} recipes
+                </h3>
+            </div>
+
+            <a class="github-link" style="position: absolute; top: 40px; left: 40px" href="https://github.com/expitau/InfiniteCraftWiki" target="_blank" v-if="!currentElement">
                 <span class="sr-only">Follow me on Github</span>
                 <svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" fill="currentColor">
                     <path fill="currentColor"
@@ -39,22 +56,15 @@
                 <div class="github-link-text">Star my repo!</div>
             </a>
 
-            <button
-                style="background-color: #347d39; color:#c6c7c7; text-decoration: none; border-radius: 0.5rem; padding: 0.5rem 1rem; cursor: pointer;  border: none; position: absolute; top: 0; right: 0; margin: 1rem"
-                @click="clearSaveData()" v-if="saveData.length > 0">
-                Clear save data
-            </button>
-
-            <h1 style="text-align: center; cursor: pointer; margin-bottom: 0px;"
-                @click="navigateTo(''); searchQuery='';">
-                Infinite Craft Wiki
-            </h1>
-
-            <h3 class="sub-header">
-                {{ formatNumber(elementCount) }} elements -- {{ formatNumber(data.metadata.recipeCount) }} recipes
-            </h3>
-
-            <div class="search-bar-wrapper">
+            <div id="search-bar" class="search-bar-wrapper">
+                <a class="github-link" href="https://github.com/expitau/InfiniteCraftWiki" target="_blank" v-if="currentElement">
+                    <span class="sr-only">Follow me on Github</span>
+                    <svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" fill="currentColor">
+                        <path fill="currentColor"
+                            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z">
+                        </path>
+                    </svg>
+                </a>
                 <input class="search-bar" type="text" placeholder="Search..." v-model="searchQuery"
                     @click="navigateTo('')"></input>
             </div>
@@ -85,6 +95,10 @@
             </div>
             <transition name="slide-up" mode="out-in">
                 <div key=0 v-if="currentElement">
+                    <button class="controls left-arrow" :style="`top:max(${scroll}px, 300px); outline: none`"
+                        @click="slideLeft"></button>
+                    <button class="controls right-arrow" :style="`top:max(${scroll}px, 300px); outline: none`"
+                        @click="slideRight"></button>
                     <transition name="slide-right" mode="out-in">
                         <h2 :key="currentElement" style="text-align: center;" @click="navigateTo('')">
                             <div class="item" style=" padding: 13px 15px 12px">
@@ -92,107 +106,171 @@
                             </div>
                         </h2>
                     </transition>
-                    <div class="ingredients-flex">
-                        <div class="ingredients-list">
-                            <h3>Created by</h3>
-                            <transition name="slide-right" mode="out-in">
-                                <table :key="currentElement">
-                                    <tr v-for="recipe in currentFrom">
-                                        <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
-                                            @click="navigateTo(recipe.A);">
-                                            {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
-                                        </td>
-                                        <td>+</td>
-                                        <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
-                                            @click="navigateTo(recipe.B);">
-                                            {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
-                                        </td>
-                                        <td>=</td>
-                                        <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
-                                            @click="navigateTo(recipe.C);">
-                                            {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
-                                        </td>
-                                    </tr>
-
-                                    <tr v-for="recipe in currentHiddenFrom" v-if="showHiddenRecipes">
-                                        <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
-                                            @click="navigateTo(recipe.A);">
-                                            {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
-                                        </td>
-                                        <td>+</td>
-                                        <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
-                                            @click="navigateTo(recipe.B);">
-                                            {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
-                                        </td>
-                                        <td>=</td>
-                                        <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
-                                            @click="navigateTo(recipe.C);">
-                                            {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
-                                        </td>
-                                    </tr>
-                                </table>
-                            </transition>
-                            <div v-if="currentHiddenFromLength > 0">
-                                <div v-if="!showHiddenRecipes" class="text-link" @click="showHiddenRecipes = true">
-                                    {{currentHiddenFromLength}} entries hidden
+                    <div class="slider-container">
+                        <div class="slider"
+                            :style="{ transform: `translateX(calc(${-currentPanelIndex * 540}px + 50% - 810px))` }">
+                            <div class="panel" :class="{ 'center-panel': currentPanelIndex === -1 }">
+                                <div class="ingredients-list">
+                                    <h3>Created by</h3>
+                                    <transition name="slide-right" mode="out-in" v-if="currentFromLength > 0">
+                                        <table :key="currentElement">
+                                            <tr v-for="recipe in currentFrom">
+                                                <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
+                                                    @click="navigateTo(recipe.A);">
+                                                    {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
+                                                </td>
+                                                <td>+</td>
+                                                <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
+                                                    @click="navigateTo(recipe.B);">
+                                                    {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
+                                                </td>
+                                                <td>=</td>
+                                                <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
+                                                    @click="navigateTo(recipe.C);">
+                                                    {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
+                                                </td>
+                                            </tr>
+                                            <tr v-for="recipe in currentHiddenFrom" v-if="showHiddenRecipes">
+                                                <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
+                                                    @click="navigateTo(recipe.A);">
+                                                    {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
+                                                </td>
+                                                <td>+</td>
+                                                <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
+                                                    @click="navigateTo(recipe.B);">
+                                                    {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
+                                                </td>
+                                                <td>=</td>
+                                                <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
+                                                    @click="navigateTo(recipe.C);">
+                                                    {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </transition>
+                                    <div v-else>
+                                        No recipes found
+                                    </div>
+                                    <div v-if="currentHiddenFromLength > 0">
+                                        <div v-if="!showHiddenRecipes" class="text-link"
+                                            @click="showHiddenRecipes = true">
+                                            {{currentHiddenFromLength}} entries hidden
+                                        </div>
+                                        <div v-else class="text-link" @click="showHiddenRecipes = false">
+                                            {{currentHiddenFromLength}} entries shown
+                                        </div>
+                                    </div>
                                 </div>
-                                <div v-else class="text-link" @click="showHiddenRecipes = false">
-                                    {{currentHiddenFromLength}} entries shown
+                            </div>
+                            <div class="panel" :class="{ 'center-panel': currentPanelIndex === 0 }">
+                                <div class="ingredients-list">
+                                    <h3>Crafting Recipe</h3>
+                                    <transition name="slide-right" mode="out-in">
+                                        <div :key="currentElement">
+                                            <table>
+                                                <tr v-for="recipe in craftingTreeData">
+                                                    <td class="item"
+                                                        :class="{'item-used': !saveData.includes(recipe.A)}"
+                                                        @click="navigateTo(recipe.A);">
+                                                        {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
+                                                    </td>
+                                                    <td>+</td>
+                                                    <td class="item"
+                                                        :class="{'item-used': !saveData.includes(recipe.B)}"
+                                                        @click="navigateTo(recipe.B);">
+                                                        {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
+                                                    </td>
+                                                    <td>=</td>
+                                                    <td class="item"
+                                                        :class="{'item-used': !saveData.includes(recipe.C)}"
+                                                        @click="navigateTo(recipe.C);">
+                                                        {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            <div v-if="craftingTreeData.length == 0 && craftingTreeReady">
+                                                <div class="item"
+                                                    :class="{'item-used': !saveData.includes(currentElement)}">
+                                                    {{ data.index[currentElement][0] }}&nbsp;{{
+                                                    data.index[currentElement][1] }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </transition>
+                                </div>
+                            </div>
+                            <div class="panel" :class="{ 'center-panel': currentPanelIndex === 1 }">
+                                <div class="ingredients-list">
+                                    <h3>Used in</h3>
+                                    <transition name="slide-right" mode="out-in" v-if="currentToLength > 0">
+                                        <table :key="currentElement">
+                                            <tr v-for="recipe in currentTo">
+                                                <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
+                                                    @click="navigateTo(recipe.A);">
+                                                    {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
+                                                </td>
+                                                <td>+</td>
+                                                <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
+                                                    @click="navigateTo(recipe.B);">
+                                                    {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
+                                                </td>
+                                                <td>=</td>
+                                                <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
+                                                    @click="navigateTo(recipe.C);">
+                                                    {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
+                                                </td>
+                                            </tr>
+                                            <tr v-for="recipe in currentHiddenTo" v-if="showHiddenRecipes">
+                                                <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
+                                                    @click="navigateTo(recipe.A);">
+                                                    {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
+                                                </td>
+                                                <td>+</td>
+                                                <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
+                                                    @click="navigateTo(recipe.B);">
+                                                    {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
+                                                </td>
+                                                <td>=</td>
+                                                <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
+                                                    @click="navigateTo(recipe.C);">
+                                                    {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </transition>
+                                    <div v-else>
+                                        No recipes found
+                                    </div>
+                                    <div v-if="currentHiddenToLength > 0">
+                                        <div v-if="!showHiddenRecipes" class="text-link"
+                                            @click="showHiddenRecipes = true">
+                                            {{currentHiddenToLength}} entries hidden
+                                        </div>
+                                        <div v-else class="text-link" @click="showHiddenRecipes = false">
+                                            {{currentHiddenToLength}} entries shown
+                                        </div>
+                                    </div>
+                                    <div id="element-scroll-end"></div>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="ingredients-list">
-                            <h3>Used in</h3>
-                            <transition name="slide-right" mode="out-in">
-                                <table :key="currentElement">
-                                    <tr v-for="recipe in currentTo">
-                                        <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
-                                            @click="navigateTo(recipe.A);">
-                                            {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
-                                        </td>
-                                        <td>+</td>
-                                        <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
-                                            @click="navigateTo(recipe.B);">
-                                            {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
-                                        </td>
-                                        <td>=</td>
-                                        <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
-                                            @click="navigateTo(recipe.C);">
-                                            {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
-                                        </td>
-                                    </tr>
-
-                                    <tr v-for="recipe in currentHiddenTo" v-if="showHiddenRecipes">
-                                        <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
-                                            @click="navigateTo(recipe.A);">
-                                            {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
-                                        </td>
-                                        <td>+</td>
-                                        <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
-                                            @click="navigateTo(recipe.B);">
-                                            {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
-                                        </td>
-                                        <td>=</td>
-                                        <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
-                                            @click="navigateTo(recipe.C);">
-                                            {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
-                                        </td>
-                                    </tr>
-                                </table>
-
-                            </transition>
-                            <div v-if="currentHiddenToLength > 0">
-                                <div v-if="!showHiddenRecipes" class="text-link" @click="showHiddenRecipes = true">
-                                    {{currentHiddenToLength}} entries hidden
-                                </div>
-                                <div v-else class="text-link" @click="showHiddenRecipes = false">
-                                    {{currentHiddenToLength}} entries shown
-                                </div>
-                            </div>
-                        </div>
-                        <div id="element-scroll-end"></div>
                     </div>
+                    <transition name="slide-up" mode="out-in">
+                        <div :key=0 class="nav-bar">
+                            <div class="nav-bar-link" :class="{ 'selected-link': currentPanelIndex === -1 }"
+                                @click="currentPanelIndex = -1">
+                                Created By
+                            </div>
+                            <div class="nav-bar-link" :class="{ 'selected-link': currentPanelIndex === 0 }"
+                                @click="currentPanelIndex = 0">
+                                Crafting Recipe
+                            </div>
+                            <div class="nav-bar-link" :class="{ 'selected-link': currentPanelIndex === 1 }"
+                                @click="currentPanelIndex = 1">
+                                Used In
+                            </div>
+                        </div>
+                    </transition>
                 </div>
                 <div key=1 v-else>
                     <div style="display: flex; flex-wrap: wrap; justify-content: center;">
@@ -306,29 +384,31 @@
             return Math.floor(result / 100)
         }
 
-        const DATA_PREFIX = 'data/';
+        const DATA_PREFIX = '/data/';
 
         // Vue app
         const app = new Vue({
             el: '#app',
             data: {
                 data: { index: {}, list: [], costs: {}, data: {}, metadata: { recipeCount: 0, loadedChunks: [] } },
+                craftingTreeData: [],
                 currentElement: "",
                 showHiddenRecipes: false,
                 searchQuery: "",
                 showToast: false,
                 saveData: [],
                 loaded: 1000,
-                loadedElements: 100
+                loadedElements: 100,
+                currentPanelIndex: 0,
+                craftingTreeReady: false,
+                scroll: 0,
             },
             computed: {
                 currentTo: function () {
-                    console.log("(computed) currentTo")
                     this.data.loadedChunks
                     if (!this.data.data[this.currentElement]) {
                         return []
                     }
-                    // console.log(this.data.data[this.currentElement])
                     let result = this.data.data[this.currentElement].to
                         .map(recipe => {
                             return { A: this.currentElement, B: recipe[0], C: recipe[1] }
@@ -336,11 +416,9 @@
                     return result.slice(0, this.loadedElements)
                 },
                 currentFrom: function () {
-                    console.log("(computed) currentFrom")
                     if (!this.data.data[this.currentElement]) {
                         return []
                     }
-                    // console.log(this.data.data[this.currentElement])
                     let result = this.data.data[this.currentElement].from
                         .map(recipe => {
                             return { A: recipe[0], B: recipe[1], C: this.currentElement }
@@ -348,11 +426,9 @@
                     return result.slice(0, this.loadedElements)
                 },
                 currentHiddenTo: function () {
-                    console.log("(computed) currentHiddenTo")
                     if (!this.data.data[this.currentElement]) {
                         return []
                     }
-                    // console.log(this.data.data[this.currentElement])
                     let result = this.data.data[this.currentElement].hiddenTo
                         .map(recipe => {
                             return { A: this.currentElement, B: recipe[0], C: recipe[1] }
@@ -360,7 +436,6 @@
                     return result.slice(0, 100)
                 },
                 currentHiddenFrom: function () {
-                    console.log("(computed) currentHiddenFrom")
                     if (!this.data.data[this.currentElement]) {
                         return []
                     }
@@ -377,39 +452,85 @@
                 currentHiddenToLength: function () {
                     return this.data.data[this.currentElement]?.hiddenTo.length || 0
                 },
+                currentFromLength: function () {
+                    return this.currentFrom.length + (this.data.data[this.currentElement]?.hiddenFrom.length || 0);
+                },
+                currentToLength: function () {
+                    return this.currentTo.length + (this.data.data[this.currentElement]?.hiddenTo.length || 0);
+                },
                 elementList: function () {
-                    console.log("(computed) elementList")
-                    // console.log(this.data.index)
                     let query = this.searchQuery.toLowerCase()
                     return this.data.list.filter(x => x[1].toLowerCase().includes(query)).map(x => x[0]).slice(0, this.loaded)
                 },
                 elementCount: function () {
-                    console.log("(computed) elementCount")
                     return Object.keys(this.data.index).length - 1;
                 },
+                isDefaultElement: function () {
+                    return this.data.costs[this.currentElement] == 1;
+                }
             },
             methods: {
                 navigateTo: function (element) {
-                    if (!this.data.data[element] && element != "") {
-                        this.loadChunk(getChunk(element))
+                    if (element != "") {
+                        if (!this.data.data[element]) {
+                            this.loadChunk(getChunk(element));
+                        }
+                        this.craftingTreeData = [];
+                        this.craftingTreeReady = false;
+                        this.calcCraftingTree(element).then(result => {
+                            this.craftingTreeReady = true;
+                            this.craftingTreeData = result;
+                            setQuery({ e: element });
+                            if (this.currentElement == "") {
+                                this.currentPanelIndex = 0;
+                            }
+                            this.showHiddenRecipes = false;
+                            this.currentElement = element;
+                            this.loaded = 1000;
+                            this.loadedElements = 100;
+                        });
+                    } else {
+                        setQuery({ e: element });
+                        this.currentElement = '';
+                        this.loaded = 1000;
+                        this.loadedElements = 100;
                     }
-                    setQuery({ e: this.currentElement });
-                    this.showHiddenRecipes = false;
-                    this.currentElement = element;
-                    this.loaded = 1000
-                    this.loadedElements = 100
-                    window.scroll({
-                        top: 0, 
-                        left: 0,
-                        behavior: 'smooth' 
-                    });
-                    return this.currentElement ? this.currentElement : "";
+                    this.smoothScrollTo(0);
+                },
+                slideLeft: function () {
+                    this.currentPanelIndex = (this.currentPanelIndex + 3) % 3 - 1;
+                },
+                slideRight: function () {
+                    this.currentPanelIndex = (this.currentPanelIndex + 2) % 3 - 1;
                 },
                 addScrollPage: function () {
                     this.loaded *= 2;
                 },
                 addElementScrollPage: function () {
                     this.loadedElements *= 2;
+                },
+                smoothScrollTo: function (position = 0) {
+                    const duration = 500;
+                    const start = window.pageYOffset;
+                    const startTime = performance.now();
+
+                    const easeInOutQuad = (t, b, c, d) => {
+                        t /= d / 2;
+                        if (t < 1) return c / 2 * t * t + b;
+                        t--;
+                        return -c / 2 * (t * (t - 2) - 1) + b;
+                    };
+
+                    const animateScroll = (currentTime) => {
+                        const timeElapsed = currentTime - startTime;
+                        const run = easeInOutQuad(timeElapsed, start, position - start, duration);
+
+                        window.scrollTo(0, run);
+
+                        if (timeElapsed < duration) requestAnimationFrame(animateScroll);
+                    };
+
+                    requestAnimationFrame(animateScroll);
                 },
                 clearSaveData: function () {
                     this.saveData = [];
@@ -421,14 +542,52 @@
                     }
                     return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
                 },
-                loadChunk: function (chunk) {
-                    fetch(DATA_PREFIX + `chunk-${chunk}.json`)
-                        .then(response => { console.log("Loaded chunk", chunk); return response.json() })
+                loadChunk: async function (chunk) {
+                    return fetch(DATA_PREFIX + `chunk-${chunk}.json`)
+                        .then(response => {
+                            console.log("Loaded chunk", chunk);
+                            return response.json()
+                        })
                         .then(data => {
                             this.data.data = Object.freeze(Object.assign({}, this.data.data, data))
                             this.data.metadata.loadedChunks.push(chunk)
-                            console.log(this.data.data)
-                        })
+                        });
+                },
+                calcCraftingTree: async function (element) {
+                    if (this.data.costs[element] == 1) {
+                        return [];
+                    }
+
+                    let craftingList = [];
+                    let usedElements = new Set();
+                    let result = [];
+                    craftingList.push(element);
+
+                    while (craftingList.length > 0) {
+                        let thisElement = craftingList.shift();
+                        if (usedElements.has(thisElement)) {
+                            continue;
+                        }
+                        usedElements.add(thisElement);
+
+                        if (!this.data.data[thisElement] && thisElement != "") {
+                            await this.loadChunk(getChunk(thisElement));
+                        }
+
+                        let left = this.data.data[thisElement].from[0][0];
+                        let right = this.data.data[thisElement].from[0][1];
+
+                        result.unshift({ A: left, B: right, C: thisElement });
+
+                        if (this.data.costs[left] != 1) {
+                            craftingList.push(left);
+                        }
+
+                        if (this.data.costs[right] != 1) {
+                            craftingList.push(right);
+                        }
+                    }
+                    return result.toReversed();
                 }
             },
             mounted() {
@@ -454,6 +613,7 @@
                     .catch(error => {
                         console.error('Error loading recipes:', error);
                     });
+
                 fetch(DATA_PREFIX + 'metadata.json')
                     .then(response => { console.log(response); return response.json() })
                     .then(metadata => {
@@ -462,36 +622,51 @@
                     .catch(error => {
                         console.error('Error loading metadata:', error);
                     });
-                addEventListener("popstate", (event) => this.currentElement = getQuery().e || "");
+
+                addEventListener("popstate", (event) => this.navigateTo(getQuery().e || ""));
+                this.navigateTo(getQuery().e || "");
                 this.saveData = (getQuery().s || localStorage.getItem("saveData") || "").split(",").filter(x => x)
                 localStorage.setItem("saveData", this.saveData.join(","))
-                setQuery({ s: "" })
-                document.addEventListener("scroll", function (event) {
+
+                document.addEventListener("scroll", (event) => {
+                    this.scroll = window.pageYOffset;
+
+                    // For main body lazy scrolling
                     var lastDiv = document.querySelector("#scroll-end");
-                    if (!lastDiv) return;
-                    var lastDivOffset = lastDiv.offsetTop + lastDiv.clientHeight;
-                    var pageOffset = window.pageYOffset + window.innerHeight;
-
-                    if (pageOffset > lastDivOffset - 20) {
-                        app.addScrollPage();
+                    if (lastDiv) {
+                        var lastDivOffset = lastDiv.offsetTop + lastDiv.clientHeight;
+                        var pageOffset = window.pageYOffset + window.innerHeight;
+    
+                        if (pageOffset > lastDivOffset - 20) {
+                            app.addScrollPage();
+                        }
                     }
-                });
 
-                document.addEventListener("scroll", function (event) {
+                    // For specific element lazy scrolling
                     var lastDiv = document.querySelector("#element-scroll-end");
-                    if (!lastDiv) return;
-                    var lastDivOffset = lastDiv.offsetTop + lastDiv.clientHeight;
-                    var pageOffset = window.pageYOffset + window.innerHeight;
-
-                    if (pageOffset > lastDivOffset - 20) {
-                        app.addElementScrollPage();
+                    if (lastDiv) {
+                        var lastDivOffset = lastDiv.offsetTop + lastDiv.clientHeight;
+                        var pageOffset = window.pageYOffset + window.innerHeight;
+    
+                        if (pageOffset > lastDivOffset - 20) {
+                            app.addElementScrollPage();
+                        }
                     }
                 });
 
-                // Preload initial chunks
-                for (let i = 0; i < 10; i++){
-                    this.loadChunk(i)
-                }
+                document.addEventListener("wheel", (event) => {
+                    window.lastScrollTime ??= Date.now();
+                    if (this.currentElement && window.lastScrollTime + 200 < Date.now()){
+                        if (event.deltaX > 15) {
+                            this.slideRight()
+                        }
+                        if (event.deltaX < -15) {
+                            this.slideLeft()
+                        }
+                        window.lastScrollTime = Date.now();
+                    }
+                });
+
             }
         });
     </script>
