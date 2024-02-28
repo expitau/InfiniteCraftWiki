@@ -245,20 +245,22 @@
                             </div>
                         </div>
                     </div>
-                    <div class="nav-bar">
-                        <div class="nav-bar-link" :class="{ 'selected-link': currentPanelIndex === -1 }"
-                            @click="currentPanelIndex = -1">
-                            Created By
+                    <transition name="slide-up" mode="out-in">
+                        <div :key=0 class="nav-bar">
+                            <div class="nav-bar-link" :class="{ 'selected-link': currentPanelIndex === -1 }"
+                                @click="currentPanelIndex = -1">
+                                Created By
+                            </div>
+                            <div class="nav-bar-link" :class="{ 'selected-link': currentPanelIndex === 0 }"
+                                @click="currentPanelIndex = 0">
+                                Crafting Recipe
+                            </div>
+                            <div class="nav-bar-link" :class="{ 'selected-link': currentPanelIndex === 1 }"
+                                @click="currentPanelIndex = 1">
+                                Used In
+                            </div>
                         </div>
-                        <div class="nav-bar-link" :class="{ 'selected-link': currentPanelIndex === 0 }"
-                            @click="currentPanelIndex = 0">
-                            Crafting Recipe
-                        </div>
-                        <div class="nav-bar-link" :class="{ 'selected-link': currentPanelIndex === 1 }"
-                            @click="currentPanelIndex = 1">
-                            Used In
-                        </div>
-                    </div>
+                    </transition>
                 </div>
                 <div key=1 v-else>
                     <div style="display: flex; flex-wrap: wrap; justify-content: center;">
