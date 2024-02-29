@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Helper</title>
+</head>
+
+<body>
+   <script>
+      // Request local storage from bookmarklet on Infinite Craft
+      window.parent.postMessage('requestLocalStorage', 'https://neal.fun');
+
+      // Add event listener for reciving local storage from Infinite Craft
+      window.addEventListener('message', function (event) {
+         fetch(`https://raw.githubusercontent.com/expitau/InfiniteCraftWiki/main/web/data/index.json`)
+            .then(res => res.json())
+            .then(data => {
+               index = Object.fromEntries(Object.entries(data).map(x => [x[1][1], x[0]]));
+               let redirectTo = window.location.host == 'expitau.github.io' ? 'https://expitau.github.io/InfiniteCraftWiki' : `http://${window.location.host}/web/index.html`;
+               window.parent.location.href = `${redirectTo}?s=${JSON.parse(event.data).elements.map(a => index[a.text]).filter(x => x).join(",")}`;
+            });
+      }, false);
+   </script>
+</body>
+
+</html>

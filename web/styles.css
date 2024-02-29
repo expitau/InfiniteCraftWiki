@@ -28,7 +28,8 @@ body {
 }
 
 .showUnavailableElements .item.item-used {
-    filter: brightness(50%)
+    filter: brightness(0.9);
+    border-color: #ff6161;
 }
 
 .visibility-toggle {
@@ -161,9 +162,6 @@ body {
 }
 
 @media (max-width: 1000px) {
-    .toast-body {
-        text-align: center;
-    }
     .github-link-text {
         display: none
     }
@@ -278,9 +276,83 @@ body {
 }
 
 .selected-link {
-    color:#ffffff;
+    color: #ffffff;
     font-weight: bold;
     border-bottom: 3px solid #347d39;
+}
+
+.button {
+    transition: all 0.05s;
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: transparent;
+	outline: solid 1px grey;
+    color: dimgrey;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 5px;
+    margin: 20px;
+    cursor: pointer;
+}
+
+.button:hover {
+    outline: solid 1px #d6d6d6;
+    color: #d6d6d6;
+}
+
+.draggable {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #347d39;
+    color: #FFFFFF;
+    text-decoration: none;
+    border-radius: 5px;
+    cursor: move !important;
+    width: fit-content;
+}
+
+.dragging {
+    opacity: 0.001;
+}
+
+.draggable-wrapper {
+    overflow: visible;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    outline: 2px solid transparent;
+    display: inline-block;
+    width: fit-content;
+    border-radius: 5px;
+    padding: 0px;
+    margin: 20px;
+}
+
+.show-outline {
+    outline: 2px dotted #c7d5e580;
+}
+
+@keyframes shake {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(-4deg);
+    }
+
+    75% {
+        transform: rotate(4deg);
+    }
+
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+.shake {
+    animation: shake 0.25s ease-in-out;
+    cursor: not-allowed !important;
 }
 
 @media (min-width: 1000px) {
