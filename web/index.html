@@ -27,10 +27,10 @@
 
 <body>
     <div id="app">
-        <div id="container" :class="{'showUnavailableElements': saveData.length > 0}">
+        <div id="container" :class="{'showUnavailableElements': saveData.size != 0}">
             <button
                 style="background-color: #347d39; color:#c6c7c7; text-decoration: none; border-radius: 0.5rem; padding: 0.5rem 1rem; cursor: pointer;  border: none; position: absolute; top: 0; right: 0; margin: 1rem"
-                @click="clearSaveData()" v-if="saveData.length > 0">
+                @click="clearSaveData()" v-if="saveData.size != 0">
                 Clear save data
             </button>
 
@@ -153,33 +153,33 @@
                                     <transition name="slide-right" mode="out-in" v-if="currentFromLength > 0">
                                         <table :key="currentElement">
                                             <tr v-for="recipe in currentFrom">
-                                                <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
+                                                <td class="item" :class="{'item-used': !saveData.has(recipe.A)}"
                                                     @click="navigateTo(recipe.A);">
                                                     {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
                                                 </td>
                                                 <td>+</td>
-                                                <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
+                                                <td class="item" :class="{'item-used': !saveData.has(recipe.B)}"
                                                     @click="navigateTo(recipe.B);">
                                                     {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
                                                 </td>
                                                 <td>=</td>
-                                                <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
+                                                <td class="item" :class="{'item-used': !saveData.has(recipe.C)}"
                                                     @click="navigateTo(recipe.C);">
                                                     {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
                                                 </td>
                                             </tr>
                                             <tr v-for="recipe in currentHiddenFrom" v-if="showHiddenRecipes">
-                                                <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
+                                                <td class="item" :class="{'item-used': !saveData.has(recipe.A)}"
                                                     @click="navigateTo(recipe.A);">
                                                     {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
                                                 </td>
                                                 <td>+</td>
-                                                <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
+                                                <td class="item" :class="{'item-used': !saveData.has(recipe.B)}"
                                                     @click="navigateTo(recipe.B);">
                                                     {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
                                                 </td>
                                                 <td>=</td>
-                                                <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
+                                                <td class="item" :class="{'item-used': !saveData.has(recipe.C)}"
                                                     @click="navigateTo(recipe.C);">
                                                     {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
                                                 </td>
@@ -206,35 +206,31 @@
                                     <transition name="slide-right" mode="out-in">
                                         <div :key="currentElement">
                                             <table>
-                                                <tr v-for="recipe in craftingTree">
-                                                    <td class="item"
-                                                        :class="{'item-used': !saveData.includes(recipe.A)}"
+                                                <tr v-for="recipe in craftingTreeData">
+                                                    <td class="item" :class="{'item-used': !saveData.has(recipe.A)}"
                                                         @click="navigateTo(recipe.A);">
                                                         {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
                                                     </td>
                                                     <td>+</td>
-                                                    <td class="item"
-                                                        :class="{'item-used': !saveData.includes(recipe.B)}"
+                                                    <td class="item" :class="{'item-used': !saveData.has(recipe.B)}"
                                                         @click="navigateTo(recipe.B);">
                                                         {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
                                                     </td>
                                                     <td>=</td>
-                                                    <td class="item"
-                                                        :class="{'item-used': !saveData.includes(recipe.C)}"
+                                                    <td class="item" :class="{'item-used': !saveData.has(recipe.C)}"
                                                         @click="navigateTo(recipe.C);">
                                                         {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
                                                     </td>
                                                 </tr>
                                             </table>
-                                            <div v-if="craftingTree.length == 0">
-                                                <div class="item"
-                                                    :class="{'item-used': !saveData.includes(currentElement)}">
+                                            <div v-if="craftingTreeData.length == 0">
+                                                <div class="item" :class="{'item-used': !saveData.has(currentElement)}">
                                                     {{ data.index[currentElement][0] }}&nbsp;{{
                                                     data.index[currentElement][1] }}
                                                 </div>
                                             </div>
-                                            <div v-if="!isMobile && saveData.length === 0 && craftingTree.length > 1" class="button"
-                                                @click="showImportToast=true">
+                                            <div v-if="!isMobile && saveData.size == 0 && craftingTreeData.length > 1"
+                                                class="button" @click="showImportToast=true">
                                                 Use your existing elements
                                             </div>
                                         </div>
@@ -247,33 +243,33 @@
                                     <transition name="slide-right" mode="out-in" v-if="currentToLength > 0">
                                         <table :key="currentElement">
                                             <tr v-for="recipe in currentTo">
-                                                <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
+                                                <td class="item" :class="{'item-used': !saveData.has(recipe.A)}"
                                                     @click="navigateTo(recipe.A);">
                                                     {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
                                                 </td>
                                                 <td>+</td>
-                                                <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
+                                                <td class="item" :class="{'item-used': !saveData.has(recipe.B)}"
                                                     @click="navigateTo(recipe.B);">
                                                     {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
                                                 </td>
                                                 <td>=</td>
-                                                <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
+                                                <td class="item" :class="{'item-used': !saveData.has(recipe.C)}"
                                                     @click="navigateTo(recipe.C);">
                                                     {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
                                                 </td>
                                             </tr>
                                             <tr v-for="recipe in currentHiddenTo" v-if="showHiddenRecipes">
-                                                <td class="item" :class="{'item-used': !saveData.includes(recipe.A)}"
+                                                <td class="item" :class="{'item-used': !saveData.has(recipe.A)}"
                                                     @click="navigateTo(recipe.A);">
                                                     {{ data.index[recipe.A][0] }}&nbsp;{{ data.index[recipe.A][1] }}
                                                 </td>
                                                 <td>+</td>
-                                                <td class="item" :class="{'item-used': !saveData.includes(recipe.B)}"
+                                                <td class="item" :class="{'item-used': !saveData.has(recipe.B)}"
                                                     @click="navigateTo(recipe.B);">
                                                     {{ data.index[recipe.B][0] }}&nbsp;{{ data.index[recipe.B][1] }}
                                                 </td>
                                                 <td>=</td>
-                                                <td class="item" :class="{'item-used': !saveData.includes(recipe.C)}"
+                                                <td class="item" :class="{'item-used': !saveData.has(recipe.C)}"
                                                     @click="navigateTo(recipe.C);">
                                                     {{ data.index[recipe.C][0] }}&nbsp;{{ data.index[recipe.C][1] }}
                                                 </td>
@@ -318,8 +314,8 @@
                     <div style="display: flex; flex-wrap: wrap; justify-content: center;">
                         <div v-if="Object.keys(data.index).length == 0" style="font-weight: bold; padding-top: 5px;">
                             Loading data...</div>
-                        <div class="item" :class="{'item-used': !saveData.includes(element)}"
-                            v-for="element in elementList" @click="navigateTo(element)">
+                        <div class="item" :class="{'item-used': !saveData.has(element)}" v-for="element in elementList"
+                            @click="navigateTo(element)">
                             {{ data.index[element][0] }}&nbsp;{{ data.index[element][1] }}
                         </div>
                     </div>
@@ -366,12 +362,15 @@
         }
 
         const DATA_PREFIX = window.location.host == 'expitau.github.io' ? '/data/' : 'data/';
+        const HELPER_URL = window.location.host == 'expitau.github.io' ? 'https://expitau.github.io/InfiniteCraftWiki/helper' : 'http://127.0.0.1:5501/web/helper.html';
 
         // Vue app
         const app = new Vue({
             el: '#app',
             data: {
                 data: { index: {}, list: [], costs: {}, craftingCache: {}, data: {}, metadata: { recipeCount: 0, loadedChunks: [] } },
+                craftingTreeData: [],
+                craftingTreeReady: false,
                 bookmarkletData: "",
                 currentElement: "",
                 showHiddenRecipes: false,
@@ -443,43 +442,6 @@
                     let query = this.searchQuery.toLowerCase()
                     return this.data.list.filter(x => x[1].toLowerCase().includes(query)).map(x => x[0]).slice(0, this.loaded)
                 },
-                craftingTree: function () {
-                    if (this.currentElement == "" || !this.data.data[this.currentElement]) {
-                        return [];
-                    }
-                    if (this.data.costs[this.currentElement] == 1) {
-                        return [];
-                    }
-
-                    let craftingList = [];
-                    let usedElements = new Set();
-                    let result = [];
-                    craftingList.push(this.currentElement);
-
-                    while (craftingList.length > 0) {
-                        let thisElement = craftingList.shift();
-                        if (usedElements.has(thisElement)) {
-                            continue;
-                        }
-                        usedElements.add(thisElement);
-
-                        if (Object.keys(this.data.craftingCache).length == 0 || !this.data.craftingCache[thisElement]) {
-                            return []
-                        }
-                        let [left, right] = this.data.craftingCache[thisElement]
-
-                        result.unshift({ A: left, B: right, C: thisElement });
-
-                        if (this.data.costs[left] != 1) {
-                            craftingList.push(left);
-                        }
-
-                        if (this.data.costs[right] != 1) {
-                            craftingList.push(right);
-                        }
-                    }
-                    return result
-                },
                 elementCount: function () {
                     return Object.keys(this.data.index).length - 1;
                 },
@@ -488,7 +450,7 @@
                 },
                 isMobile: function () {
                     return (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
-                }
+                },
             },
             methods: {
                 navigateTo: function (element) {
@@ -496,20 +458,22 @@
                         if (!this.data.data[element]) {
                             this.loadChunk(getChunk(element));
                         }
-                        setQuery({ e: element });
+                        this.craftingTreeData = [];
+                        this.craftingTreeReady = false;
+                        this.calcCraftingTree(element).then(result => {
+                            this.craftingTreeReady = true;
+                            this.craftingTreeData = result;
+                        });
                         if (this.currentElement == "") {
                             this.currentPanelIndex = 0;
                         }
                         this.showHiddenRecipes = false;
-                        this.currentElement = element;
-                        this.loaded = 1000;
-                        this.loadedElements = 100;
-                    } else {
-                        setQuery({ e: element });
-                        this.currentElement = '';
-                        this.loaded = 1000;
-                        this.loadedElements = 100;
                     }
+                    this.currentElement = element;
+                    this.loaded = 1000;
+                    this.loadedElements = 100;
+                    setQuery({ e: element });
+                    localStorage.setItem("lastElement", element);
                     this.smoothScrollTo(0);
                 },
                 slideLeft: function () {
@@ -548,7 +512,7 @@
                     requestAnimationFrame(animateScroll);
                 },
                 clearSaveData: function () {
-                    this.saveData = [];
+                    this.saveData = new Set();
                     localStorage.setItem("saveData", "");
                 },
                 dragStart() {
@@ -570,6 +534,57 @@
                     }
                     return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
                 },
+                calcCraftingTree: async function (element) {
+                    if (this.data.costs[element] == 1) {
+                        return [];
+                    }
+                    let craftingList = [];
+                    let usedElements = new Set();
+                    let result = [];
+                    craftingList.push(element);
+                    while (craftingList.length > 0) {
+                        let thisElement = craftingList.shift();
+                        if (usedElements.has(thisElement)) {
+                            continue;
+                        }
+                        usedElements.add(thisElement);
+                        let left, right;
+                        if (this.saveData.size == 0) {
+                            [left, right] = this.data.craftingCache[thisElement];
+                        } else {
+                            if (!this.data.data[thisElement] && thisElement != "") {
+                                await this.loadChunk(getChunk(thisElement));
+                            }
+                            let fromIndex = 0;
+                            for (let i = 0; i < this.data.data[thisElement].from.length; i++) {
+                                if (this.saveData.has(this.data.data[thisElement].from[i][0])) {
+                                    if (this.saveData.has(this.data.data[thisElement].from[i][1])) {
+                                        fromIndex = i;
+                                        break;
+                                    }
+                                    if (!usedElements.has(this.data.data[thisElement].from[i][1])) {
+                                        fromIndex = i;
+                                        break;
+                                    }
+                                } else if (this.saveData.has(this.data.data[thisElement].from[i][1])) {
+                                    if (!usedElements.has(this.data.data[thisElement].from[i][0])) {
+                                        fromIndex = i;
+                                        break;
+                                    }
+                                }
+                            }
+                            [left, right] = this.data.data[thisElement].from[fromIndex];
+                        }
+                        result.unshift({ A: left, B: right, C: thisElement });
+                        if (this.data.costs[left] != 1 && !this.saveData.has(left)) {
+                            craftingList.unshift(left);
+                        }
+                        if (this.data.costs[right] != 1 && !this.saveData.has(right)) {
+                            craftingList.unshift(right);
+                        }
+                    }
+                    return result;
+                },
                 loadChunk: async function (chunk) {
                     return fetch(DATA_PREFIX + `chunk-${chunk}.json`)
                         .then(response => {
@@ -583,12 +598,20 @@
                                 if (from == "") {
                                     from = []
                                 } else {
-                                    from = from.split(sep2).map(x => x.split(sep3))
+                                    from = from.split(sep2).map(x => x.split(sep3));
+                                    if (this.saveData.size != 0) {
+                                        from = from.sort((a, b) => (+this.saveData.has(b[0])) + (+this.saveData.has(b[1]))
+                                            - (+this.saveData.has(a[0])) - (+this.saveData.has(a[1])));
+                                    }
                                 }
                                 if (to == "") {
                                     to = []
                                 } else {
-                                    to = to.split(sep2).map(x => x.split(sep3))
+                                    to = to.split(sep2).map(x => x.split(sep3));
+                                    if (this.saveData.size != 0) {
+                                        to = to.sort((a, b) => (+this.saveData.has(b[0])) + (+this.saveData.has(a[1])) * 2
+                                            - (+this.saveData.has(b[1])) * 2 - (+this.saveData.has(a[0])));
+                                    }
                                 }
                                 if (hiddenFrom == "") {
                                     hiddenFrom = []
@@ -628,7 +651,7 @@
                         this.data.list = Object.freeze(Object.entries(index).sort((a, b) => a[1][2] - b[1][2]).filter(x => x[1][1] != "Nothing").map(x => [x[0], x[1][1]]))
                         this.data.costs = Object.freeze(Object.fromEntries(Object.entries(index).map(x => [x[0], x[1][2]])))
 
-                        this.navigateTo(getQuery().e || "");
+                        this.navigateTo(getQuery().e || (document.referrer === HELPER_URL ? localStorage.getItem("lastElement") : "") || "");
                     })
                     .catch(error => {
                         console.error('Error loading recipes:', error);
@@ -646,21 +669,17 @@
                 fetch('bookmarklet.js')
                     .then(response => { return response.text() })
                     .then(bookmarkletText => {
-                        this.bookmarkletData = bookmarkletText.replace(
-                            'HELPER_URL',
-                            window.location.host == 'expitau.github.io' ?
-                                'https://expitau.github.io/InfiniteCraftWiki/helper' :
-                                'http://127.0.0.1:5501/web/helper.html'
-                        );
+                        this.bookmarkletData = bookmarkletText.replace('HELPER_URL', HELPER_URL);
                     })
                     .catch(error => {
                         console.error('Error loading bookmarklet:', error);
                     });
 
                 addEventListener("popstate", (event) => this.navigateTo(getQuery().e || ""));
-                this.saveData = (getQuery().s || localStorage.getItem("saveData") || "").split(",").filter(x => x);
-                setQuery({'s': ''})
-                localStorage.setItem("saveData", this.saveData.join(","));
+                var savaDataArray = (getQuery().s || localStorage.getItem("saveData") || "").split(",").filter(x => x);
+                setQuery({ s: '' })
+                this.saveData = new Set(savaDataArray);
+                localStorage.setItem("saveData", savaDataArray.join(","));
 
                 document.addEventListener("scroll", (event) => {
                     this.scroll = window.pageYOffset;
@@ -701,6 +720,10 @@
                     }
                 });
 
+                // Preload initial chunks
+                for (let i = 0; i < 10; i++){
+                    this.loadChunk(i)
+                }
             }
         });
     </script>
