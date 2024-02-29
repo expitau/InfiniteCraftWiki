@@ -65,7 +65,7 @@ function getCosts(data) {
 // Convert a number to base 64
 function toBase64(n) {
     n = n + 1
-    let base64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+'
+    let base64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-='
     let result = ''
     while (n > 0) {
         result = base64[n % 64] + result
