@@ -159,7 +159,14 @@ async function main() {
             data.attempted.splice(i, 1)
             i--
         }
+        if (A == "20" || B == "20" || C == "20" || A == "000 Leagues Under the Sea" || B == "000 Leagues Under the Sea" || C == "000 Leagues Under the Sea") {
+            console.log(data.attempted[i])
+            data.attempted.splice(i, 1)
+            i--
+        }
     }
+
+
 
     save(data.attempted, data.costs, data.icons)
 }
