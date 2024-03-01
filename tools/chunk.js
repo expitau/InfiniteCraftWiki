@@ -79,14 +79,10 @@ function getChunk(value) {
 }
 
 async function main() {
-    let attempted = []
-    let icons = { "Water": "💧", "Fire": "🔥", "Wind": "🌬️", "Earth": "🌍" }
-    let costs = { "Water": 1, "Fire": 1, "Wind": 1, "Earth": 1 }
-
     fileContents = fs.readFileSync('web/data/data.json', 'utf8');
-    parsedData = JSON.parse(fileContents);
+    rawData = JSON.parse(fileContents);
 
-    let data = generateData(parsedData)
+    let data = generateData(rawData)
     let chunks = Object.groupBy(Object.entries(data.data), x => getChunk(x[0]))
     for (let key of Object.keys(chunks)) {
         let value = chunks[key].map(e => {
