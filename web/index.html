@@ -353,7 +353,7 @@
 
         // Decode base64 value mod 1000
         function getChunk(value) {
-            let base64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+'
+            let base64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-='
             let result = 0
             for (let i = 0; i < value.length; i++) {
                 result = (result * 64 + base64.indexOf(value[i]))
@@ -586,13 +586,13 @@
                     return result;
                 },
                 loadChunk: async function (chunk) {
-                    return fetch(DATA_PREFIX + `chunk-${chunk}.json`)
+                    return fetch(DATA_PREFIX + `chunks/chunk-${chunk}.json`)
                         .then(response => {
                             console.log("Loaded chunk", chunk);
                             return response.json()
                         })
                         .then(data => {
-                            [sep1, sep2, sep3] = ["::c", "::b", "::a"]
+                            let [sep1, sep2, sep3] = [":3", ":2", ":1"]
                             chunkData = Object.fromEntries(Object.entries(data).map(x => {
                                 let [from, to, hiddenFrom, hiddenTo] = x[1].split(sep1)
                                 if (from == "") {

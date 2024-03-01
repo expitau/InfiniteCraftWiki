@@ -70,7 +70,7 @@ function generateData(raw) {
 
 // Decode base64 value mod 1000
 function getChunk(value) {
-    let base64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+'
+    let base64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-='
     let result = 0
     for (let i = 0; i < value.length; i++) {
         result = (result * 64 + base64.indexOf(value[i]))
@@ -99,7 +99,7 @@ async function main() {
             let hiddenFrom = e[1].from.map(x => data.costs[x[1]] > data.costs[x[0]] ? [x[1], x[0]] : [x[0], x[1]]).filter(x => !(x[0] != currentElement && x[1] != currentElement && data.index[currentElement][1] != 'Nothing')).sort((a, b) => compareRecipes({ A: a[0], B: a[1], C: currentElement }, { A: b[0], B: b[1], C: currentElement }, data))
             // console.log("Processing hidden to")
             let hiddenTo = e[1].to.filter(x => !(currentElement != x[1] && x[0] != x[1] && data.index[x[1]][1] != 'Nothing')).sort((a, b) => compareRecipes({ A: currentElement, B: a[0], C: a[1] }, { A: currentElement, B: b[0], C: b[1] }, data))
-            return [e[0], `${from.map(x => x.join("::a")).join("::b")}::c${to.map(x => x.join("::a")).join("::b")}::c${hiddenFrom.map(x => x.join("::a")).join("::b")}::c${hiddenTo.map(x => x.join("::a")).join("::b")}`]
+            return [e[0], `${from.map(x => x.join(":1")).join(":2")}:3${to.map(x => x.join(":1")).join(":2")}:3${hiddenFrom.map(x => x.join(":1")).join(":2")}:3${hiddenTo.map(x => x.join(":1")).join(":2")}`]
         })
         // .map(x =>
         //     [x[0], {
@@ -119,7 +119,8 @@ async function main() {
         //             hiddenFrom: [],
         //             hiddenTo: []
         //         }])
-        fs.writeFileSync('web/data/chunk-' + key + '.json', JSON.stringify(Object.fromEntries(value)), 'utf8');
+        fs.writeFileSync('web/data/chunks/chunk-' + key + '.json', JSON.stringify(Object.fromEntries(value)), 'utf8');
+        console.log("Wrote chunk", key)
     }
     data.index = Object.fromEntries(Object.entries(data.index).map(e => {
         return [e[0], [e[1][0], e[1][1], e[1][2], data.data[e[0]].from[0][0], data.data[e[0]].from[0][1]]]
