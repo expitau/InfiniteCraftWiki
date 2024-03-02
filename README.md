@@ -41,4 +41,4 @@ See [data.json](web/data/data.json) for the current data, and the bottom of [ind
 ## Acknowledgements
 - [Neal Agarwal](https://neal.fun/) for creating Infinite Craft
 - [Reu Zuidema](https://github.com/reumarks) For various contributions and PRs
-- [fan87](https://github.com/fan87) For providing an additional dataset
+- [fan87](https://github.com/fan87) and [Jcw87](https://github.com/Jcw87) for providing additional datasets
