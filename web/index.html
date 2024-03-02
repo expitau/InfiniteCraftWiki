@@ -50,7 +50,7 @@
                 <div class="github-link-text">Star my repo!</div>
             </a>
 
-            <div class="github-link" style="position: absolute; top: 40px; right: 40px" @click="showSettingsToast=true"
+            <div v-if="!isMobile" class="github-link" style="position: absolute; top: 40px; right: 40px" @click="showSettingsToast=true"
                 target="_blank">
                 <div class="github-link-text">Settings</div>
                 <span class="sr-only">Settings</span>
@@ -138,7 +138,7 @@
                 <div class="toast" v-if="showSettingsToast">
                     <div class="toast-body">
                         <h2 style="margin-top: 0px; text-align: center;">Settings</h2>
-                        <div v-if="!isMobile" class="button"
+                        <div class="button"
                             style="background-color: #347d39; color:white; outline:none; margin-bottom: 0px;"
                             @click="showImportToast=true; showSettingsToast=false">
                             Import your Infinite Craft elements
