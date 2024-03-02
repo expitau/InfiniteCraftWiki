@@ -189,21 +189,21 @@
                                                         <tr v-for="recipe in currentFrom">
                                                             <td class="item"
                                                                 :class="{'item-used': !saveData.has(recipe.A)}"
-                                                                @click="navigateTo(recipe.A);">
+                                                                @click="navigateTo(recipe.A);" @mouseover="loadChunk(getChunk(recipe.A))">
                                                                 {{ data.index[recipe.A][0] }}&nbsp;{{
                                                                 data.index[recipe.A][1] }}
                                                             </td>
                                                             <td>+</td>
                                                             <td class="item"
                                                                 :class="{'item-used': !saveData.has(recipe.B)}"
-                                                                @click="navigateTo(recipe.B);">
+                                                                @click="navigateTo(recipe.B);" @mouseover="loadChunk(getChunk(recipe.B))">
                                                                 {{ data.index[recipe.B][0] }}&nbsp;{{
                                                                 data.index[recipe.B][1] }}
                                                             </td>
                                                             <td>=</td>
                                                             <td class="item"
                                                                 :class="{'item-used': !saveData.has(recipe.C)}"
-                                                                @click="navigateTo(recipe.C);">
+                                                                @click="navigateTo(recipe.C);" @mouseover="loadChunk(getChunk(recipe.C))">
                                                                 {{ data.index[recipe.C][0] }}&nbsp;{{
                                                                 data.index[recipe.C][1] }}
                                                             </td>
@@ -212,21 +212,21 @@
                                                             v-if="showHiddenRecipes">
                                                             <td class="item"
                                                                 :class="{'item-used': !saveData.has(recipe.A)}"
-                                                                @click="navigateTo(recipe.A);">
+                                                                @click="navigateTo(recipe.A);" @mouseover="loadChunk(getChunk(recipe.A))">
                                                                 {{ data.index[recipe.A][0] }}&nbsp;{{
                                                                 data.index[recipe.A][1] }}
                                                             </td>
                                                             <td>+</td>
                                                             <td class="item"
                                                                 :class="{'item-used': !saveData.has(recipe.B)}"
-                                                                @click="navigateTo(recipe.B);">
+                                                                @click="navigateTo(recipe.B);" @mouseover="loadChunk(getChunk(recipe.B))">
                                                                 {{ data.index[recipe.B][0] }}&nbsp;{{
                                                                 data.index[recipe.B][1] }}
                                                             </td>
                                                             <td>=</td>
                                                             <td class="item"
                                                                 :class="{'item-used': !saveData.has(recipe.C)}"
-                                                                @click="navigateTo(recipe.C);">
+                                                                @click="navigateTo(recipe.C);" @mouseover="loadChunk(getChunk(recipe.C))">
                                                                 {{ data.index[recipe.C][0] }}&nbsp;{{
                                                                 data.index[recipe.C][1] }}
                                                             </td>
@@ -273,21 +273,21 @@
                                                             <tr v-for="recipe in craftingTreeData">
                                                                 <td class="item"
                                                                     :class="{'item-used': !saveData.has(recipe.A)}"
-                                                                    @click="navigateTo(recipe.A);">
+                                                                    @click="navigateTo(recipe.A);" @mouseover="loadChunk(getChunk(recipe.A))">
                                                                     {{ data.index[recipe.A][0] }}&nbsp;{{
                                                                     data.index[recipe.A][1] }}
                                                                 </td>
                                                                 <td>+</td>
                                                                 <td class="item"
                                                                     :class="{'item-used': !saveData.has(recipe.B)}"
-                                                                    @click="navigateTo(recipe.B);">
+                                                                    @click="navigateTo(recipe.B);" @mouseover="loadChunk(getChunk(recipe.B))">
                                                                     {{ data.index[recipe.B][0] }}&nbsp;{{
                                                                     data.index[recipe.B][1] }}
                                                                 </td>
                                                                 <td>=</td>
                                                                 <td class="item"
                                                                     :class="{'item-used': !saveData.has(recipe.C)}"
-                                                                    @click="navigateTo(recipe.C);">
+                                                                    @click="navigateTo(recipe.C);" @mouseover="loadChunk(getChunk(recipe.C))">
                                                                     {{ data.index[recipe.C][0] }}&nbsp;{{
                                                                     data.index[recipe.C][1] }}
                                                                 </td>
@@ -330,21 +330,21 @@
                                                         <tr v-for="recipe in currentTo">
                                                             <td class="item"
                                                                 :class="{'item-used': !saveData.has(recipe.A)}"
-                                                                @click="navigateTo(recipe.A);">
+                                                                @click="navigateTo(recipe.A);" @mouseover="loadChunk(getChunk(recipe.A))">
                                                                 {{ data.index[recipe.A][0] }}&nbsp;{{
                                                                 data.index[recipe.A][1] }}
                                                             </td>
                                                             <td>+</td>
                                                             <td class="item"
                                                                 :class="{'item-used': !saveData.has(recipe.B)}"
-                                                                @click="navigateTo(recipe.B);">
+                                                                @click="navigateTo(recipe.B);" @mouseover="loadChunk(getChunk(recipe.B))">
                                                                 {{ data.index[recipe.B][0] }}&nbsp;{{
                                                                 data.index[recipe.B][1] }}
                                                             </td>
                                                             <td>=</td>
                                                             <td class="item"
                                                                 :class="{'item-used': !saveData.has(recipe.C)}"
-                                                                @click="navigateTo(recipe.C);">
+                                                                @click="navigateTo(recipe.C);" @mouseover="loadChunk(getChunk(recipe.C))">
                                                                 {{ data.index[recipe.C][0] }}&nbsp;{{
                                                                 data.index[recipe.C][1] }}
                                                             </td>
@@ -352,21 +352,21 @@
                                                         <tr v-for="recipe in currentHiddenTo" v-if="showHiddenRecipes">
                                                             <td class="item"
                                                                 :class="{'item-used': !saveData.has(recipe.A)}"
-                                                                @click="navigateTo(recipe.A);">
+                                                                @click="navigateTo(recipe.A);" @mouseover="loadChunk(getChunk(recipe.A))">
                                                                 {{ data.index[recipe.A][0] }}&nbsp;{{
                                                                 data.index[recipe.A][1] }}
                                                             </td>
                                                             <td>+</td>
                                                             <td class="item"
                                                                 :class="{'item-used': !saveData.has(recipe.B)}"
-                                                                @click="navigateTo(recipe.B);">
+                                                                @click="navigateTo(recipe.B);" @mouseover="loadChunk(getChunk(recipe.B))">
                                                                 {{ data.index[recipe.B][0] }}&nbsp;{{
                                                                 data.index[recipe.B][1] }}
                                                             </td>
                                                             <td>=</td>
                                                             <td class="item"
                                                                 :class="{'item-used': !saveData.has(recipe.C)}"
-                                                                @click="navigateTo(recipe.C);">
+                                                                @click="navigateTo(recipe.C);" @mouseover="loadChunk(getChunk(recipe.C))">
                                                                 {{ data.index[recipe.C][0] }}&nbsp;{{
                                                                 data.index[recipe.C][1] }}
                                                             </td>
@@ -400,7 +400,7 @@
                         <div v-if="Object.keys(data.index).length == 0" style="font-weight: bold; padding-top: 5px;">
                             Loading data...</div>
                         <div class="item" :class="{'item-used': !saveData.has(element)}" v-for="element in elementList"
-                            @click="navigateTo(element)">
+                            @click="navigateTo(element)" @mouseover="loadChunk(getChunk(element))">
                             {{ data.index[element][0] }}&nbsp;{{ data.index[element][1] }}
                         </div>
                     </div>
@@ -448,16 +448,6 @@
             }
 
             return queryParams;
-        }
-
-        // Decode base64 value mod 1000
-        function getChunk(value) {
-            let base64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-='
-            let result = 0
-            for (let i = 0; i < value.length; i++) {
-                result = (result * 64 + base64.indexOf(value[i]))
-            }
-            return Math.floor(result / 100)
         }
 
         const PATH_PREFIX = window.location.host == 'expitau.github.io' ? '/' : '';
@@ -560,6 +550,14 @@
                 },
             },
             methods: {
+                getChunk: function(value) {
+                    let base64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-='
+                    let result = 0
+                    for (let i = 0; i < value.length; i++) {
+                        result = (result * 64 + base64.indexOf(value[i]))
+                    }
+                    return Math.floor(result / 100)
+                },
                 navigateTo: function (element) {
                     if (element != "") {
                         this.craftingTreeData = null;
@@ -571,7 +569,7 @@
                         if (!this.data.data[element]) {
                             this.elementLoaded = false;
                             this.craftingTreeData == null;
-                            this.loadChunk(getChunk(element)).then(_ => {
+                            this.loadChunk(this.getChunk(element)).then(_ => {
                                 this.smoothScrollTop();
                                 this.calcCraftingTree(element);
                                 this.elementLoaded = true;
@@ -679,7 +677,7 @@
                             usedElements.add(currentElement);
                         } else {
                             if (!this.data.data[currentElement] && currentElement != "") {
-                                await this.loadChunk(getChunk(currentElement));
+                                await this.loadChunk(this.getChunk(currentElement));
                             }
                             let fromIndex = null;
                             for (let i = currentNode.lastIndex != undefined ? currentNode.lastIndex + 1 : 0; i < this.data.data[currentElement].from.length; i++) {
@@ -846,11 +844,6 @@
                         window.lastScrollTime = Date.now();
                     }
                 });
-
-                // Preload initial chunks
-                for (let i = 0; i < 10; i++) {
-                    await this.loadChunk(i);
-                }
             }
         });
     </script>
