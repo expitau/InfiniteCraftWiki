@@ -258,41 +258,58 @@
                                     <transition name="slide-right" mode="out-in">
                                         <div :key="currentElement">
                                             <transition name="slide-right" mode="out-in">
-                                                <div v-if="craftingTreeData == null"
-                                                    style="font-weight: bold; padding-top: 5px;">
-                                                    Loading data...
+                                                <div :key="craftingTreeData == null">
+                                                    <div v-if="craftingTreeData == null"
+                                                        style="font-weight: bold; padding-top: 5px;">
+                                                        Loading data...
+                                                    </div>
+                                                    <div v-else-if="craftingTreeData.length == 0" class="item"
+                                                        :class="{'item-used': !saveData.has(currentElement)}">
+                                                        {{ data.index[currentElement][0] }}&nbsp;{{
+                                                        data.index[currentElement][1] }}
+                                                    </div>
+                                                    <div v-else>
+                                                        <table>
+                                                            <tr v-for="recipe in craftingTreeData">
+                                                                <td class="item"
+                                                                    :class="{'item-used': !saveData.has(recipe.A)}"
+                                                                    @click="navigateTo(recipe.A);">
+                                                                    {{ data.index[recipe.A][0] }}&nbsp;{{
+                                                                    data.index[recipe.A][1] }}
+                                                                </td>
+                                                                <td>+</td>
+                                                                <td class="item"
+                                                                    :class="{'item-used': !saveData.has(recipe.B)}"
+                                                                    @click="navigateTo(recipe.B);">
+                                                                    {{ data.index[recipe.B][0] }}&nbsp;{{
+                                                                    data.index[recipe.B][1] }}
+                                                                </td>
+                                                                <td>=</td>
+                                                                <td class="item"
+                                                                    :class="{'item-used': !saveData.has(recipe.C)}"
+                                                                    @click="navigateTo(recipe.C);">
+                                                                    {{ data.index[recipe.C][0] }}&nbsp;{{
+                                                                    data.index[recipe.C][1] }}
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                        <div v-if="!isMobile && data.costs[currentElement] > 2">
+                                                            <div v-if="saveData.size == 0" class="button"
+                                                                @click="showImportToast=true">
+                                                                Use your existing elements
+                                                            </div>
+                                                            <div v-else-if="showFullRecipe" class="button"
+                                                                @click="showFullRecipe=false; calcCraftingTree(currentElement)">
+                                                                Show simplified recipe
+                                                            </div>
+                                                            <div v-else class=" button"
+                                                                @click="showFullRecipe=true; calcCraftingTree(currentElement)">
+                                                                Show full recipe
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div v-else-if="craftingTreeData.length == 0" class="item"
-                                                    :class="{'item-used': !saveData.has(currentElement)}">
-                                                    {{ data.index[currentElement][0] }}&nbsp;{{
-                                                    data.index[currentElement][1] }}
-                                                </div>
-                                                <table v-else>
-                                                    <tr v-for="recipe in craftingTreeData">
-                                                        <td class="item" :class="{'item-used': !saveData.has(recipe.A)}"
-                                                            @click="navigateTo(recipe.A);">
-                                                            {{ data.index[recipe.A][0] }}&nbsp;{{
-                                                            data.index[recipe.A][1] }}
-                                                        </td>
-                                                        <td>+</td>
-                                                        <td class="item" :class="{'item-used': !saveData.has(recipe.B)}"
-                                                            @click="navigateTo(recipe.B);">
-                                                            {{ data.index[recipe.B][0] }}&nbsp;{{
-                                                            data.index[recipe.B][1] }}
-                                                        </td>
-                                                        <td>=</td>
-                                                        <td class="item" :class="{'item-used': !saveData.has(recipe.C)}"
-                                                            @click="navigateTo(recipe.C);">
-                                                            {{ data.index[recipe.C][0] }}&nbsp;{{
-                                                            data.index[recipe.C][1] }}
-                                                        </td>
-                                                    </tr>
-                                                </table>
                                             </transition>
-                                            <div v-if="!isMobile && saveData.size == 0 && craftingTreeData?.length > 1"
-                                                class="button" @click="showImportToast=true">
-                                                Use your existing elements
-                                            </div>
                                         </div>
                                     </transition>
                                 </div>
@@ -473,6 +490,7 @@
                 currentPanelIndex: 0,
                 scroll: 0,
                 isScrolling: false,
+                showFullRecipe: false,
             },
             computed: {
                 currentTo: function () {
@@ -548,6 +566,7 @@
                         this.showHiddenRecipes = false;
                         if (this.currentElement == "") {
                             this.currentPanelIndex = 0;
+                            this.showFullRecipe = false;
                         }
                         if (!this.data.data[element]) {
                             this.elementLoaded = false;
@@ -653,7 +672,7 @@
                             continue;
                         }
 
-                        if (this.saveData.size == 0) {
+                        if (this.saveData.size == 0 || this.showFullRecipe) {
                             currentNode.left = { value: this.data.craftingCache[currentElement][0] };
                             currentNode.right = { value: this.data.craftingCache[currentElement][1] };
                             usedElements.add(currentElement);
@@ -698,16 +717,16 @@
                         }
 
                         result.unshift({ A: currentNode.left.value, B: currentNode.right.value, C: currentElement });
-                        if (this.data.costs[currentNode.left.value] != 1 && !this.saveData.has(currentNode.left.value)) {
+                        if (this.data.costs[currentNode.left.value] != 1 && (!this.saveData.has(currentNode.left.value) || this.showFullRecipe)) {
                             craftingList.unshift(currentNode.left);
                         }
-                        if (this.data.costs[currentNode.right.value] != 1 && !this.saveData.has(currentNode.right.value)) {
+                        if (this.data.costs[currentNode.right.value] != 1 && (!this.saveData.has(currentNode.right.value) || this.showFullRecipe)) {
                             craftingList.unshift(currentNode.right);
                         }
                     }
                     this.craftingTreeData = result;
                 },
-                loadChunk: async function(chunk) {
+                loadChunk: async function (chunk) {
                     if (this.chunkLoadState[chunk]) {
                         return this.chunkLoadState[chunk];
                     }

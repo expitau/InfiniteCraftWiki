@@ -23,7 +23,7 @@ function displayMessage(header, content) {
 if (window.location.href != "https://neal.fun/infinite-craft/") {
    setTimeout(() => {
       window.location.href = "https://neal.fun/infinite-craft/";
-   }, 1200);
+   }, 1000);
    displayMessage('Redirecting to Infinite Craft', 'Click this Bookmarklet again once you are there to save your data!');
 } else if (!top.hasOwnProperty('addOnCreated')) {
    displayMessage('Redirecting to Infinite Craft Wiki', 'Do this any time to update your elements!');
