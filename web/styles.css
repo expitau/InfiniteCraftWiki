@@ -1,5 +1,6 @@
 :root {
     color-scheme: dark;
+    scrollbar-gutter: stable;
 }
 
 body {
@@ -9,6 +10,7 @@ body {
     color: #c6c7c7;
     margin: 0;
     overflow-x: hidden;
+    overflow-y: auto;
 }
 
 #app {
@@ -293,6 +295,9 @@ body {
     border-radius: 5px;
     margin: 20px;
     cursor: pointer;
+    width: fit-content;
+    margin-left: auto;
+	margin-right: auto;
 }
 
 .button:hover {

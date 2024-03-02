@@ -50,12 +50,13 @@
                 <div class="github-link-text">Star my repo!</div>
             </a>
 
-            <div class="github-link" style="position: absolute; top: 40px; right: 40px"
-                @click="showSettingsToast=true" target="_blank">
+            <div class="github-link" style="position: absolute; top: 40px; right: 40px" @click="showSettingsToast=true"
+                target="_blank">
                 <div class="github-link-text">Settings</div>
                 <span class="sr-only">Settings</span>
                 <svg width="32" height="32" viewBox="0 -960 960 960" fill="currentColor">
-                    <path d="m370-80-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-103 78q1 7 1 13.5v27q0 6.5-2 13.5l103 78-110 190-118-50q-11 8-23 15t-24 12L590-80H370Zm70-80h79l14-106q31-8 57.5-23.5T639-327l99 41 39-68-86-65q5-14 7-29.5t2-31.5q0-16-2-31.5t-7-29.5l86-65-39-68-99 42q-22-23-48.5-38.5T533-694l-13-106h-79l-14 106q-31 8-57.5 23.5T321-633l-99-41-39 68 86 64q-5 15-7 30t-2 32q0 16 2 31t7 30l-86 65 39 68 99-42q22 23 48.5 38.5T427-266l13 106Zm42-180q58 0 99-41t41-99q0-58-41-99t-99-41q-59 0-99.5 41T342-480q0 58 40.5 99t99.5 41Zm-2-140Z"/>
+                    <path
+                        d="m370-80-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-103 78q1 7 1 13.5v27q0 6.5-2 13.5l103 78-110 190-118-50q-11 8-23 15t-24 12L590-80H370Zm70-80h79l14-106q31-8 57.5-23.5T639-327l99 41 39-68-86-65q5-14 7-29.5t2-31.5q0-16-2-31.5t-7-29.5l86-65-39-68-99 42q-22-23-48.5-38.5T533-694l-13-106h-79l-14 106q-31 8-57.5 23.5T321-633l-99-41-39 68 86 64q-5 15-7 30t-2 32q0 16 2 31t7 30l-86 65 39 68 99-42q22 23 48.5 38.5T427-266l13 106Zm42-180q58 0 99-41t41-99q0-58-41-99t-99-41q-59 0-99.5 41T342-480q0 58 40.5 99t99.5 41Zm-2-140Z" />
                 </svg>
             </div>
 
@@ -137,8 +138,9 @@
                 <div class="toast" v-if="showSettingsToast">
                     <div class="toast-body">
                         <h2 style="margin-top: 0px; text-align: center;">Settings</h2>
-                        <div v-if="!isMobile && saveData.size == 0"
-                            class="button" style="background-color: #347d39; color:white; outline:none" @click="showImportToast=true; showSettingsToast=false">
+                        <div v-if="!isMobile" class="button"
+                            style="background-color: #347d39; color:white; outline:none; margin-bottom: 0px;"
+                            @click="showImportToast=true; showSettingsToast=false">
                             Import your Infinite Craft elements
                         </div>
                         <div v-if="saveData.size != 0" style="background-color: #7b3d3d; color:white; outline:none"
@@ -146,7 +148,7 @@
                             Clear User Data
                         </div>
                         <div style="display: flex; flex-direction: row; justify-content: center;">
-                            <div class="button" style="margin:0px" @click="showSettingsToast=false">
+                            <div class="button" style="margin-bottom:0px" @click="showSettingsToast=false">
                                 Close
                             </div>
                         </div>
@@ -229,11 +231,14 @@
                                     <h3>Crafting Recipe</h3>
                                     <transition name="slide-right" mode="out-in">
                                         <div :key="currentElement">
-                                            <div v-if="craftingTreeData == null">
+                                            <div v-if="craftingTreeData == null"
+                                                style="font-weight: bold; padding-top: 5px;">
                                                 Loading data...
                                             </div>
-                                            <div v-else-if="craftingTreeData.length == 0" class="item" :class="{'item-used': !saveData.has(currentElement)}">
-                                                {{ data.index[currentElement][0] }}&nbsp;{{ data.index[currentElement][1] }}
+                                            <div v-else-if="craftingTreeData.length == 0" class="item"
+                                                :class="{'item-used': !saveData.has(currentElement)}">
+                                                {{ data.index[currentElement][0] }}&nbsp;{{
+                                                data.index[currentElement][1] }}
                                             </div>
                                             <table v-else>
                                                 <tr v-for="recipe in craftingTreeData">
@@ -391,6 +396,7 @@
             el: '#app',
             data: {
                 data: { index: {}, list: [], costs: {}, craftingCache: {}, data: {}, metadata: { recipeCount: 0, loadedChunks: [] } },
+                chunkLoadState: [],
                 craftingTreeData: null,
                 bookmarkletData: "",
                 currentElement: "",
@@ -401,11 +407,13 @@
                 showSettingsToast: false,
                 isDraggingBookmarklet: false,
                 isShaking: false,
-                saveData: [],
+                saveData: new Set(),
+                saveDataArray: [],
                 loaded: 1000,
                 loadedElements: 100,
                 currentPanelIndex: 0,
                 scroll: 0,
+                isScrolling: false,
             },
             computed: {
                 currentTo: function () {
@@ -484,16 +492,17 @@
                         if (!this.data.data[element]) {
                             this.craftingTreeData == null;
                             this.loadChunk(getChunk(element)).then(_ => {
+                                this.smoothScrollTop();
                                 this.calcCraftingTree(element)
                             });
-                        }else{
+                        } else {
+                            this.smoothScrollTop();
                             this.calcCraftingTree(element);
                         }
                     }
-                    this.currentElement = element;
-                    this.smoothScrollTop();
                     this.loaded = 1000;
                     this.loadedElements = 100;
+                    this.currentElement = element;
                     setQuery({ e: element });
                     localStorage.setItem("lastElement", element);
                 },
@@ -509,11 +518,14 @@
                 addElementScrollPage: function () {
                     this.loadedElements *= 2;
                 },
-                smoothScrollTop: function () {
+                smoothScrollTop: () => {
+                    if(window.pageYOffset > 500){
+                        window.scrollTo(0, 500);
+                    }
+                    this.isScrolling = false;
                     const duration = 500;
                     const start = window.pageYOffset;
                     const startTime = performance.now();
-
                     const easeInOutQuad = (t, b, c, d) => {
                         t /= d / 2;
                         if (t < 1) return c / 2 * t * t + b;
@@ -522,6 +534,9 @@
                     };
 
                     const animateScroll = (currentTime) => {
+                        if(this.isScrolling){
+                            return;
+                        }
                         const timeElapsed = currentTime - startTime;
                         const run = easeInOutQuad(timeElapsed, start, 0 - start, duration);
                         window.scrollTo(0, run);
@@ -532,6 +547,7 @@
                 },
                 clearSaveData: function () {
                     this.saveData = new Set();
+                    this.saveDataArray = [];
                     localStorage.setItem("saveData", "");
                 },
                 dragStart() {
@@ -565,7 +581,7 @@
                     let tree = {
                         value: element
                     };
-                    let craftingList = [ tree ];
+                    let craftingList = [tree];
 
                     while (craftingList.length > 0) {
                         let currentNode = craftingList.shift();
@@ -574,7 +590,7 @@
                         if (usedElements.has(currentElement)) {
                             continue;
                         }
-                        
+
                         if (this.saveData.size == 0) {
                             currentNode.left = { value: this.data.data[currentElement].from[0][0] };
                             currentNode.right = { value: this.data.data[currentElement].from[0][1] };
@@ -604,21 +620,21 @@
                                     break;
                                 }
                             }
-                            
-                            if(fromIndex == null) {
+
+                            if (fromIndex == null) {
                                 console.log('Added  looping element: ' + this.data.index[currentElement][1]);
                                 // If a dependency loop is detected move to the parent again and try the following recipe instead
                                 usedElements.delete(currentNode.parent.value);
                                 craftingList.unshift(currentNode.parent);
                                 continue;
-                            }else{
+                            } else {
                                 currentNode.left = { value: this.data.data[currentElement].from[fromIndex][0], parent: currentNode };
                                 currentNode.right = { value: this.data.data[currentElement].from[fromIndex][1], parent: currentNode };
                                 currentNode.lastIndex = fromIndex;
                                 usedElements.add(currentElement);
                             }
                         }
-                        
+
                         result.unshift({ A: currentNode.left.value, B: currentNode.right.value, C: currentElement });
                         if (this.data.costs[currentNode.left.value] != 1 && !this.saveData.has(currentNode.left.value)) {
                             craftingList.unshift(currentNode.left);
@@ -629,49 +645,33 @@
                     }
                     this.craftingTreeData = result;
                 },
-                loadChunk: async function (chunk) {
-                    return fetch(DATA_PREFIX + `chunks/chunk-${chunk}.json`)
-                        .then(response => {
-                            console.log("Loaded chunk", chunk);
-                            return response.json()
-                        })
-                        .then(data => {
-                            let [sep1, sep2, sep3] = [":3", ":2", ":1"]
-                            chunkData = Object.fromEntries(Object.entries(data).map(x => {
-                                let [from, to, hiddenFrom, hiddenTo] = x[1].split(sep1)
-                                if (from == "") {
-                                    from = []
-                                } else {
-                                    from = from.split(sep2).map(x => x.split(sep3));
-                                    if (this.saveData.size != 0) {
-                                        from = from.sort((a, b) => (+this.saveData.has(b[0])) + (+this.saveData.has(b[1]))
-                                            - (+this.saveData.has(a[0])) - (+this.saveData.has(a[1])));
-                                    }
-                                }
-                                if (to == "") {
-                                    to = []
-                                } else {
-                                    to = to.split(sep2).map(x => x.split(sep3));
-                                    if (this.saveData.size != 0) {
-                                        to = to.sort((a, b) => (+this.saveData.has(b[0])) + (+this.saveData.has(a[1])) * 2
-                                            - (+this.saveData.has(b[1])) * 2 - (+this.saveData.has(a[0])));
-                                    }
-                                }
-                                if (hiddenFrom == "") {
-                                    hiddenFrom = []
-                                } else {
-                                    hiddenFrom = hiddenFrom.split(sep2).map(x => x.split(sep3))
-                                }
-                                if (hiddenTo == "") {
-                                    hiddenTo = []
-                                } else {
-                                    hiddenTo = hiddenTo.split(sep2).map(x => x.split(sep3))
-                                }
-                                return [x[0], { from, to, hiddenFrom, hiddenTo }]
-                            }))
-                            this.data.data = Object.freeze(Object.assign({}, this.data.data, chunkData))
-                            this.data.metadata.loadedChunks.push(chunk)
-                        });
+                loadChunk: async function(chunk) {
+                    if (this.chunkLoadState[chunk]) {
+                        return this.chunkLoadState[chunk];
+                    }
+                    const worker = new Worker('loadChunkWorker.js');
+                    const promise = new Promise((resolve, reject) => {
+                        worker.onmessage = (e) => {
+                            const { chunkData, chunk } = e.data;
+                            this.chunkLoadState[chunk] = true;
+                            this.data.data = Object.freeze(Object.assign({}, this.data.data, chunkData));
+                            this.data.metadata.loadedChunks.push(chunk);
+                            resolve(true);
+                            worker.terminate();
+                        };
+                        worker.onerror = (e) => {
+                            reject(e);
+                            delete this.chunkLoadState[chunk];
+                            worker.terminate();
+                        };
+                    });
+                    worker.postMessage({ 
+                        chunk: chunk,
+                        saveData: this.savaDataArray,
+                        DATA_PREFIX: DATA_PREFIX,
+                    });
+                    this.chunkLoadState[chunk] = promise;
+                    return promise;
                 },
             },
             async mounted() {
@@ -720,10 +720,10 @@
                     });
 
                 addEventListener("popstate", (event) => this.navigateTo(getQuery().e || ""));
-                var savaDataArray = (getQuery().s || localStorage.getItem("saveData") || "").split(",").filter(x => x);
+                this.savaDataArray = (getQuery().s || localStorage.getItem("saveData") || "").split(",").filter(x => x);
+                this.saveData = new Set(this.savaDataArray);
+                localStorage.setItem("saveData", this.savaDataArray.join(","));
                 setQuery({ s: '' })
-                this.saveData = new Set(savaDataArray);
-                localStorage.setItem("saveData", savaDataArray.join(","));
 
                 document.addEventListener("scroll", (event) => {
                     this.scroll = window.pageYOffset;
@@ -752,17 +752,23 @@
                 });
 
                 document.addEventListener("wheel", (event) => {
+                    this.isScrolling = true;
                     window.lastScrollTime ??= Date.now();
                     if (this.currentElement && window.lastScrollTime + 200 < Date.now()) {
-                        if (event.deltaX > 20) {
+                        if (event.deltaX > 30 && event.deltaY < 30) {
                             this.slideRight()
                         }
-                        if (event.deltaX < -20) {
+                        if (event.deltaX < -30 && event.deltaY < 30) {
                             this.slideLeft()
                         }
                         window.lastScrollTime = Date.now();
                     }
                 });
+
+                // Preload initial chunks
+                for (let i = 0; i < 10; i++) {
+                    await this.loadChunk(i);
+                }
             }
         });
     </script>
