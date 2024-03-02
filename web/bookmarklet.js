@@ -1,4 +1,4 @@
-/* Click here to redirect to infinite craft  */
+/* Click here to redirect to infinite craft -> Click again to Save data to the Wiki */
 function createIframeWithAccess() {
    /* Create and append the Iframe */
    var iframe = document.createElement('iframe');
@@ -16,7 +16,7 @@ function createIframeWithAccess() {
 }
 
 function displayMessage(header, content) {
-   document.body.innerHTML = `<div style="position: fixed;width: 100vw;text-align: center;height: 100vh;background-color: #191919;color: white;padding-top: 50px;font-size: 20px;font-family: "Roboto", sans-serif;"><div style=" font-weight: bold; font-size: larger;">${header}</div><br><div>${content}</div></div>`;
+   document.body.innerHTML = `<div style="position: fixed;width: 100vw;text-align: center;height: 100vh;background-color: #191919;color: #c6c7c7;padding-top: 50px;font-size: 18px; font-family: "Roboto", sans-serif;"><h1 style="margin-bottom: 5px;">${header}</h1><br><div style="font-weight: bold; color: gray;">${content}</div></div>`;
 }
 
 /* Redirect the user to infinite craft if they are not there already */

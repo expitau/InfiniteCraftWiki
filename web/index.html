@@ -50,8 +50,8 @@
                 <div class="github-link-text">Star my repo!</div>
             </a>
 
-            <div v-if="!isMobile" class="github-link" style="position: absolute; top: 40px; right: 40px" @click="showSettingsToast=true"
-                target="_blank">
+            <div v-if="!isMobile" class="github-link" style="position: absolute; top: 40px; right: 40px"
+                @click="showSettingsToast=true" target="_blank">
                 <div class="github-link-text">Settings</div>
                 <span class="sr-only">Settings</span>
                 <svg width="32" height="32" viewBox="0 -960 960 960" fill="currentColor">
@@ -443,8 +443,11 @@
             return Math.floor(result / 100)
         }
 
-        const DATA_PREFIX = window.location.host == 'expitau.github.io' ? '/data/' : 'data/';
-        const HELPER_URL = window.location.host == 'expitau.github.io' ? 'https://expitau.github.io/InfiniteCraftWiki/helper' : 'http://127.0.0.1:5501/web/helper.html';
+        const PATH_PREFIX = window.location.host == 'expitau.github.io' ? '/' : '';
+        const CHUNK_WORKER_PATH = `${PATH_PREFIX}loadChunkWorker.js`;
+        const DATA_PATH = `${PATH_PREFIX}data/`;
+        const HELPER_PATH = window.location.host == 'expitau.github.io' ? 'https://expitau.github.io/InfiniteCraftWiki/helper'
+            : 'http://127.0.0.1:5501/web/helper.html';
 
         // Vue app
         const app = new Vue({
@@ -709,7 +712,7 @@
                     if (this.chunkLoadState[chunk]) {
                         return this.chunkLoadState[chunk];
                     }
-                    const worker = new Worker('loadChunkWorker.js');
+                    const worker = new Worker(CHUNK_WORKER_PATH);
                     const promise = new Promise((resolve, reject) => {
                         worker.onmessage = (e) => {
                             const { chunkData, chunk } = e.data;
@@ -728,7 +731,7 @@
                     worker.postMessage({
                         chunk: chunk,
                         saveData: this.savaDataArray,
-                        DATA_PREFIX: DATA_PREFIX,
+                        DATA_PREFIX: DATA_PATH,
                     });
                     this.chunkLoadState[chunk] = promise;
                     return promise;
@@ -747,7 +750,7 @@
                     this.showToast = false;
                 }
                 // Load recipes from JSON file
-                fetch(DATA_PREFIX + 'index.json')
+                fetch(DATA_PATH + 'index.json')
                     .then(response => { console.log(response); return response.json() })
                     .then(index => {
                         this.data.index = Object.freeze(Object.fromEntries(Object.entries(index).map(x => [x[0], [x[1][0], x[1][1]]])))
@@ -755,13 +758,13 @@
                         this.data.list = Object.freeze(Object.entries(index).sort((a, b) => a[1][2] - b[1][2]).filter(x => x[1][1] != "Nothing").map(x => [x[0], x[1][1]]))
                         this.data.costs = Object.freeze(Object.fromEntries(Object.entries(index).map(x => [x[0], x[1][2]])))
 
-                        this.navigateTo(getQuery().e || (document.referrer === HELPER_URL ? localStorage.getItem("lastElement") : "") || "");
+                        this.navigateTo(getQuery().e || (document.referrer === HELPER_PATH ? localStorage.getItem("lastElement") : "") || "");
                     })
                     .catch(error => {
                         console.error('Error loading recipes:', error);
                     });
 
-                fetch(DATA_PREFIX + 'metadata.json')
+                fetch(DATA_PATH + 'metadata.json')
                     .then(response => { console.log(response); return response.json() })
                     .then(metadata => {
                         this.data.metadata.recipeCount = metadata.recipeCount
@@ -773,7 +776,7 @@
                 fetch('bookmarklet.js')
                     .then(response => { return response.text() })
                     .then(bookmarkletText => {
-                        this.bookmarkletData = bookmarkletText.replace('HELPER_URL', HELPER_URL);
+                        this.bookmarkletData = bookmarkletText.replace('HELPER_URL', HELPER_PATH);
                     })
                     .catch(error => {
                         console.error('Error loading bookmarklet:', error);
