@@ -844,6 +844,11 @@
                         window.lastScrollTime = Date.now();
                     }
                 });
+                
+                // Preload initial chunks
+                for (let i = 0; i < 10; i++) {
+                    await this.loadChunk(i);
+                }
             }
         });
     </script>
