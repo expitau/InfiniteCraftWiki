@@ -13,6 +13,10 @@ body {
     overflow-y: auto;
 }
 
+#container {
+    position: relative;
+}
+
 #app {
     overflow: hidden;
     padding: 1rem 3rem 3rem;
@@ -31,7 +35,8 @@ body {
 
 .showUnavailableElements .item.item-used {
     filter: brightness(0.9);
-    border-color: #ff6161;
+	border-color: #9d7979;
+	background: linear-gradient(225deg, #ff6161 0%, #ff6161 10px, transparent 10px, transparent 100%);
 }
 
 .visibility-toggle {
@@ -112,6 +117,7 @@ body {
 }
 
 .toast-body {
+    position: relative;
     background-color: #242424;
     border-radius: 0.5rem;
     padding: 3rem 4rem 2rem;
@@ -134,16 +140,26 @@ body {
 }
 
 .github-link {
+    position: absolute;
+    top: 0px;
+    left: 1rem;
     color: #c6c7c7;
     display: flex;
     align-items: center;
     text-decoration: none;
     gap: 10px;
-    position: relative;
-    top: 0px;
     margin-left: 0px;
     margin-right: 0px;
     text-wrap: nowrap;
+}
+
+.upload-button {
+    position: absolute;
+    top: 0px;
+    right: 1rem;
+    display: flex;
+    text-decoration: none;
+    margin: 0px;
 }
 
 .github-link-text {
@@ -163,9 +179,13 @@ body {
     transition: color var(--transition-s) ease;
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 700px) {
     .github-link-text {
-        display: none
+        display: none;
+    }
+
+    .upload-button {
+        display: none;
     }
 }
 
@@ -288,7 +308,7 @@ body {
     display: inline-block;
     padding: 10px 20px;
     background-color: transparent;
-	outline: solid 1px grey;
+    outline: solid 1px grey;
     color: dimgrey;
     font-weight: bold;
     text-decoration: none;
@@ -297,7 +317,7 @@ body {
     cursor: pointer;
     width: fit-content;
     margin-left: auto;
-	margin-right: auto;
+    margin-right: auto;
 }
 
 .button:hover {
@@ -364,4 +384,21 @@ body {
     .nav-bar {
         display: none;
     }
+}
+
+.close-button {
+    border: none;
+    display: inline-block;
+    padding: 10px 26px;
+    vertical-align: middle;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    font-size: 40px;
+}
+
+.topright {
+    position: absolute;
+    right: 0;
+    top: 0
 }
