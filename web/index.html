@@ -289,7 +289,7 @@
                                                     </tr>
                                                 </table>
                                             </transition>
-                                            <div v-if="!isMobile && saveData.size == 0 && craftingTreeData.length > 1"
+                                            <div v-if="!isMobile && saveData.size == 0 && craftingTreeData?.length > 1"
                                                 class="button" @click="showImportToast=true">
                                                 Use your existing elements
                                             </div>
@@ -645,7 +645,6 @@
                         value: element
                     };
                     let craftingList = [tree];
-
                     while (craftingList.length > 0) {
                         let currentNode = craftingList.shift();
                         let currentElement = currentNode.value;
@@ -655,8 +654,8 @@
                         }
 
                         if (this.saveData.size == 0) {
-                            currentNode.left = { value: this.data.data[currentElement].from[0][0] };
-                            currentNode.right = { value: this.data.data[currentElement].from[0][1] };
+                            currentNode.left = { value: this.data.craftingCache[currentElement][0] };
+                            currentNode.right = { value: this.data.craftingCache[currentElement][1] };
                             usedElements.add(currentElement);
                         } else {
                             if (!this.data.data[currentElement] && currentElement != "") {
@@ -708,7 +707,7 @@
                     }
                     this.craftingTreeData = result;
                 },
-                loadChunk: async function (chunk) {
+                loadChunk: async function(chunk) {
                     if (this.chunkLoadState[chunk]) {
                         return this.chunkLoadState[chunk];
                     }
@@ -730,7 +729,7 @@
                     });
                     worker.postMessage({
                         chunk: chunk,
-                        saveData: this.savaDataArray,
+                        saveData: this.saveDataArray,
                         DATA_PREFIX: DATA_PATH,
                     });
                     this.chunkLoadState[chunk] = promise;
@@ -783,9 +782,9 @@
                     });
 
                 addEventListener("popstate", (event) => this.navigateTo(getQuery().e || ""));
-                this.savaDataArray = (getQuery().s || localStorage.getItem("saveData") || "").split(",").filter(x => x);
-                this.saveData = new Set(this.savaDataArray);
-                localStorage.setItem("saveData", this.savaDataArray.join(","));
+                this.saveDataArray = (getQuery().s || localStorage.getItem("saveData") || "").split(",").filter(x => x);
+                this.saveData = new Set(this.saveDataArray);
+                localStorage.setItem("saveData", this.saveDataArray.join(","));
                 setQuery({ s: '' })
 
                 document.addEventListener("scroll", (event) => {
