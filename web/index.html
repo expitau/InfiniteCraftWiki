@@ -541,6 +541,7 @@
             methods: {
                 navigateTo: function (element) {
                     if (element != "") {
+                        this.craftingTreeData = null;
                         this.showHiddenRecipes = false;
                         if (this.currentElement == "") {
                             this.currentPanelIndex = 0;
