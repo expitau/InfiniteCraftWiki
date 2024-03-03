@@ -30,13 +30,14 @@ body {
     display: inline-block;
     margin: 5px;
     line-height: 1em;
-    border: 1px solid #525252;
+    outline: 1px solid #525252;
 }
 
 .showUnavailableElements .item.item-used {
     filter: brightness(0.9);
-	border-color: #9d7979;
-	background: linear-gradient(225deg, #ff6161 0%, #ff6161 10px, transparent 10px, transparent 100%);
+	outline: #9d7979 solid 1px;
+	background: linear-gradient(225deg, #ff6161 10px, transparent 10.2px);
+	outline-offset: -1px;
 }
 
 .visibility-toggle {
@@ -51,7 +52,7 @@ body {
 }
 
 .item:hover {
-    border: 1px solid #45505c;
+    outline: 1px solid #45505c;
 }
 
 .ingredients-list {
