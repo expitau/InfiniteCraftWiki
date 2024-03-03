@@ -154,8 +154,8 @@
                                 <div class="ingredients-list">
                                     <h3>Created by</h3>
                                     <transition name="slide-right" mode="out-in">
-                                        <div :key="(+isChunkLoaded())">
-                                            <div v-if="!isChunkLoaded()" style="font-weight: bold; padding-top: 5px;">
+                                        <div :key="(+isElementLoaded(currentElement))">
+                                            <div v-if="!isElementLoaded(currentElement)" style="font-weight: bold; padding-top: 5px;">
                                                 Loading data...
                                             </div>
                                             <transition name="slide-right" mode="out-in"
@@ -312,8 +312,8 @@
                                 <div class="ingredients-list">
                                     <h3>Used in</h3>
                                     <transition name="slide-right" mode="out-in">
-                                        <div :key="+isChunkLoaded()">
-                                            <div v-if="!isChunkLoaded()" style="font-weight: bold; padding-top: 5px;">
+                                        <div :key="+isElementLoaded(currentElement)">
+                                            <div v-if="!isElementLoaded(currentElement)" style="font-weight: bold; padding-top: 5px;">
                                                 Loading data...
                                             </div>
                                             <transition name="slide-right" mode="out-in"
@@ -641,9 +641,9 @@
                 elementTitle: function (element) {
                     return this.saveDataExists ? (this.saveData.has(element) ? 'Crafted' : 'Not crafted') : '';
                 },
-                isChunkLoaded: function () {
-                    return this.data.metadata.loadedChunks[this.getChunk(this.currentElement)] ?
-                        this.data.metadata.loadedChunks[this.getChunk(this.currentElement)][1] : false;
+                isElementLoaded: function (element) {
+                    return this.data.metadata.loadedChunks[this.getChunk(element)] ?
+                        this.data.metadata.loadedChunks[this.getChunk(element)][1] : false;
                 },
                 getChunk: function (value) {
                     let base64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-='
