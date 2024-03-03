@@ -474,7 +474,6 @@
                 showImportToast: false,
                 isDraggingBookmarklet: false,
                 isShaking: false,
-                saveData: new Set(),
                 saveDataArray: [],
                 loaded: 1000,
                 loadedElements: 100,
@@ -550,6 +549,9 @@
                 },
                 isMobile: function () {
                     return (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+                },
+                saveData: function() {
+                    return new Set(this.saveDataArray);
                 },
                 bookmarkletData: function() {
                     return `javascript:(function(){
@@ -648,7 +650,6 @@
                     requestAnimationFrame(animateScroll);
                 },
                 clearSaveData: function () {
-                    this.saveData = new Set();
                     this.saveDataArray = [];
                     localStorage.setItem("saveData", "");
                     window.location.reload();
@@ -822,7 +823,6 @@
 
                 addEventListener("popstate", (event) => this.navigateTo(getQuery().e || ""));
                 this.saveDataArray = (getQuery().s || localStorage.getItem("saveData") || "").split(",").filter(x => x);
-                this.saveData = new Set(this.saveDataArray);
                 localStorage.setItem("saveData", this.saveDataArray.join(","));
                 setQuery({ s: '' })
 
