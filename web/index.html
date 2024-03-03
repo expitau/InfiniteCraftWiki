@@ -153,8 +153,8 @@
                                 <div class="ingredients-list">
                                     <h3>Created by</h3>
                                     <transition name="slide-right" mode="out-in">
-                                        <div :key="this.elementLoaded">
-                                            <div v-if="!this.elementLoaded"
+                                        <div :key="+isChunkLoaded">
+                                            <div v-if="!isChunkLoaded"
                                                 style="font-weight: bold; padding-top: 5px;">
                                                 Loading data...
                                             </div>
@@ -312,8 +312,8 @@
                                 <div class="ingredients-list">
                                     <h3>Used in</h3>
                                     <transition name="slide-right" mode="out-in">
-                                        <div :key="this.elementLoaded">
-                                            <div v-if="!this.elementLoaded"
+                                        <div :key="+isChunkLoaded">
+                                            <div v-if="!isChunkLoaded"
                                                 style="font-weight: bold; padding-top: 5px;">
                                                 Loading data...
                                             </div>
@@ -470,7 +470,6 @@
                 craftingTreeData: null,
                 bookmarkletData: "",
                 currentElement: "",
-                elementLoaded: false,
                 showHiddenRecipes: false,
                 searchQuery: "",
                 showToast: false,
@@ -551,7 +550,7 @@
                 },
                 isDefaultElement: function () {
                     return this.data.costs[this.currentElement] == 1;
-                },
+                },    
                 isMobile: function () {
                     return (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
                 },
@@ -566,15 +565,12 @@
                             this.showFullRecipe = false;
                         }
                         if (!this.data.data[element]) {
-                            this.elementLoaded = false;
                             this.craftingTreeData == null;
                             this.loadChunk(this.getChunk(element)).then(_ => {
                                 this.smoothScrollTop();
                                 this.calcCraftingTree(element);
-                                this.elementLoaded = true;
                             });
                         } else {
-                            this.elementLoaded = true;
                             this.smoothScrollTop();
                             this.calcCraftingTree(element);
                         }
@@ -645,6 +641,9 @@
                 },
                 elementTitle: function (element) {
                     return this.saveDataExists ? (this.saveData.has(element) ? 'Crafted' : 'Not crafted') : '';
+                },
+                isChunkLoaded: function () {
+                    return this.data.metadata.loadedChunks[this.getChunk(this.currentElement)] == true;
                 },
                 getChunk: function (value) {
                     let base64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-='
