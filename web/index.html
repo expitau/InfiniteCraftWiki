@@ -467,7 +467,6 @@
             el: '#app',
             data: {
                 data: { index: {}, list: [], costs: {}, craftingCache: {}, data: {}, metadata: { recipeCount: 0, loadedChunks: [] } },
-                chunkLoadState: [],
                 craftingTreeData: null,
                 bookmarkletData: "",
                 currentElement: "",
@@ -656,22 +655,21 @@
                     return Math.floor(result / 100)
                 },
                 loadChunk: async function (chunk) {
-                    if (this.chunkLoadState[chunk]) {
-                        return this.chunkLoadState[chunk];
+                    if (this.data.metadata.loadedChunks[chunk]) {
+                        return this.data.metadata.loadedChunks[chunk];
                     }
                     const worker = new Worker(CHUNK_WORKER_PATH);
                     const promise = new Promise((resolve, reject) => {
                         worker.onmessage = (e) => {
                             const { chunkData, chunk } = e.data;
-                            this.chunkLoadState[chunk] = true;
                             this.data.data = Object.freeze(Object.assign({}, this.data.data, chunkData));
-                            this.data.metadata.loadedChunks.push(chunk);
+                            this.data.metadata.loadedChunks[chunk] = true;
                             resolve(true);
                             worker.terminate();
                         };
                         worker.onerror = (e) => {
                             reject(e);
-                            delete this.chunkLoadState[chunk];
+                            delete this.data.metadata.loadedChunks[chunk];
                             worker.terminate();
                         };
                     });
@@ -680,7 +678,7 @@
                         saveData: this.saveDataArray,
                         DATA_PREFIX: DATA_PREFIX,
                     });
-                    this.chunkLoadState[chunk] = promise;
+                    this.data.metadata.loadedChunks[chunk] = promise;
                     return promise;
                 },
                 calcCraftingTree: async function (element) {
