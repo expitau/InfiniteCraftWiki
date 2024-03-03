@@ -12,6 +12,7 @@
         window.dataLayer = window.dataLayer || [];
         function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
+
         gtag('config', 'G-PCW5J4G9KX');
     </script>
 
@@ -27,7 +28,7 @@
 
 <body>
     <div id="app">
-        <div id="container" :class="{'showUnavailableElements': saveData.size != 0}">
+        <div id="container" :class="{'showUnavailableElements': saveData.size > 0}">
             <div>
                 <h1 style="text-align: center; cursor: pointer; margin-bottom: 0px;"
                     @click="navigateTo(''); searchQuery='';">
@@ -49,7 +50,7 @@
                 <div class="github-link-text">Star my repo!</div>
             </a>
 
-            <div v-if="!isMobile" class="upload-button">
+            <div v-if="!isMobile" class="import-button">
                 <div style="margin:0px" class="button" @click="showImportToast=true">
                     Import Data
                 </div>
