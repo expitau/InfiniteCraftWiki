@@ -107,7 +107,7 @@
                         </p>
                         <div class="draggable-wrapper" :class="{ 'show-outline': isDraggingBookmarklet }"
                             style="margin-left: auto; margin-right: auto;">
-                            <a :href="`javascript:(function(){${bookmarkletData}})();`" draggable="true"
+                            <a :href="`${bookmarkletData}`" draggable="true"
                                 @dragstart="this.isDraggingBookmarklet = true"
                                 @dragend="this.isDraggingBookmarklet = false" @click.prevent="preventClick"
                                 class="draggable" :class="{ 'dragging': isDraggingBookmarklet, 'shake': isShaking}">
@@ -467,7 +467,6 @@
             data: {
                 data: { index: {}, list: [], costs: {}, craftingCache: {}, data: {}, metadata: { recipeCount: 0, loadedChunks: [] } },
                 craftingTreeData: null,
-                bookmarkletData: "",
                 currentElement: "",
                 showHiddenRecipes: false,
                 searchQuery: "",
@@ -552,6 +551,36 @@
                 isMobile: function () {
                     return (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
                 },
+                bookmarkletData: function() {
+                    return `javascript:(function(){
+                    /* Click here to redirect to infinite craft -> Click again to Save data to the Wiki */
+                        function createIframeWithAccess() {
+                            var iframe = document.createElement('iframe');
+                            iframe.style.display = 'none';
+                            iframe.src = '${IFRAME_PATH}';
+                            document.body.appendChild(iframe);
+                            window.addEventListener('message', function (event) {
+                                if (event.data === 'requestLocalStorage') {
+                                    var localStorageData = localStorage.getItem('infinite-craft-data');
+                                    event.source.postMessage(localStorageData, event.origin);
+                                }
+                            }, false);
+                        }
+                        function displayMessage(header, content) {
+                            document.body.innerHTML = \`<div style="position: fixed;width: 100vw;text-align: center;height: 100vh;background-color: #191919;color: #c6c7c7;padding-top: 50px;font-size: 18px; font-family: "Roboto", sans-serif;"><h1 style="margin-bottom: 5px;">\${header}</h1><br><div style="font-weight: bold; color: gray;">\${content}</div></div>\`;
+                        }
+                        if (window.location.href != "https://neal.fun/infinite-craft/") {
+                            setTimeout(() => {
+                                window.location.href = "https://neal.fun/infinite-craft/";
+                            }, 1000);
+                            displayMessage('Redirecting to Infinite Craft', 'Click this Bookmarklet again once you are there to save your data!');
+                            } else if (!top.hasOwnProperty('addOnCreated')) {
+                            displayMessage('Redirecting to Infinite Craft Wiki', 'Do this any time to update your elements!');
+                            createIframeWithAccess();
+                            top.addOnCreated = true;
+                        }
+                    })();`;
+                }
             },
             methods: {
                 navigateTo: function (element) {
@@ -789,15 +818,6 @@
                     })
                     .catch(error => {
                         console.error('Error loading metadata:', error);
-                    });
-
-                fetch('bookmarklet.js')
-                    .then(response => { return response.text() })
-                    .then(bookmarkletText => {
-                        this.bookmarkletData = bookmarkletText.replace('IFRAME_URL', IFRAME_PATH);
-                    })
-                    .catch(error => {
-                        console.error('Error loading bookmarklet:', error);
                     });
 
                 addEventListener("popstate", (event) => this.navigateTo(getQuery().e || ""));
