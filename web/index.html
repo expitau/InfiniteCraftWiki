@@ -481,7 +481,6 @@
                 loadedElements: 100,
                 currentPanelIndex: 0,
                 scroll: 0,
-                isScrolling: false,
                 showFullRecipe: false,
             },
             computed: {
@@ -596,7 +595,7 @@
                     if (window.pageYOffset > 500) {
                         window.scrollTo(0, 500);
                     }
-                    this.isScrolling = false;
+                    window.isScrolling = false;
                     const duration = 500;
                     const start = window.pageYOffset;
                     const startTime = performance.now();
@@ -608,7 +607,7 @@
                     };
 
                     const animateScroll = (currentTime) => {
-                        if (this.isScrolling) {
+                        if (window.isScrolling) {
                             return;
                         }
                         const timeElapsed = currentTime - startTime;
@@ -834,7 +833,7 @@
                 });
 
                 document.addEventListener("wheel", (event) => {
-                    this.isScrolling = true;
+                    window.isScrolling = true;
                     window.lastScrollTime ??= Date.now();
                     if (this.currentElement && window.lastScrollTime + 200 < Date.now()) {
                         if (event.deltaX > 30 && event.deltaY < 30) {
