@@ -3,7 +3,7 @@ function createIframeWithAccess() {
    /* Create and append the Iframe */
    var iframe = document.createElement('iframe');
    iframe.style.display = 'none';
-   iframe.src = 'HELPER_URL';
+   iframe.src = 'IFRAME_URL';
    document.body.appendChild(iframe);
 
    /* Respond to requests for local storage from Iframe */

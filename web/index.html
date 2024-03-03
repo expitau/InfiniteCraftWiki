@@ -108,7 +108,7 @@
                         <div class="draggable-wrapper" :class="{ 'show-outline': isDraggingBookmarklet }"
                             style="margin-left: auto; margin-right: auto;">
                             <a :href="`javascript:(function(){${bookmarkletData}})();`" draggable="true"
-                                @dragstart="dragStart" @dragend="dragEnd" @click.prevent="preventClick"
+                                @dragstart="this.isDraggingBookmarklet = true" @dragend="this.isDraggingBookmarklet = false" @click.prevent="preventClick"
                                 class="draggable" :class="{ 'dragging': isDraggingBookmarklet, 'shake': isShaking}">
                                 Infinite Craft Wiki
                             </a>
@@ -457,11 +457,10 @@
             return queryParams;
         }
 
-        const PATH_PREFIX = window.location.host == 'expitau.github.io' ? '/' : '';
-        const CHUNK_WORKER_PATH = `${PATH_PREFIX}loadChunkWorker.js`;
-        const DATA_PATH = `${PATH_PREFIX}data/`;
-        const HELPER_PATH = window.location.host == 'expitau.github.io' ? 'https://expitau.github.io/InfiniteCraftWiki/helper'
-            : 'http://127.0.0.1:5501/web/helper.html';
+        const CHUNK_WORKER_PATH = 'loadChunkWorker.js';
+        const DATA_PREFIX = 'data/';
+        const IFRAME_PATH = window.location.host == 'expitau.github.io' ? 'https://expitau.github.io/InfiniteCraftWiki/bookmarklet-iframe'
+            : 'http://127.0.0.1:5501/web/bookmarklet-iframe.html';
 
         // Vue app
         const app = new Vue({
@@ -632,12 +631,6 @@
                     localStorage.setItem("saveData", "");
                     window.location.reload();
                 },
-                dragStart() {
-                    this.isDraggingBookmarklet = true;
-                },
-                dragEnd() {
-                    this.isDraggingBookmarklet = false;
-                },
                 preventClick(event) {
                     this.isShaking = true;
                     setTimeout(() => {
@@ -685,7 +678,7 @@
                     worker.postMessage({
                         chunk: chunk,
                         saveData: this.saveDataArray,
-                        DATA_PREFIX: DATA_PATH,
+                        DATA_PREFIX: DATA_PREFIX,
                     });
                     this.chunkLoadState[chunk] = promise;
                     return promise;
@@ -779,7 +772,7 @@
                     this.showToast = false;
                 }
                 // Load recipes from JSON file
-                fetch(DATA_PATH + 'index.json')
+                fetch(DATA_PREFIX + 'index.json')
                     .then(response => { console.log(response); return response.json() })
                     .then(index => {
                         this.data.index = Object.freeze(Object.fromEntries(Object.entries(index).map(x => [x[0], [x[1][0], x[1][1]]])))
@@ -787,13 +780,13 @@
                         this.data.list = Object.freeze(Object.entries(index).sort((a, b) => a[1][2] - b[1][2]).filter(x => x[1][1] != "Nothing").map(x => [x[0], x[1][1]]))
                         this.data.costs = Object.freeze(Object.fromEntries(Object.entries(index).map(x => [x[0], x[1][2]])))
 
-                        this.navigateTo(getQuery().e || (document.referrer === HELPER_PATH ? localStorage.getItem("lastElement") : "") || "");
+                        this.navigateTo(getQuery().e || (document.referrer === IFRAME_PATH ? localStorage.getItem("lastElement") : "") || "");
                     })
                     .catch(error => {
                         console.error('Error loading recipes:', error);
                     });
 
-                fetch(DATA_PATH + 'metadata.json')
+                fetch(DATA_PREFIX + 'metadata.json')
                     .then(response => { console.log(response); return response.json() })
                     .then(metadata => {
                         this.data.metadata.recipeCount = metadata.recipeCount
@@ -805,7 +798,7 @@
                 fetch('bookmarklet.js')
                     .then(response => { return response.text() })
                     .then(bookmarkletText => {
-                        this.bookmarkletData = bookmarkletText.replace('HELPER_URL', HELPER_PATH);
+                        this.bookmarkletData = bookmarkletText.replace('IFRAME_URL', IFRAME_PATH);
                     })
                     .catch(error => {
                         console.error('Error loading bookmarklet:', error);
