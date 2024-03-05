@@ -459,7 +459,7 @@
         const CHUNK_WORKER_PATH = 'loadChunkWorker.js';
         const DATA_PREFIX = 'data/';
         const IFRAME_PATH = window.location.host == 'expitau.github.io' ? 'https://expitau.github.io/InfiniteCraftWiki/bookmarklet-iframe'
-            : 'http://127.0.0.1:5501/web/bookmarklet-iframe.html';
+            : `http://${window.location.host}/web/bookmarklet-iframe.html`;
 
         // Vue app
         const app = new Vue({
@@ -554,12 +554,12 @@
                     return new Set(this.saveDataArray);
                 },
                 bookmarkletData: function() {
-                    return `javascript:(function(){
-                    /* Click here to redirect to infinite craft -> Click again to Save data to the Wiki */
+                    var bookmarklet = function(){
+                        /* Click here to redirect to infinite craft -> Click again to Save data to the Wiki */
                         function createIframeWithAccess() {
                             var iframe = document.createElement('iframe');
                             iframe.style.display = 'none';
-                            iframe.src = '${IFRAME_PATH}';
+                            iframe.src = 'IFRAME_PATH';
                             document.body.appendChild(iframe);
                             window.addEventListener('message', function (event) {
                                 if (event.data === 'requestLocalStorage') {
@@ -569,7 +569,7 @@
                             }, false);
                         }
                         function displayMessage(header, content) {
-                            document.body.innerHTML = \`<div style="position: fixed;width: 100vw;text-align: center;height: 100vh;background-color: #191919;color: #c6c7c7;padding-top: 50px;font-size: 18px; font-family: "Roboto", sans-serif;"><h1 style="margin-bottom: 5px;">\${header}</h1><br><div style="font-weight: bold; color: gray;">\${content}</div></div>\`;
+                            document.body.innerHTML = `<div style="position: fixed;width: 100vw;text-align: center;height: 100vh;background-color: #191919;color: #c6c7c7;padding-top: 50px;font-size: 18px; font-family: "Roboto", sans-serif;"><h1 style="margin-bottom: 5px;">${header}</h1><br><div style="font-weight: bold; color: gray;">${content}</div></div>`;
                         }
                         if (window.location.href != "https://neal.fun/infinite-craft/") {
                             setTimeout(() => {
@@ -581,7 +581,8 @@
                             createIframeWithAccess();
                             top.addOnCreated = true;
                         }
-                    })();`;
+                    };
+                    return `javascript:(${bookmarklet.toString()})()`.replace('IFRAME_PATH', IFRAME_PATH);
                 }
             },
             methods: {
