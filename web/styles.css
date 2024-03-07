@@ -178,7 +178,7 @@ body {
 
 .github-link:hover {
     color: #949494;
-    transition: color var(--transition-s) ease;
+    transition: color 0.05s ease;
 }
 
 @media (max-width: 700px) {
@@ -306,12 +306,12 @@ body {
 }
 
 .button {
-    transition: all 0.05s;
+    transition: color 0.05s ease;
     display: inline-block;
     padding: 10px 20px;
     background-color: transparent;
-    outline: solid 1px grey;
-    color: dimgrey;
+    outline: solid 1px #c6c7c7;
+    color: #c6c7c7;
     font-weight: bold;
     text-decoration: none;
     border-radius: 5px;
@@ -323,8 +323,8 @@ body {
 }
 
 .button:hover {
-    outline: solid 1px #d6d6d6;
-    color: #d6d6d6;
+    outline: solid 1px #949494;
+    color: #949494;
 }
 
 .draggable {
