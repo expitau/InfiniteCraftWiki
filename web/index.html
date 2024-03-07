@@ -52,7 +52,7 @@
 
             <div v-if="!isMobile" class="import-button">
                 <div style="margin:0px; padding: 9px;" class="button" @click="showImportToast=true">
-                    Import Game Data
+                    Import User Data
                 </div>
             </div>
 
@@ -121,7 +121,7 @@
                             <b>Step 3:</b>
                             Import your data to The Wiki by clicking on the bookmarklet again
                         </p>
-                        <div v-if="saveDataExists" class="button" @click="clearSaveData()">
+                        <div v-if="saveDataExists" class="button delete-button" @click="clearSaveData()">
                             Clear User Data
                         </div>
                     </div>

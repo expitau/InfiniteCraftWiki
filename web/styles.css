@@ -327,6 +327,16 @@ body {
     color: #949494;
 }
 
+.delete-button {
+    outline: solid 1px #d53a3a;
+    color: #d53a3a;
+}
+
+.delete-button:hover {
+    outline: solid 1px #ba1d1d;
+    color: #ba1d1d;
+}
+
 .draggable {
     display: inline-block;
     padding: 10px 20px;
