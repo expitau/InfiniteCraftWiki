@@ -120,6 +120,7 @@ body {
 .toast-body {
     position: relative;
     background-color: #242424;
+    max-width: 600px;
     border-radius: 0.5rem;
     padding: 3rem 4rem 2rem;
     display: flex;

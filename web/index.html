@@ -52,7 +52,7 @@
 
             <div v-if="!isMobile" class="import-button">
                 <div style="margin:0px" class="button" @click="showImportToast=true">
-                    Import Data
+                    Import Game Data
                 </div>
             </div>
 
@@ -98,9 +98,15 @@
 
             <transition name="slide-up" mode="out-in">
                 <div class="toast" v-if="showImportToast" v-on:click.self="showImportToast=false;">
-                    <div class="toast-body">
+                    <div class="toast-body" style="text-align: center;">
                         <span class="close-button topright" @click="showImportToast=false">&times;</span>
-                        <h2 style="margin-top: 0px; text-align: center;">Import your Infinite Craft data</h2>
+                        <h2 style="margin-top: 0px;">Import your Infinite Craft data</h2>
+                        <p>
+                            <i>
+                                Importing your game data allows The Wiki to show you which elements you have already 
+                                crafted and simplify crafting recipes using your existing elements
+                            </i>
+                        </p>
                         <p>
                             <b>Step 1:</b>
                             Click and drag this bookmarklet to your bookmarks bar
@@ -121,7 +127,7 @@
                         </p>
                         <p>
                             <b>Step 3:</b>
-                            Import your elements to The Wiki by clicking on the bookmarklet again
+                            Import your data to The Wiki by clicking on the bookmarklet again
                         </p>
                         <div v-if="saveDataExists" class="button" @click="clearSaveData()">
                             Clear User Data
@@ -287,12 +293,8 @@
                                                                 </td>
                                                             </tr>
                                                         </table>
-                                                        <div v-if="!isMobile && data.costs[currentElement] > 2">
-                                                            <div v-if="!saveDataExists" class="button"
-                                                                @click="showImportToast=true">
-                                                                Use your existing elements
-                                                            </div>
-                                                            <div v-else-if="showFullRecipe" class="button"
+                                                        <div v-if="saveDataExists && !isMobile && data.costs[currentElement] > 2">
+                                                            <div v-if="showFullRecipe" class="button"
                                                                 @click="showFullRecipe=false; calcCraftingTree(currentElement)">
                                                                 Show simplified recipe
                                                             </div>
