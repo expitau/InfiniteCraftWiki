@@ -1,7 +1,7 @@
 const fs = require('fs');
 
-const LOAD_FILE = 'web/data/data.json'
-const SAVE_FILE = 'web/data/data.json'
+const DEFAULT_LOAD_FILE = 'web/data/data.json'
+const DEFAULT_SAVE_FILE = 'web/data/data.json'
 
 function toBase64(n) {
     n = n + 1
@@ -14,6 +14,7 @@ function toBase64(n) {
     return result
 }
 
+// Takes { attempted, icons, costs }, returns { index, data }
 function compress(data) {
     console.log("Compressing...")
     let index = Object.keys(data.costs).sort((a, b) => data.costs[a] - data.costs[b]).filter(x => x != "Nothing").map((a, i) => [toBase64(i), [data.icons[a], a, data.costs[a]]])
@@ -25,6 +26,7 @@ function compress(data) {
     return { index: forward, data: comp }
 }
 
+// Takes { index, data }, returns { attempted, icons, costs }
 function uncompress(data) {
     out = {}
     out.attempted = data.data.split(';').map(x => x.split(',').map(y => data.index[y])).map(x => { return [x[0][1], x[1][1], x[2][1]] })
@@ -33,6 +35,7 @@ function uncompress(data) {
     return out
 }
 
+// Takes { attempted }, returns costs
 function getCosts(data) {
     console.log("Generating costs...")
     let costs = { "Water": 1, "Fire": 1, "Wind": 1, "Earth": 1 }
@@ -43,17 +46,11 @@ function getCosts(data) {
         for (recipe of data.attempted) {
             if (recipe[2] == "Nothing" || recipe[0] == "Nothing" || recipe[1] == "Nothing") {
             } else if (costs[recipe[0]] == null || costs[recipe[1]] == null) {
-                // console.log("Processing", recipe)
-                // console.log("Missing cost for", recipe[0], "or", recipe[1])
                 completed = false;
             } else if (!costs[recipe[2]]) {
-                // console.log("Processing", recipe)
-                // console.log("Set cost for", recipe[2], "to", costs[recipe[0]] + costs[recipe[1]], "(didn't exist)")
                 costs[recipe[2]] = costs[recipe[0]] + costs[recipe[1]]
                 completed = false;
             } else if (costs[recipe[2]] > costs[recipe[0]] + costs[recipe[1]]) {
-                // console.log("Processing", recipe)
-                // console.log("Set cost for", recipe[2], "to", costs[recipe[0]] + costs[recipe[1]], `(${costs[recipe[2]]} was higher)`)
                 costs[recipe[2]] = costs[recipe[0]] + costs[recipe[1]]
                 completed = false;
             }
@@ -62,24 +59,25 @@ function getCosts(data) {
     return Object.fromEntries(Object.entries(costs).sort(([, a], [, b]) => a - b))
 }
 
-
-function save(attempted, icons) {
+// Generates costs, and saves attempted and icons to file
+function save(attempted, icons, filepath = DEFAULT_SAVE_FILE) {
     try {
         data = { attempted, icons }
 
         data.costs = getCosts(data)
 
-        fs.writeFileSync(SAVE_FILE, JSON.stringify(compress(data)), 'utf8');
+        fs.writeFileSync(filepath, JSON.stringify(compress(data)), 'utf8');
         console.log(`${attempted.length} entries written to file`);
     } catch (err) {
         console.error('Error writing file:', err);
     }
 }
 
-function load() {
+// Returns { attempted, costs, icons } object
+function load(filepath = DEFAULT_LOAD_FILE) {
     let data
     try {
-        const file = fs.readFileSync(LOAD_FILE, 'utf8');
+        const file = fs.readFileSync(filepath, 'utf8');
         data = uncompress(JSON.parse(file));
     } catch (e) {
         console.error(e)
