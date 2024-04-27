@@ -850,6 +850,7 @@
                 
                 window.addEventListener('message', (event) => {
                     if(event.origin == `http://${window.location.host}`){
+                        event.source.postMessage('heartbeat response', event.origin);
                         let message = JSON.parse(event.data);
                         if(message.type == 'update all'){
                             console.log('Updated all');
@@ -857,13 +858,11 @@
                             localStorage.setItem('saveData', this.saveDataArray.join(','));
                             this.loadedChunks = [];
                             this.navigateTo(this.currentElement);
-                            event.source.postMessage('heartbeat response', event.origin);
                             this.dataSynced = true;
                         }else if(message.type == 'heartbeat'){
                             console.log('Heartbeat');
                             if(this.dataSynced){
                                 this.syncState = 2;
-                                event.source.postMessage('heartbeat response', event.origin);
                             }else{
                                 this.syncState = 1;
                                 event.source.postMessage('ready', event.origin);
