@@ -35,8 +35,11 @@
                     Infinite Craft Wiki
                 </h1>
 
-                <h3 class="sub-header">
+                <h3 v-if="!connectedToInfiniteCraft" class="sub-header">
                     {{ formatNumber(elementCount) }} elements · {{ formatNumber(data.metadata.recipeCount) }} recipes
+                </h3>
+                <h3 v-else class="sub-header" style="color:#347d39">
+                    Connected to Infinite Craft
                 </h3>
             </div>
 
@@ -474,6 +477,8 @@
                 currentPanelIndex: 0,
                 scroll: 0,
                 showFullRecipe: false,
+                connectedToInfiniteCraft: false,
+                lastHeartbeat: 0,
             },
             computed: {
                 currentTo: function () {
@@ -570,10 +575,14 @@
                                 window.location.href = "https://neal.fun/infinite-craft/";
                             }, 1000);
                             displayMessage('Redirecting to Infinite Craft', 'Click this Bookmarklet again once you are there to save your data!');
-                            } else if (!top.hasOwnProperty('addOnCreated')) {
-                            displayMessage('Redirecting to Infinite Craft Wiki', 'Do this any time to update your elements!');
+                        } else if (!top.hasOwnProperty('addOnCreated')) {
                             createIframeWithAccess();
                             top.addOnCreated = true;
+                            let connectedMessage = document.createElement('div');
+                            connectedMessage.style = 'color: black; margin-left: 150px; font-size: larger; margin-top: 15px;';
+                            connectedMessage.innerHTML = 'Connected to Wiki';
+                            let mainContainer = document.getElementsByClassName('container')[0];
+                            mainContainer.appendChild(connectedMessage);
                         }
                     };
                     return `javascript:(${bookmarklet.toString()})()`.replace(/  +/g, ' ').replace('IFRAME_PATH', IFRAME_PATH);
@@ -817,9 +826,37 @@
                     });
 
                 addEventListener("popstate", (event) => this.navigateTo(getQuery().e || ""));
-                this.saveDataArray = (getQuery().s || localStorage.getItem("saveData") || "").split(",").filter(x => x);
-                localStorage.setItem("saveData", this.saveDataArray.join(","));
-                setQuery({ s: '' })
+
+                if(localStorage.getItem("saveData") != null){
+                    this.saveDataArray = localStorage.getItem("saveData").split(",");
+                }
+                
+                window.addEventListener('message', (event) => {
+                    if(event.origin == `http://${window.location.host}`){
+                        this.connectedToInfiniteCraft = true;
+                        let message = JSON.parse(event.data);
+                        if(message.type == 'update all'){
+                            console.log('Updated all');
+                            this.saveDataArray = message.data;
+                            localStorage.setItem("saveData", this.saveDataArray.join(","));
+                            this.navigateTo(this.currentElement);
+                        }else if(message.type == 'heartbeat'){
+                            console.log('heartbeat');
+                            this.lastHeartbeat = Date.now();
+                            event.source.postMessage('heartbeat response', event.origin);
+                        }
+                    }
+                });
+
+                setInterval(() => {
+                    if(Date.now() - this.lastHeartbeat > 10000){
+                        this.connectedToInfiniteCraft = false;
+                    }
+                }, 10000);
+
+                if(window.opener != null){
+                    window.opener.postMessage('ready', `http://${window.location.host}`);
+                }
 
                 document.addEventListener("scroll", (event) => {
                     this.scroll = window.pageYOffset;

@@ -9,18 +9,53 @@
 
 <body>
    <script>
+      let wikiTab = window.open(window.location.host == 'expitau.github.io' ? 'https://expitau.github.io/InfiniteCraftWiki' : `http://${window.location.host}/web/index.html`);
+      
       // Request local storage from bookmarklet on Infinite Craft
-      window.parent.postMessage('requestLocalStorage', 'https://neal.fun');
+      setInterval(() => {
+         window.parent.postMessage('requestLocalStorage', 'https://neal.fun')
+      }, 5000);
+
+      let mainSent = false;
+      let isWikiReady = false;
+      let isDataReady = false;
+      let localStorageData = '';
+      let saveData = [];
+      let lastSaveData = "";
+
+      function sendData(type, data) {
+         wikiTab.postMessage(JSON.stringify({type: type, data: data}), `http://${window.location.host}`);
+      }
 
       // Add event listener for reciving local storage from Infinite Craft
       window.addEventListener('message', function (event) {
-         fetch(`https://raw.githubusercontent.com/expitau/InfiniteCraftWiki/main/web/data/index.json`)
+         if(event.origin == `http://${window.location.host}` && event.data == 'ready'){
+            sendData('ready response', {});
+            isWikiReady = true;
+            if(isDataReady){
+               sendData('all', saveData);
+               mainSent = true;
+            }
+         }
+         if(event.origin == 'https://neal.fun'){
+            if(event.data === lastSaveData){
+               console.log('same save data!');
+               sendData('heartbeat', {});
+               return;
+            }
+            fetch(`https://raw.githubusercontent.com/expitau/InfiniteCraftWiki/main/web/data/index.json`)
             .then(res => res.json())
             .then(data => {
-               index = Object.fromEntries(Object.entries(data).map(x => [x[1][1], x[0]]));
-               let redirectTo = window.location.host == 'expitau.github.io' ? 'https://expitau.github.io/InfiniteCraftWiki' : `http://${window.location.host}/web/index.html`;
-               window.parent.location.href = `${redirectTo}?s=${JSON.parse(event.data).elements.map(a => index[a.text]).filter(x => x).join(",")}`;
+               console.log('sending new save data!')
+               isDataReady = true;
+               if(isWikiReady){
+                  let index = Object.fromEntries(Object.entries(data).map(x => [x[1][1], x[0]]));
+                  saveData = JSON.parse(event.data).elements.map(a => index[a.text]).filter(x => x);
+                  sendData('update all', saveData);
+                  lastSaveData = event.data;
+               }
             });
+         }
       }, false);
    </script>
 </body>
