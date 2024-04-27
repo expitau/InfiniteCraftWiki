@@ -12,13 +12,18 @@
       let wikiTab = window.open(window.location.host == 'expitau.github.io' ? 'https://expitau.github.io/InfiniteCraftWiki' : `http://${window.location.host}/web/index.html`);
       
       // Request local storage from bookmarklet on Infinite Craft
+      let lastHeartbeat = Date.now();
       setInterval(() => {
-         window.parent.postMessage('requestLocalStorage', 'https://neal.fun')
-      }, 5000);
+         if(Date.now() - lastHeartbeat > 15000){
+            window.parent.postMessage('disconnected', 'https://neal.fun')
+         } else {
+            window.parent.postMessage('requestLocalStorage', 'https://neal.fun')
+         }
+      }, 500);
 
       let mainSent = false;
       let isWikiReady = false;
-      let isDataReady = false;
+      let isDataReady = false;lastHeartbeat
       let localStorageData = '';
       let saveData = [];
       let lastSaveData = "";
@@ -29,12 +34,13 @@
 
       // Add event listener for reciving local storage from Infinite Craft
       window.addEventListener('message', function (event) {
-         if(event.origin == `http://${window.location.host}` && event.data == 'ready'){
-            sendData('ready response', {});
-            isWikiReady = true;
-            if(isDataReady){
-               sendData('all', saveData);
-               mainSent = true;
+         if(event.origin == `http://${window.location.host}`){
+            lastHeartbeat = Date.now();
+            if(event.data == 'ready'){
+               isWikiReady = true;
+               if(isDataReady){
+                  sendData('update all', saveData);
+               }
             }
          }
          if(event.origin == 'https://neal.fun'){

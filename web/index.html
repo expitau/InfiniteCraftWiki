@@ -35,11 +35,14 @@
                     Infinite Craft Wiki
                 </h1>
 
-                <h3 v-if="!connectedToInfiniteCraft" class="sub-header">
+                <h3 v-if="syncState == 0" class="sub-header">
                     {{ formatNumber(elementCount) }} elements · {{ formatNumber(data.metadata.recipeCount) }} recipes
                 </h3>
+                <h3 v-else-if="syncState == 1" class="sub-header" style="color:#347d39">
+                    Tab Syncing with Infinite Craft...
+                </h3>
                 <h3 v-else class="sub-header" style="color:#347d39">
-                    Connected to Infinite Craft
+                    Tab Synced with Infinite Craft
                 </h3>
             </div>
 
@@ -477,8 +480,9 @@
                 currentPanelIndex: 0,
                 scroll: 0,
                 showFullRecipe: false,
-                connectedToInfiniteCraft: false,
-                lastHeartbeat: 0,
+                syncState: 0,
+                lastHeartbeat: Date.now(),
+                dataSynced: false,
             },
             computed: {
                 currentTo: function () {
@@ -556,7 +560,12 @@
                     var bookmarklet = function(){
                         /* Click here to redirect to infinite craft -> Click again to Save data to the Wiki */
                         function createIframeWithAccess() {
+                            if(document.getElementById('IframeWithAccess') != null){
+                                document.getElementById('IframeWithAccess').remove();
+                            }
+
                             var iframe = document.createElement('iframe');
+                            iframe.id = 'IframeWithAccess';
                             iframe.style.display = 'none';
                             iframe.src = 'IFRAME_PATH';
                             document.body.appendChild(iframe);
@@ -564,24 +573,29 @@
                                 if (event.data === 'requestLocalStorage') {
                                     var localStorageData = localStorage.getItem('infinite-craft-data');
                                     event.source.postMessage(localStorageData, event.origin);
+                                }else if (event.data === 'disconnected') {
+                                    document.getElementById('connectedMessage').innerHTML = "Wiki connection lost - use bookmarklet to reconnect";
                                 }
                             }, false);
                         }
                         function displayMessage(header, content) {
                             document.body.innerHTML = `<div style="position: fixed;width: 100vw;text-align: center;height: 100vh;background-color: #191919;color: #c6c7c7;padding-top: 50px;font-size: 18px; font-family: "Roboto", sans-serif;"><h1 style="margin-bottom: 5px;">${header}</h1><br><div style="font-weight: bold; color: gray;">${content}</div></div>`;
                         }
-                        if (window.location.href != "https://neal.fun/infinite-craft/") {
+                        if (window.location.href != 'https://neal.fun/infinite-craft/') {
                             setTimeout(() => {
-                                window.location.href = "https://neal.fun/infinite-craft/";
+                                window.location.href = 'https://neal.fun/infinite-craft/';
                             }, 1000);
-                            displayMessage('Redirecting to Infinite Craft', 'Click this Bookmarklet again once you are there to save your data!');
-                        } else if (!top.hasOwnProperty('addOnCreated')) {
+                            displayMessage('Redirecting to Infinite Craft', 'Click this Bookmarklet again once you are there to import your data!');
+                        } else {
                             createIframeWithAccess();
-                            top.addOnCreated = true;
-                            let connectedMessage = document.createElement('div');
-                            connectedMessage.style = 'color: black; margin-left: 150px; font-size: larger; margin-top: 15px;';
-                            connectedMessage.innerHTML = 'Connected to Wiki';
+                            if(document.getElementById('connectedMessage') != null){
+                                document.getElementById('connectedMessage').remove();
+                            }
                             let mainContainer = document.getElementsByClassName('container')[0];
+                            let connectedMessage = document.createElement('div');
+                            connectedMessage.id = 'connectedMessage';
+                            connectedMessage.style = 'color: black; margin-left: 150px; font-size: larger; margin-top: 15px;';
+                            connectedMessage.innerHTML = 'Syncing with Wiki';
                             mainContainer.appendChild(connectedMessage);
                         }
                     };
@@ -612,7 +626,7 @@
                     this.loadedElements = 100;
                     this.currentElement = element;
                     setQuery({ e: element });
-                    localStorage.setItem("lastElement", element);
+                    localStorage.setItem('lastElement', element);
                 },
                 slideLeft: function () {
                     this.currentPanelIndex = (this.currentPanelIndex + 3) % 3 - 1;
@@ -655,7 +669,7 @@
                 },
                 clearSaveData: function () {
                     this.saveDataArray = [];
-                    localStorage.setItem("saveData", "");
+                    localStorage.removeItem('saveData');
                     window.location.reload();
                 },
                 preventClick(event) {
@@ -807,10 +821,10 @@
                     .then(index => {
                         this.data.index = Object.freeze(Object.fromEntries(Object.entries(index).map(x => [x[0], [x[1][0], x[1][1]]])))
                         this.data.craftingCache = Object.freeze(Object.fromEntries(Object.entries(index).map(x => [x[0], [x[1][3], x[1][4]]])))
-                        this.data.list = Object.freeze(Object.entries(index).sort((a, b) => a[1][2] - b[1][2]).filter(x => x[1][1] != "Nothing").map(x => [x[0], x[1][1]]))
+                        this.data.list = Object.freeze(Object.entries(index).sort((a, b) => a[1][2] - b[1][2]).filter(x => x[1][1] != 'Nothing').map(x => [x[0], x[1][1]]))
                         this.data.costs = Object.freeze(Object.fromEntries(Object.entries(index).map(x => [x[0], x[1][2]])))
 
-                        this.navigateTo(getQuery().e || (document.referrer === IFRAME_PATH ? localStorage.getItem("lastElement") : "") || "");
+                        this.navigateTo(getQuery().e || (document.referrer === IFRAME_PATH ? localStorage.getItem('lastElement') : '') || '');
                     })
                     .catch(error => {
                         console.error('Error loading recipes:', error);
@@ -825,44 +839,53 @@
                         console.error('Error loading metadata:', error);
                     });
 
-                addEventListener("popstate", (event) => this.navigateTo(getQuery().e || ""));
+                addEventListener("popstate", (event) => this.navigateTo(getQuery().e || ''));
 
-                if(localStorage.getItem("saveData") != null){
-                    this.saveDataArray = localStorage.getItem("saveData").split(",");
+                if(localStorage.getItem('saveData') != null){
+                    this.saveDataArray = localStorage.getItem('saveData').split(',');
                 }
                 
                 window.addEventListener('message', (event) => {
                     if(event.origin == `http://${window.location.host}`){
-                        this.connectedToInfiniteCraft = true;
                         let message = JSON.parse(event.data);
                         if(message.type == 'update all'){
                             console.log('Updated all');
                             this.saveDataArray = message.data;
-                            localStorage.setItem("saveData", this.saveDataArray.join(","));
+                            localStorage.setItem('saveData', this.saveDataArray.join(','));
+                            this.loadedChunks = [];
                             this.navigateTo(this.currentElement);
-                        }else if(message.type == 'heartbeat'){
-                            console.log('heartbeat');
-                            this.lastHeartbeat = Date.now();
                             event.source.postMessage('heartbeat response', event.origin);
+                            this.dataSynced = true;
+                        }else if(message.type == 'heartbeat'){
+                            console.log('Heartbeat');
+                            if(this.dataSynced){
+                                this.syncState = 2;
+                                event.source.postMessage('heartbeat response', event.origin);
+                            }else{
+                                this.syncState = 1;
+                                event.source.postMessage('ready', event.origin);
+                            }
+                            this.lastHeartbeat = Date.now();
                         }
                     }
                 });
 
-                setInterval(() => {
-                    if(Date.now() - this.lastHeartbeat > 10000){
-                        this.connectedToInfiniteCraft = false;
-                    }
-                }, 10000);
-
-                if(window.opener != null){
+                if(window.opener != null && document.referrer === IFRAME_PATH){
+                    this.syncState = 1;
                     window.opener.postMessage('ready', `http://${window.location.host}`);
                 }
 
-                document.addEventListener("scroll", (event) => {
+                setInterval(() => {
+                    if(Date.now() - this.lastHeartbeat > 7000){
+                        this.syncState = 0;
+                    }
+                }, 500);
+
+                document.addEventListener('scroll', (event) => {
                     this.scroll = window.pageYOffset;
 
                     // For main body lazy scrolling
-                    var lastDiv = document.querySelector("#scroll-end");
+                    var lastDiv = document.querySelector('#scroll-end');
                     if (lastDiv) {
                         var lastDivOffset = lastDiv.offsetTop + lastDiv.clientHeight;
                         var pageOffset = window.pageYOffset + window.innerHeight;
@@ -873,7 +896,7 @@
                     }
 
                     // For specific element lazy scrolling
-                    var lastDiv = document.querySelector("#element-scroll-end");
+                    var lastDiv = document.querySelector('#element-scroll-end');
                     if (lastDiv) {
                         var lastDivOffset = lastDiv.offsetTop + lastDiv.clientHeight;
                         var pageOffset = window.pageYOffset + window.innerHeight;
@@ -884,7 +907,7 @@
                     }
                 });
 
-                document.addEventListener("wheel", (event) => {
+                document.addEventListener('wheel', (event) => {
                     window.isScrolling = true;
                     window.lastScrollTime ??= Date.now();
                     if (this.currentElement && window.lastScrollTime + 200 < Date.now()) {
@@ -899,7 +922,7 @@
                 });
 
                 // Preload initial chunks
-                for (let i = 0; i < 10; i++) {
+                for (let i = 0; i < 5; i++) {
                     await this.loadChunk(i);
                 }
             }
