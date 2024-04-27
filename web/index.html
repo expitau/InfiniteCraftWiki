@@ -35,8 +35,11 @@
                     Infinite Craft Wiki
                 </h1>
 
-                <h3 v-if="syncState == 0" class="sub-header">
+                <h3 v-if="syncState == 0 && !saveDataExists" class="sub-header">
                     {{ formatNumber(elementCount) }} elements · {{ formatNumber(data.metadata.recipeCount) }} recipes
+                </h3>
+                <h3 v-else-if="syncState == 0" class="sub-header">
+                    User data may be out of sync
                 </h3>
                 <h3 v-else-if="syncState == 1" class="sub-header" style="color:#347d39">
                     Tab Syncing with Infinite Craft...

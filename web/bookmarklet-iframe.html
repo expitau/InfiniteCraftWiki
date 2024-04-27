@@ -14,7 +14,7 @@
       // Request local storage from bookmarklet on Infinite Craft
       let lastHeartbeat = Date.now();
       setInterval(() => {
-         if(Date.now() - lastHeartbeat > 15000){
+         if(Date.now() - lastHeartbeat > 9000){
             window.parent.postMessage('disconnected', 'https://neal.fun')
          } else {
             window.parent.postMessage('requestLocalStorage', 'https://neal.fun')
@@ -23,7 +23,7 @@
 
       let mainSent = false;
       let isWikiReady = false;
-      let isDataReady = false;lastHeartbeat
+      let isDataReady = false;
       let localStorageData = '';
       let saveData = [];
       let lastSaveData = "";
