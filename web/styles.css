@@ -315,11 +315,9 @@ body {
     font-weight: bold;
     text-decoration: none;
     border-radius: 5px;
-    margin: 20px;
+    margin: 20px 0px;
     cursor: pointer;
     width: fit-content;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 .button:hover {
@@ -330,6 +328,16 @@ body {
 .delete-button {
     outline: solid 1px #d53a3a;
     color: #d53a3a;
+}
+
+.warning-button {
+    outline: solid 1px #d5be3a;
+    color: #d5be3a;
+}
+
+.warning-button:hover {
+    outline: solid 1px #ba901d;
+    color: #ba901d;
 }
 
 .delete-button:hover {
