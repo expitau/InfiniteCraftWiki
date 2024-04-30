@@ -43,7 +43,7 @@
                     Tab Syncing with Infinite Craft...
                 </h3>
                 <h3 v-else-if="saveDataExists" class="sub-header">
-                    Save data loaded
+                    Save data loaded - Not syncing
                 </h3>
                 <h3 v-else class="sub-header">
                     {{ formatNumber(elementCount) }} elements · {{ formatNumber(data.metadata.recipeCount) }} recipes
@@ -120,7 +120,7 @@
                                 @dragstart="this.isDraggingBookmarklet = true"
                                 @dragend="this.isDraggingBookmarklet = false" @click.prevent="preventClick"
                                 class="draggable" :class="{ 'dragging': isDraggingBookmarklet, 'shake': isShaking}">
-                                Infinite Craft Wiki
+                                Sync with Wiki
                             </a>
                         </div>
                         <p>

@@ -1,4 +1,14 @@
 window.BOOKMARKLET_DATA = function () {
+    /* Fetch metadata.json and alert if version different */
+    async function checkVersion() {
+        let VERSION = 1;
+        let response = await fetch(`https://raw.githubusercontent.com/expitau/InfiniteCraftWiki/main/web/data/metadata.json`);
+        let data = await response.json();
+        console.log(data);
+        if (data.bookmarkletVersion != VERSION) {
+            alert('Bookmarklet version is outdated! Update the bookmarklet by dragging it into your bookmarks bar again from the wiki page.');
+        }
+    }
     /* Click here to redirect to infinite craft -> Click again to Save data to the Wiki */
     function createIframeWithAccess() {
         if (document.getElementById('IframeWithAccess') != null) {
@@ -51,15 +61,17 @@ window.BOOKMARKLET_DATA = function () {
         return;
     }
 
-    createIframeWithAccess();
+    checkVersion().then(() => {
+        createIframeWithAccess();
 
-    /* Reset the connection message */
-    document.getElementById('connectedMessage')?.remove();
-    let mainContainer = document.getElementsByClassName('container')[0];
-    let connectedMessage = document.createElement('div');
-    connectedMessage.id = 'connectedMessage';
-    connectedMessage.style = 'margin-left: 150px; font-size: larger; margin-top: 15px;';
-    connectedMessage.style.color = "green";
-    connectedMessage.innerHTML = 'Syncing with Wiki';
-    mainContainer.appendChild(connectedMessage);
+        /* Reset the connection message */
+        document.getElementById('connectedMessage')?.remove();
+        let mainContainer = document.getElementsByClassName('container')[0];
+        let connectedMessage = document.createElement('div');
+        connectedMessage.id = 'connectedMessage';
+        connectedMessage.style = 'margin-left: 150px; font-size: larger; margin-top: 15px;';
+        connectedMessage.style.color = "green";
+        connectedMessage.innerHTML = 'Syncing with Wiki';
+        mainContainer.appendChild(connectedMessage);
+    })
 }.toString();
