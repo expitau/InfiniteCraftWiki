@@ -843,7 +843,7 @@
                 addEventListener("popstate", (event) => this.navigateTo(getQuery().e || ''));
 
                 if (localStorage.getItem('saveData') != null) {
-                    this.saveDataArray = localStorage.getItem('saveData').split(',');
+                    this.saveDataArray = localStorage.getItem('saveData').split(',').filter(x => x);
                 }
 
                 function processDataFromIframe(data) {
