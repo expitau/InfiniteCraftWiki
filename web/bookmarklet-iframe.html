@@ -22,9 +22,9 @@
       }
 
       function processDataFromWiki(data) {
+         console.log("Heartbeat received")
          if (!isActive) return;
 
-         console.log("Heartbeat received")
          if (data.type == 'heartbeat') {
             sendDataToWiki('heartbeatAck')
             lastHeartbeat = Date.now();
@@ -76,7 +76,7 @@
       window.addEventListener('message', function (event) {
          if (!isActive) return;
 
-         if (event.origin == `http://${window.location.host}`) {
+         if (event.origin == `https://${window.location.host}`) {
             processDataFromWiki(JSON.parse(event.data))
             return
          }
