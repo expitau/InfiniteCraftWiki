@@ -575,7 +575,7 @@
                     return Object.keys(this.data.index).length - 1;
                 },
                 saveDataExists: function () {
-                    return this.saveDataArray.length > 0;
+                    return this.saveDataArray.length > 0 && !this.isMobile;
                 },
                 isDefaultElement: function () {
                     return this.data.costs[this.currentElement] == 1;
