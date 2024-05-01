@@ -24,6 +24,7 @@
       function processDataFromWiki(data) {
          if (!isActive) return;
 
+         console.log("Heartbeat received")
          if (data.type == 'heartbeat') {
             sendDataToWiki('heartbeatAck')
             lastHeartbeat = Date.now();
