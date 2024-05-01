@@ -18,7 +18,7 @@
       let saveData = [];
 
       function sendDataToWiki(type, data = {}) {
-         wikiTab.postMessage(JSON.stringify({ type, data }), `http://${window.location.host}`);
+         wikiTab.postMessage(JSON.stringify({ type, data }), `https://${window.location.host}`);
       }
 
       function processDataFromWiki(data) {

@@ -801,7 +801,7 @@
                     this.craftingTreeData = result;
                 },
                 sendDataToIFrame: (type, data = {}) => {
-                    window.iframeRef.postMessage(JSON.stringify({ type: type, data: data }), `http://${window.location.host}`);
+                    window.iframeRef.postMessage(JSON.stringify({ type: type, data: data }), `https://${window.location.host}`);
                 }
             },
             async mounted() {
@@ -863,7 +863,7 @@
                 }
 
                 window.addEventListener('message', (event) => {
-                    if (event.origin == `http://${window.location.host}`) {
+                    if (event.origin == `https://${window.location.host}`) {
                         window.iframeRef = event.source
                         // Weird syntax for letting us use this.* inside the function
                         processDataFromIframe.call(this, JSON.parse(event.data))
