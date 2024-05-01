@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- This document is on neal.fun, providing updates via postmessage back to the host -->
+
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Bookmarklet iframe</title>
+</head>
+
+<body>
+   <script>
+      let isActive = true;
+      let wikiTab = window.open(window.location.host == 'expitau.github.io' ? 'https://expitau.github.io/InfiniteCraftWiki' : `http://${window.location.host}/web/index.html`);
+
+      let lastSaveData = [];
+      let saveData = [];
+
+      function sendDataToWiki(type, data = {}) {
+         wikiTab.postMessage(JSON.stringify({ type, data }), `http://${window.location.host}`);
+      }
+
+      function processDataFromWiki(data) {
+         if (!isActive) return;
+
+         if (data.type == 'heartbeat') {
+            sendDataToWiki('heartbeatAck')
+            lastHeartbeat = Date.now();
+         } else if (data.type == 'disconnect') {
+            sendDataToParent('disconnected')
+            isActive = false;
+         }
+      }
+
+      function sendDataToParent(type, data = {}) {
+         window.parent.postMessage(JSON.stringify({ type, data }), 'https://neal.fun')
+      }
+
+      function processDataFromParent(data) {
+         if (data.type != 'data') {
+            return
+         }
+
+         fetch(`https://raw.githubusercontent.com/expitau/InfiniteCraftWiki/main/web/data/index.json`)
+            .then(res => res.json())
+            .then(indexData => {
+               let index = Object.fromEntries(Object.entries(indexData).map(x => [x[1][1], x[0]]));
+               saveData = JSON.parse(data.data).elements.map(a => index[a.text]).filter(x => x);
+
+               if (saveData.join(",") !== lastSaveData.join(",")) {
+                  console.log("Sending update", saveData, lastSaveData)
+                  sendDataToWiki('update', saveData);
+                  lastSaveData = saveData;
+               } else {
+                  console.log('Save data matches!');
+               }
+
+            });
+      }
+
+      // Heartbeat with wiki
+      let lastHeartbeat = Date.now();
+      setInterval(() => {
+         if (!isActive) return;
+
+         if (Date.now() - lastHeartbeat > 5000) {
+            sendDataToParent('disconnected')
+         } else {
+            sendDataToParent('connected')
+         }
+      }, 500);
+
+      // Add event listener for reciving local storage from Infinite Craft
+      window.addEventListener('message', function (event) {
+         if (!isActive) return;
+
+         if (event.origin == `http://${window.location.host}`) {
+            processDataFromWiki(JSON.parse(event.data))
+            return
+         }
+
+         if (event.origin == 'https://neal.fun') {
+            processDataFromParent(JSON.parse(event.data))
+            return
+         }
+      }, false);
+   </script>
+</body>
+
+</html>

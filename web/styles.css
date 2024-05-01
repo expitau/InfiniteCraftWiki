@@ -1,5 +1,6 @@
 :root {
     color-scheme: dark;
+    scrollbar-gutter: stable;
 }
 
 body {
@@ -9,6 +10,11 @@ body {
     color: #c6c7c7;
     margin: 0;
     overflow-x: hidden;
+    overflow-y: auto;
+}
+
+#container {
+    position: relative;
 }
 
 #app {
@@ -24,11 +30,14 @@ body {
     display: inline-block;
     margin: 5px;
     line-height: 1em;
-    border: 1px solid #525252;
+    outline: 1px solid #525252;
 }
 
 .showUnavailableElements .item.item-used {
-    filter: brightness(50%)
+    filter: brightness(0.9);
+	outline: #9d7979 solid 1px;
+	background: linear-gradient(225deg, #ff6161 10px, transparent 10.2px);
+	outline-offset: -1px;
 }
 
 .visibility-toggle {
@@ -43,7 +52,7 @@ body {
 }
 
 .item:hover {
-    border: 1px solid #45505c;
+    outline: 1px solid #45505c;
 }
 
 .ingredients-list {
@@ -109,7 +118,9 @@ body {
 }
 
 .toast-body {
+    position: relative;
     background-color: #242424;
+    max-width: 600px;
     border-radius: 0.5rem;
     padding: 3rem 4rem 2rem;
     display: flex;
@@ -131,16 +142,26 @@ body {
 }
 
 .github-link {
+    position: absolute;
+    top: 3px;
+    left: 1rem;
     color: #c6c7c7;
     display: flex;
     align-items: center;
     text-decoration: none;
     gap: 10px;
-    position: relative;
-    top: 0px;
     margin-left: 0px;
-    margin-right: 10px;
+    margin-right: 0px;
     text-wrap: nowrap;
+}
+
+.import-button {
+    position: absolute;
+    top: 0px;
+    right: 1rem;
+    display: flex;
+    text-decoration: none;
+    margin: 0px;
 }
 
 .github-link-text {
@@ -157,15 +178,16 @@ body {
 
 .github-link:hover {
     color: #949494;
-    transition: color var(--transition-s) ease;
+    transition: color 0.05s ease;
 }
 
-@media (max-width: 1000px) {
-    .toast-body {
-        text-align: center;
-    }
+@media (max-width: 700px) {
     .github-link-text {
-        display: none
+        display: none;
+    }
+
+    .import-button {
+        display: none;
     }
 }
 
@@ -278,13 +300,125 @@ body {
 }
 
 .selected-link {
-    color:#ffffff;
+    color: #ffffff;
     font-weight: bold;
     border-bottom: 3px solid #347d39;
+}
+
+.button {
+    transition: color 0.05s ease;
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: transparent;
+    outline: solid 1px #c6c7c7;
+    color: #c6c7c7;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 5px;
+    margin: 20px 0px;
+    cursor: pointer;
+    width: fit-content;
+}
+
+.button:hover {
+    outline: solid 1px #949494;
+    color: #949494;
+}
+
+.delete-button {
+    outline: solid 1px #d53a3a;
+    color: #d53a3a;
+}
+
+.warning-button {
+    outline: solid 1px #d5be3a;
+    color: #d5be3a;
+}
+
+.warning-button:hover {
+    outline: solid 1px #ba901d;
+    color: #ba901d;
+}
+
+.delete-button:hover {
+    outline: solid 1px #ba1d1d;
+    color: #ba1d1d;
+}
+
+.draggable {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #347d39;
+    color: #FFFFFF;
+    text-decoration: none;
+    border-radius: 5px;
+    cursor: move !important;
+    width: fit-content;
+}
+
+.dragging {
+    opacity: 0.001;
+}
+
+.draggable-wrapper {
+    overflow: visible;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    outline: 2px solid transparent;
+    display: inline-block;
+    width: fit-content;
+    border-radius: 5px;
+    padding: 0px;
+    margin: 20px;
+}
+
+.show-outline {
+    outline: 2px dotted #c7d5e580;
+}
+
+@keyframes shake {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(-4deg);
+    }
+
+    75% {
+        transform: rotate(4deg);
+    }
+
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+.shake {
+    animation: shake 0.25s ease-in-out;
+    cursor: not-allowed !important;
 }
 
 @media (min-width: 1000px) {
     .nav-bar {
         display: none;
     }
+}
+
+.close-button {
+    border: none;
+    display: inline-block;
+    padding: 10px 26px;
+    vertical-align: middle;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    font-size: 40px;
+}
+
+.topright {
+    position: absolute;
+    right: 0;
+    top: 0
 }
