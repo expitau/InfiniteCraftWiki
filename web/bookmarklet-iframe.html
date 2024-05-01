@@ -16,6 +16,14 @@
 
       let lastSaveData = [];
       let saveData = [];
+      let index = null;
+      let isIndexReady = false;
+      fetch(`https://raw.githubusercontent.com/expitau/InfiniteCraftWiki/main/web/data/index.json`)
+         .then(res => res.json())
+         .then(data => {
+            index = Object.fromEntries(Object.entries(data).map(x => [x[1][1], x[0]]));;
+            isIndexReady = true;
+         });
 
       function sendDataToWiki(type, data = {}) {
          wikiTab.postMessage(JSON.stringify({ type, data }), `https://${window.location.host}`);
@@ -43,21 +51,21 @@
             return
          }
 
-         fetch(`https://raw.githubusercontent.com/expitau/InfiniteCraftWiki/main/web/data/index.json`)
-            .then(res => res.json())
-            .then(indexData => {
-               let index = Object.fromEntries(Object.entries(indexData).map(x => [x[1][1], x[0]]));
-               saveData = JSON.parse(data.data).elements.map(a => index[a.text]).filter(x => x);
+         if (!isIndexReady) {
+            setTimeout(() => {
+               processDataFromParent(data)
+            }, 1000);
+            return
+         }
+         saveData = JSON.parse(data.data).elements.map(a => index[a.text]).filter(x => x);
 
-               if (saveData.join(",") !== lastSaveData.join(",")) {
-                  console.log("Sending update", saveData, lastSaveData)
-                  sendDataToWiki('update', saveData);
-                  lastSaveData = saveData;
-               } else {
-                  console.log('Save data matches!');
-               }
-
-            });
+         if (saveData.join(",") !== lastSaveData.join(",")) {
+            console.log("Sending update", saveData, lastSaveData)
+            sendDataToWiki('update', saveData);
+            lastSaveData = saveData;
+         } else {
+            console.log('Save data matches!');
+         }
       }
 
       // Heartbeat with wiki
