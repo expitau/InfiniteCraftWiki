@@ -63,6 +63,23 @@ body {
     height: min-content;
 }
 
+
+@media (max-width: 520px) {
+    .ingredients-list {
+        scale: 0.9;
+        transform-origin: top;
+    }
+}
+
+@media (max-width: 460px) {
+    .ingredients-list {
+        scale: 0.8;
+        transform-origin: top;
+    }
+}
+
+
+
 @media (max-width) {
     #element {
         flex-direction: column-reverse
