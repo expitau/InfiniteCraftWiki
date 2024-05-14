@@ -2,7 +2,7 @@
 
 This is a webpage that provides a guide on how to craft various items in neal.fun's [Infinite Craft](https://neal.fun/infinite-craft/).
 
-Visit the [live site](https://expitau.github.io/InfiniteCraftWiki/) to see it in action!
+Visit the [live site](https://expitau.com/InfiniteCraftWiki/) to see it in action!
 
 ## Importing Save Files
 
