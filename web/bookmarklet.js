@@ -1,7 +1,7 @@
 window.BOOKMARKLET_DATA = function () {
     /* Fetch metadata.json and alert if version different */
     async function checkVersion() {
-        let VERSION = 1;
+        let VERSION = 2;
         let response = await fetch(`https://raw.githubusercontent.com/expitau/InfiniteCraftWiki/main/web/data/metadata.json`);
         let data = await response.json();
         console.log(data);
