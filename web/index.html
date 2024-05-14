@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Infinite Craft Wiki</title>
     <meta name="description" content="Explore over 3M crafting recipes from Infinite Craft!">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-PCW5J4G9KX"></script>
     <script>
@@ -106,7 +109,8 @@
                         <p>
                             <i>
                                 Importing your game data allows The Wiki to show you which elements you have already
-                                crafted and simplify crafting recipes using your existing elements. It will NOT show any new discoveries, or elements the wiki doesn't know about yet.
+                                crafted and simplify crafting recipes using your existing elements. It will NOT show any
+                                new discoveries, or elements the wiki doesn't know about yet.
                             </i>
                         </p>
                         <p>
@@ -489,8 +493,7 @@
 
         const CHUNK_WORKER_PATH = 'loadChunkWorker.js';
         const DATA_PREFIX = 'data/';
-        const IFRAME_PATH = window.location.host == 'expitau.com' ? 'https://expitau.com/InfiniteCraftWiki/bookmarklet-iframe'
-            : `http://${window.location.host}/web/bookmarklet-iframe.html`;
+        const IFRAME_PATH = window.location.host.includes('localhost') ? `http://${window.location.host}/web/bookmarklet-iframe.html` : 'https://expitau.com/InfiniteCraftWiki/bookmarklet-iframe';
 
         // Vue app
         const app = new Vue({

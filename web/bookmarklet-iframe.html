@@ -12,7 +12,7 @@
 <body>
    <script>
       let isActive = true;
-      let wikiTab = window.open(window.location.host == 'expitau.com' ? 'https://expitau.com/InfiniteCraftWiki' : `http://${window.location.host}/web/index.html`);
+      let wikiTab = window.open(window.location.host.includes('localhost') ? `http://${window.location.host}/web/index.html` : 'https://expitau.com/InfiniteCraftWiki');
 
       let lastSaveData = [];
       let saveData = [];
