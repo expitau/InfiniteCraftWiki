@@ -17,7 +17,7 @@ async function main() {
         }
     }
     for (let item of attemptedSet2) {
-        recipe = item.split(",,").map(x => data1.icons[x] + " " + x)
+        recipe = item.split(",,").map(x => data2.icons[x] + " " + x)
         console.log("\x1b[32m+",recipe[0],"+",recipe[1],"=>",recipe[2])
     }
     console.log(data1.attempted.length, data2.attempted.length)
