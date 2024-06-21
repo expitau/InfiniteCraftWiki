@@ -75,7 +75,9 @@ function getChunk(value) {
     for (let i = 0; i < value.length; i++) {
         result = (result * 64 + base64.indexOf(value[i]))
     }
-    return Math.floor(result / 100)
+    return Math.floor(Math.log(result / 50 + 1) * 8) + 1;
+    // return Math.floor(result / 1000)
+    // return Math.ceil(Math.log10((result + 1) / 3 + 1));
 }
 
 async function main() {
