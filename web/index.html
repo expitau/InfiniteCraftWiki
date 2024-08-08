@@ -826,12 +826,32 @@
                 fetch(DATA_PREFIX + 'index.json')
                     .then(response => { console.log(response); return response.json() })
                     .then(index => {
-                        this.data.index = Object.freeze(Object.fromEntries(Object.entries(index).map(x => [x[0], [x[1][0], x[1][1]]])))
-                        this.data.craftingCache = Object.freeze(Object.fromEntries(Object.entries(index).map(x => [x[0], [x[1][3], x[1][4]]])))
-                        this.data.list = Object.freeze(Object.entries(index).sort((a, b) => a[1][2] - b[1][2]).filter(x => x[1][1] != 'Nothing').map(x => [x[0], x[1][1]]))
-                        this.data.costs = Object.freeze(Object.fromEntries(Object.entries(index).map(x => [x[0], x[1][2]])))
+                        console.log("Start mounted")
+                        const tempIndex = {};
+                        const tempCraftingCache = {};
+                        const tempList = [];
+                        const tempCosts = {};
+
+                        for (const [key, value] of Object.entries(index)) {
+                            tempIndex[key] = [value[0], value[1]];
+                            tempCraftingCache[key] = [value[3], value[4]];
+                            tempCosts[key] = value[2];
+
+                            if (value[1] !== 'Nothing') {
+                                tempList.push([key, value[1], value[2]]);
+                            }
+                        }
+
+                        tempList.sort((a, b) => a[2] - b[2]);
+
+                        this.data.index = Object.freeze(tempIndex);
+                        this.data.craftingCache = Object.freeze(tempCraftingCache);
+                        this.data.list = Object.freeze(tempList.map(x => [x[0], x[1]]));
+                        this.data.costs = Object.freeze(tempCosts);
 
                         this.navigateTo(getQuery().e || (document.referrer === IFRAME_PATH ? localStorage.getItem('lastElement') : '') || '');
+                        console.log("Finish mounted")
+
                     })
                     .catch(error => {
                         console.error('Error loading recipes:', error);
@@ -932,7 +952,6 @@
                         window.lastScrollTime = Date.now();
                     }
                 });
-
                 // Preload initial chunks
                 // for (let i = 0; i < 5; i++) {
                 //     await this.loadChunk(i);
