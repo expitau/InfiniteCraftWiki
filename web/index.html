@@ -424,7 +424,7 @@
                 <div key=1 v-else>
                     <div style="display: flex; flex-wrap: wrap; justify-content: center;">
                         <div v-if="Object.keys(data.index).length == 0" style="font-weight: bold; padding-top: 5px;">
-                            Loading data...</div>
+                            Loading data (may take up to 20s)...</div>
                         <div class="item" :class="{'item-used': !saveData.has(element)}" :title="elementTitle(element)"
                             v-for="element in elementList" @click="navigateTo(element)"
                             @mouseover="loadChunk(getChunk(element))">
