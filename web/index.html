@@ -51,7 +51,8 @@
                     Save data loaded - Not syncing
                 </h3>
                 <h3 v-else class="sub-header">
-                    {{ formatNumber(elementCount) }} elements · {{ formatNumber(data.metadata.recipeCount) }} recipes
+                    {{ formatNumber(data.metadata.elementCount) }} elements · {{ formatNumber(data.metadata.recipeCount)
+                    }} recipes
                 </h3>
             </div>
 
@@ -102,7 +103,6 @@
                     </div>
                 </div>
             </transition>
-
             <transition name="slide-up" mode="out-in">
                 <div class="toast" v-if="showImportToast" v-on:click.self="showImportToast=false;">
                     <div class="toast-body" style="text-align: center;">
@@ -153,18 +153,20 @@
             </transition>
 
             <transition name="slide-up" mode="out-in">
-                <div key=0 v-if="currentElement">
+                <div key=0 v-if="currentElement !== ''">
                     <button class="controls left-arrow" :style="`top:max(${scroll}px, 300px); outline: none`"
                         @click="slideLeft"></button>
                     <button class="controls right-arrow" :style="`top:max(${scroll}px, 300px); outline: none`"
                         @click="slideRight"></button>
+
                     <transition name="slide-right" mode="out-in">
                         <div :key="currentElement" style="text-align: center;" @click="navigateTo('')">
                             <div class="item"
                                 style="transform: scale(1.5); margin-top:30px; margin-bottom: 30px; border-radius: 3px; border-width: 0.4px"
                                 :class="{'item-used': !saveData.has(currentElement)}"
                                 :title="elementTitle(currentElement)">
-                                {{ data.index[currentElement][0] }}&nbsp;{{ data.index[currentElement][1] }}
+                                {{ data.index[currentElement] && data.index[currentElement][0] }}&nbsp;{{
+                                data.index[currentElement] && data.index[currentElement][1] }}
                             </div>
                         </div>
                     </transition>
@@ -176,83 +178,48 @@
                                 <div class="ingredients-list">
                                     <h3>Created by</h3>
                                     <transition name="slide-right" mode="out-in">
-                                        <div :key="(+isElementLoaded(currentElement))">
+                                        <div :key="currentElement">
                                             <div v-if="!isElementLoaded(currentElement)"
                                                 style="font-weight: bold; padding-top: 5px;">
                                                 Loading data...
                                             </div>
                                             <transition name="slide-right" mode="out-in"
-                                                v-else-if="currentFromLength > 0">
+                                                v-else-if="getElement(currentElement).from.length > 0">
                                                 <div :key="currentElement">
                                                     <table style="font-weight: bold;">
-                                                        <tr v-for="recipe in currentFrom">
+                                                        <tr
+                                                            v-for="recipe in getElement(currentElement).from.map(x => [x[0],x[1],currentElement])">
                                                             <td class="item"
-                                                                :class="{'item-used': !saveData.has(recipe.A)}"
-                                                                :title="elementTitle(recipe.A)"
-                                                                @click="navigateTo(recipe.A);"
-                                                                @mouseover="loadChunk(getChunk(recipe.A))">
-                                                                {{ data.index[recipe.A][0] }}&nbsp;{{
-                                                                data.index[recipe.A][1] }}
+                                                                :class="{'item-used': !saveData.has(recipe[0])}"
+                                                                :title="elementTitle(recipe[0])"
+                                                                @click="navigateTo(recipe[0]);"
+                                                                @mouseover="getElement(recipe[0])">
+                                                                {{ data.index[recipe[0]] && data.index[recipe[0]][0]
+                                                                }}&nbsp;{{
+                                                                data.index[recipe[0]] && data.index[recipe[0]][1] }}
                                                             </td>
                                                             <td>+</td>
                                                             <td class="item"
-                                                                :class="{'item-used': !saveData.has(recipe.B)}"
-                                                                :title="elementTitle(recipe.B)"
-                                                                @click="navigateTo(recipe.B);"
-                                                                @mouseover="loadChunk(getChunk(recipe.B))">
-                                                                {{ data.index[recipe.B][0] }}&nbsp;{{
-                                                                data.index[recipe.B][1] }}
+                                                                :class="{'item-used': !saveData.has(recipe[1])}"
+                                                                :title="elementTitle(recipe[1])"
+                                                                @click="navigateTo(recipe[1]);"
+                                                                @mouseover="getElement(recipe[1])">
+                                                                {{ data.index[recipe[1]] && data.index[recipe[1]][0]
+                                                                }}&nbsp;{{
+                                                                data.index[recipe[1]] && data.index[recipe[1]][1] }}
                                                             </td>
                                                             <td>=</td>
                                                             <td class="item"
-                                                                :class="{'item-used': !saveData.has(recipe.C)}"
-                                                                :title="elementTitle(recipe.C)"
-                                                                @click="navigateTo(recipe.C);"
-                                                                @mouseover="loadChunk(getChunk(recipe.C))">
-                                                                {{ data.index[recipe.C][0] }}&nbsp;{{
-                                                                data.index[recipe.C][1] }}
-                                                            </td>
-                                                        </tr>
-                                                        <tr v-for="recipe in currentHiddenFrom"
-                                                            v-if="showHiddenRecipes">
-                                                            <td class="item"
-                                                                :class="{'item-used': !saveData.has(recipe.A)}"
-                                                                :title="elementTitle(recipe.A)"
-                                                                @click="navigateTo(recipe.A);"
-                                                                @mouseover="loadChunk(getChunk(recipe.A))">
-                                                                {{ data.index[recipe.A][0] }}&nbsp;{{
-                                                                data.index[recipe.A][1] }}
-                                                            </td>
-                                                            <td>+</td>
-                                                            <td class="item"
-                                                                :class="{'item-used': !saveData.has(recipe.B)}"
-                                                                :title="elementTitle(recipe.B)"
-                                                                @click="navigateTo(recipe.B);"
-                                                                @mouseover="loadChunk(getChunk(recipe.B))">
-                                                                {{ data.index[recipe.B][0] }}&nbsp;{{
-                                                                data.index[recipe.B][1] }}
-                                                            </td>
-                                                            <td>=</td>
-                                                            <td class="item"
-                                                                :class="{'item-used': !saveData.has(recipe.C)}"
-                                                                :title="elementTitle(recipe.C)"
-                                                                @click="navigateTo(recipe.C);"
-                                                                @mouseover="loadChunk(getChunk(recipe.C))">
-                                                                {{ data.index[recipe.C][0] }}&nbsp;{{
-                                                                data.index[recipe.C][1] }}
+                                                                :class="{'item-used': !saveData.has(recipe[2])}"
+                                                                :title="elementTitle(recipe[2])"
+                                                                @click="navigateTo(recipe[2]);"
+                                                                @mouseover="getElement(recipe[2])">
+                                                                {{ data.index[recipe[2]] && data.index[recipe[2]][0]
+                                                                }}&nbsp;{{
+                                                                data.index[recipe[2]] && data.index[recipe[2]][1] }}
                                                             </td>
                                                         </tr>
                                                     </table>
-                                                    <div v-if="currentHiddenFromLength > 0">
-                                                        <div v-if="!showHiddenRecipes" class="text-link"
-                                                            @click="showHiddenRecipes = true">
-                                                            {{currentHiddenFromLength}} entries hidden
-                                                        </div>
-                                                        <div v-else class="text-link"
-                                                            @click="showHiddenRecipes = false">
-                                                            {{currentHiddenFromLength}} entries shown
-                                                        </div>
-                                                    </div>
                                                 </div>
                                             </transition>
                                             <div v-else style="font-weight: bold; padding-top: 5px;">
@@ -276,48 +243,48 @@
                                                     </div>
                                                     <div v-else-if="craftingTreeData.length == 0" class="item"
                                                         :class="{'item-used': !saveData.has(currentElement)}">
-                                                        {{ data.index[currentElement][0] }}&nbsp;{{
-                                                        data.index[currentElement][1] }}
+                                                        {{ data.index[currentElement] && data.index[currentElement][0] }}&nbsp;{{
+                                                        data.index[currentElement] && data.index[currentElement][1] }}
                                                     </div>
                                                     <div v-else>
                                                         <table style="font-weight: bold;">
                                                             <tr v-for="recipe in craftingTreeData">
                                                                 <td class="item"
-                                                                    :class="{'item-used': !saveData.has(recipe.A)}"
-                                                                    :title="elementTitle(recipe.A)"
-                                                                    @click="navigateTo(recipe.A);"
-                                                                    @mouseover="loadChunk(getChunk(recipe.A))">
-                                                                    {{ data.index[recipe.A][0] }}&nbsp;{{
-                                                                    data.index[recipe.A][1] }}
+                                                                    :class="{'item-used': !saveData.has(recipe[0])}"
+                                                                    :title="elementTitle(recipe[0])"
+                                                                    @click="navigateTo(recipe[0]);"
+                                                                    @mouseover="getElement(recipe[0])">
+                                                                    {{ data.index[recipe[0]] && data.index[recipe[0]][0] }}&nbsp;{{
+                                                                    data.index[recipe[0]] && data.index[recipe[0]][1] }}
                                                                 </td>
                                                                 <td>+</td>
                                                                 <td class="item"
-                                                                    :class="{'item-used': !saveData.has(recipe.B)}"
-                                                                    :title="elementTitle(recipe.B)"
-                                                                    @click="navigateTo(recipe.B);"
-                                                                    @mouseover="loadChunk(getChunk(recipe.B))">
-                                                                    {{ data.index[recipe.B][0] }}&nbsp;{{
-                                                                    data.index[recipe.B][1] }}
+                                                                    :class="{'item-used': !saveData.has(recipe[1])}"
+                                                                    :title="elementTitle(recipe[1])"
+                                                                    @click="navigateTo(recipe[1]);"
+                                                                    @mouseover="getElement(recipe[1])">
+                                                                    {{ data.index[recipe[1]] && data.index[recipe[1]][0] }}&nbsp;{{
+                                                                    data.index[recipe[1]] && data.index[recipe[1]][1] }}
                                                                 </td>
                                                                 <td>=</td>
                                                                 <td class="item"
-                                                                    :class="{'item-used': !saveData.has(recipe.C)}"
-                                                                    :title="elementTitle(recipe.C)"
-                                                                    @click="navigateTo(recipe.C);"
-                                                                    @mouseover="loadChunk(getChunk(recipe.C))">
-                                                                    {{ data.index[recipe.C][0] }}&nbsp;{{
-                                                                    data.index[recipe.C][1] }}
+                                                                    :class="{'item-used': !saveData.has(recipe[2])}"
+                                                                    :title="elementTitle(recipe[2])"
+                                                                    @click="navigateTo(recipe[2]);"
+                                                                    @mouseover="getElement(recipe[2])">
+                                                                    {{ data.index[recipe[2]] && data.index[recipe[2]][0] }}&nbsp;{{
+                                                                    data.index[recipe[2]] && data.index[recipe[2]][1] }}
                                                                 </td>
                                                             </tr>
                                                         </table>
                                                         <div
                                                             v-if="saveDataExists && !isMobile && data.costs[currentElement] > 2">
                                                             <div v-if="showFullRecipe" class="button"
-                                                                @click="showFullRecipe=false; calcCraftingTree(currentElement)">
+                                                                @click="showFullRecipe=false;">
                                                                 Show simplified recipe
                                                             </div>
                                                             <div v-else class=" button"
-                                                                @click="showFullRecipe=true; calcCraftingTree(currentElement)">
+                                                                @click="showFullRecipe=true;">
                                                                 Show full recipe
                                                             </div>
                                                         </div>
@@ -332,82 +299,44 @@
                                 <div class="ingredients-list">
                                     <h3>Used in</h3>
                                     <transition name="slide-right" mode="out-in">
-                                        <div :key="+isElementLoaded(currentElement)">
+                                        <div :key="currentElement">
                                             <div v-if="!isElementLoaded(currentElement)"
                                                 style="font-weight: bold; padding-top: 5px;">
                                                 Loading data...
                                             </div>
                                             <transition name="slide-right" mode="out-in"
-                                                v-else-if="currentToLength > 0">
+                                                v-else-if="getElement(currentElement).to.length > 0">
                                                 <div :key="currentElement">
                                                     <table style="font-weight: bold;">
-                                                        <tr v-for="recipe in currentTo">
+                                                        <tr v-for="recipe in getElement(currentElement).to.map(x => [currentElement,x[0],x[1]])">
                                                             <td class="item"
-                                                                :class="{'item-used': !saveData.has(recipe.A)}"
-                                                                :title="elementTitle(recipe.A)"
-                                                                @click="navigateTo(recipe.A);"
-                                                                @mouseover="loadChunk(getChunk(recipe.A))">
-                                                                {{ data.index[recipe.A][0] }}&nbsp;{{
-                                                                data.index[recipe.A][1] }}
+                                                                :class="{'item-used': !saveData.has(recipe[0])}"
+                                                                :title="elementTitle(recipe[0])"
+                                                                @click="navigateTo(recipe[0]);"
+                                                                @mouseover="getElement(recipe[0])">
+                                                                {{ data.index[recipe[0]] && data.index[recipe[0]][0] }}&nbsp;{{
+                                                                data.index[recipe[0]] && data.index[recipe[0]][1] }}
                                                             </td>
                                                             <td>+</td>
                                                             <td class="item"
-                                                                :class="{'item-used': !saveData.has(recipe.B)}"
-                                                                :title="elementTitle(recipe.B)"
-                                                                @click="navigateTo(recipe.B);"
-                                                                @mouseover="loadChunk(getChunk(recipe.B))">
-                                                                {{ data.index[recipe.B][0] }}&nbsp;{{
-                                                                data.index[recipe.B][1] }}
+                                                                :class="{'item-used': !saveData.has(recipe[1])}"
+                                                                :title="elementTitle(recipe[1])"
+                                                                @click="navigateTo(recipe[1]);"
+                                                                @mouseover="getElement(recipe[1])">
+                                                                {{ data.index[recipe[1]] && data.index[recipe[1]][0] }}&nbsp;{{
+                                                                data.index[recipe[1]] && data.index[recipe[1]][1] }}
                                                             </td>
                                                             <td>=</td>
                                                             <td class="item"
-                                                                :class="{'item-used': !saveData.has(recipe.C)}"
-                                                                :title="elementTitle(recipe.C)"
-                                                                @click="navigateTo(recipe.C);"
-                                                                @mouseover="loadChunk(getChunk(recipe.C))">
-                                                                {{ data.index[recipe.C][0] }}&nbsp;{{
-                                                                data.index[recipe.C][1] }}
-                                                            </td>
-                                                        </tr>
-                                                        <tr v-for="recipe in currentHiddenTo" v-if="showHiddenRecipes">
-                                                            <td class="item"
-                                                                :class="{'item-used': !saveData.has(recipe.A)}"
-                                                                :title="elementTitle(recipe.A)"
-                                                                @click="navigateTo(recipe.A);"
-                                                                @mouseover="loadChunk(getChunk(recipe.A))">
-                                                                {{ data.index[recipe.A][0] }}&nbsp;{{
-                                                                data.index[recipe.A][1] }}
-                                                            </td>
-                                                            <td>+</td>
-                                                            <td class="item"
-                                                                :class="{'item-used': !saveData.has(recipe.B)}"
-                                                                :title="elementTitle(recipe.B)"
-                                                                @click="navigateTo(recipe.B);"
-                                                                @mouseover="loadChunk(getChunk(recipe.B))">
-                                                                {{ data.index[recipe.B][0] }}&nbsp;{{
-                                                                data.index[recipe.B][1] }}
-                                                            </td>
-                                                            <td>=</td>
-                                                            <td class="item"
-                                                                :class="{'item-used': !saveData.has(recipe.C)}"
-                                                                :title="elementTitle(recipe.C)"
-                                                                @click="navigateTo(recipe.C);"
-                                                                @mouseover="loadChunk(getChunk(recipe.C))">
-                                                                {{ data.index[recipe.C][0] }}&nbsp;{{
-                                                                data.index[recipe.C][1] }}
+                                                                :class="{'item-used': !saveData.has(recipe[2])}"
+                                                                :title="elementTitle(recipe[2])"
+                                                                @click="navigateTo(recipe[2]);"
+                                                                @mouseover="getElement(recipe[2])">
+                                                                {{ data.index[recipe[2]] && data.index[recipe[2]][0] }}&nbsp;{{
+                                                                data.index[recipe[2]] && data.index[recipe[2]][1] }}
                                                             </td>
                                                         </tr>
                                                     </table>
-                                                    <div v-if="currentHiddenToLength > 0">
-                                                        <div v-if="!showHiddenRecipes" class="text-link"
-                                                            @click="showHiddenRecipes = true">
-                                                            {{currentHiddenToLength}} entries hidden
-                                                        </div>
-                                                        <div v-else class="text-link"
-                                                            @click="showHiddenRecipes = false">
-                                                            {{currentHiddenToLength}} entries shown
-                                                        </div>
-                                                    </div>
                                                 </div>
                                             </transition>
                                             <div v-else style="font-weight: bold; padding-top: 5px;">
@@ -424,17 +353,17 @@
                 <div key=1 v-else>
                     <div style="display: flex; flex-wrap: wrap; justify-content: center;">
                         <div v-if="Object.keys(data.index).length == 0" style="font-weight: bold; padding-top: 5px;">
-                            Loading data (may take up to 20s)...</div>
-                        <div class="item" :class="{'item-used': !saveData.has(element)}" :title="elementTitle(element)"
-                            v-for="element in elementList" @click="navigateTo(element)"
-                            @mouseover="loadChunk(getChunk(element))">
-                            {{ data.index[element][0] }}&nbsp;{{ data.index[element][1] }}
+                            Loading data...</div>
+                        <div class="item" :class="{'item-used': !saveData.has(element[0])}"
+                            :title="elementTitle(element[0])" v-for="element in elementList"
+                            @click="navigateTo(element[0])" @mouseover="getElement(element[0])">
+                            {{ element[1] }}&nbsp;{{ element[2] }}
                         </div>
                     </div>
                     <div id="scroll-end"></div>
                 </div>
             </transition>
-            <div v-if="currentElement" class="nav-bar">
+            <div v-if="currentElement !== ''" class="nav-bar">
                 <div class="nav-bar-link" :class="{ 'selected-link': currentPanelIndex === -1 }"
                     @click="currentPanelIndex = -1">
                     Created By
@@ -477,6 +406,17 @@
             return queryParams;
         }
 
+
+        function base64ToRecipeSegment(value) {
+            if (!value) return undefined
+            return [fromBase64(value.slice(0, 4)), fromBase64(value.slice(4, 8))]
+        }
+
+
+        function getChunk(n) {
+            return Math.floor(Math.log(n / 50 + 1) * 8) + 1;
+        }
+
         class SyncState {
             static #_SYNC_ERROR = -1;
             static #_NOT_CONNECTED = 0;
@@ -494,17 +434,30 @@
         }
 
         const CHUNK_WORKER_PATH = 'loadChunkWorker.js';
+        const SEARCH_WORKER_PATH = 'searchWorker.js';
         const DATA_PREFIX = 'data/';
         const IFRAME_PATH = window.location.host.includes('localhost') ? `http://${window.location.host}/web/bookmarklet-iframe` : 'https://expitau.com/InfiniteCraftWiki/bookmarklet-iframe';
+        let searchWorker = new Worker(SEARCH_WORKER_PATH);
+        function fromBase64(value) {
+            let base64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-='
+            let result = 0
+            for (let i = 0; i < value.length; i++) {
+                result = (result * 64 + base64.indexOf(value[i]))
+            }
+            return result
+        }
+
+        function base64ToRecipeSegment(value) {
+            return [fromBase64(value.slice(0, 4)), fromBase64(value.slice(4, 8))]
+        }
 
         // Vue app
         const app = new Vue({
             el: '#app',
             data: {
-                data: { index: {}, list: [], costs: {}, craftingCache: {}, data: {}, metadata: { recipeCount: 0, loadedChunks: [] } },
-                craftingTreeData: null,
-                currentElement: "",
-                showHiddenRecipes: false,
+                data: { chunks: {}, index: {}, metadata: { recipeCount: 0, elementCount: 0 } },
+                list: [],
+                currentElement: +getQuery().e || "",
                 searchQuery: "",
                 showToast: false,
                 showImportToast: false,
@@ -519,65 +472,45 @@
                 lastHeartbeat: Date.now(),
                 syncState: SyncState.NOT_CONNECTED,
             },
+            watch: {
+                searchQuery: function (newQuery) {
+                    this.list = []
+                    searchWorker.postMessage({ query: newQuery });
+                }
+            },
             computed: {
-                currentTo: function () {
-                    if (!this.data.data[this.currentElement]) {
-                        return []
+                craftingTreeData: function () {
+                    if (!this.data.index[this.currentElement]) {
+                        return
                     }
-                    let result = this.data.data[this.currentElement].to
-                        .map(recipe => {
-                            return { A: this.currentElement, B: recipe[0], C: recipe[1] }
-                        })
-                    return result.slice(0, this.loadedElements)
-                },
-                currentFrom: function () {
-                    if (!this.data.data[this.currentElement]) {
-                        return []
+                    let required = []
+                    let crafted = [0,1,2,3]
+                    let tree = []
+                    required.push(this.currentElement)
+                    while (required.length > 0) {
+                        let current = required.pop()
+                        if (!this.data.index[current]) {
+                            return tree
+                        }
+                        if (crafted.includes(current)) {
+                            continue
+                        }
+                        let A = this.data.index[current][3]
+                        let B = this.data.index[current][4]
+                        tree.push([A, B, current])
+                        crafted.push(current)
+                        if (!crafted.includes(A)) {
+                            required.push(A)
+                        }
+                        if (!crafted.includes(B)) {
+                            required.push(B)
+                        }
                     }
-                    let result = this.data.data[this.currentElement].from
-                        .map(recipe => {
-                            return { A: recipe[0], B: recipe[1], C: this.currentElement }
-                        })
-                    return result.slice(0, this.loadedElements)
-                },
-                currentHiddenTo: function () {
-                    if (!this.data.data[this.currentElement]) {
-                        return []
-                    }
-                    let result = this.data.data[this.currentElement].hiddenTo
-                        .map(recipe => {
-                            return { A: this.currentElement, B: recipe[0], C: recipe[1] }
-                        })
-                    return result.slice(0, 100)
-                },
-                currentHiddenFrom: function () {
-                    if (!this.data.data[this.currentElement]) {
-                        return []
-                    }
-                    let result = this.data.data[this.currentElement].hiddenFrom
-                        .map(recipe => {
-                            return { A: recipe[0], B: recipe[1], C: this.currentElement }
-                        })
-                    return result.slice(0, 100)
-                },
-                currentHiddenFromLength: function () {
-                    return this.data.data[this.currentElement]?.hiddenFrom.length || 0
-                },
-                currentHiddenToLength: function () {
-                    return this.data.data[this.currentElement]?.hiddenTo.length || 0
-                },
-                currentFromLength: function () {
-                    return this.currentFrom.length + (this.data.data[this.currentElement]?.hiddenFrom.length || 0);
-                },
-                currentToLength: function () {
-                    return this.currentTo.length + (this.data.data[this.currentElement]?.hiddenTo.length || 0);
+                    console.log(tree)
+                    return tree
                 },
                 elementList: function () {
-                    let query = this.searchQuery.toLowerCase()
-                    return this.data.list.filter(x => x[1].toLowerCase().includes(query)).map(x => x[0]).slice(0, this.loaded)
-                },
-                elementCount: function () {
-                    return Object.keys(this.data.index).length - 1;
+                    return this.list.slice(0, this.loaded).map(x => [x, this.data.index[x] && this.data.index[x][0], this.data.index[x] && this.data.index[x][1]])
                 },
                 saveDataExists: function () {
                     return this.saveDataArray.length > 0 && !this.isMobile;
@@ -602,28 +535,63 @@
                 }
             },
             methods: {
+                loadChunk: async function (c) {
+                    if (this.data.chunks[c]) {
+                        return Promise.resolve();
+                    }
+                    return new Promise((resolve) => {
+                        fetch(DATA_PREFIX + `data/dat-${c}.json`).then(res => res.json()).then(data => {
+                            let chunkData = {}
+
+                            for (let [index, rawTo, rawFrom] of data) {
+                                let from = rawFrom.map(x => base64ToRecipeSegment(x));
+                                let to = rawTo.map(x => base64ToRecipeSegment(x));
+                                chunkData[index] = {
+                                    from: from,
+                                    to: to,
+                                };
+                            }
+
+                            this.data.chunks = {
+                                ...this.data.chunks,
+                                [c]: chunkData
+                            }
+                            console.log("Loaded chunk " + c);
+                            resolve()
+                        });
+                    })
+                },
+                getElement: function (e) {
+                    if (e === "") {
+                        return {
+                            from: [],
+                            to: [],
+                        };
+                    }
+                    if (!this.data.chunks[getChunk(e)]) {
+                        this.loadChunk(getChunk(e))
+                        return {
+                            from: [],
+                            to: [],
+                        };
+                    }
+                    let out = this.data.chunks[getChunk(e)][e]
+                    return {
+                        from: out.from.slice(0, this.loadedElements),
+                        to: out.to.slice(0,this.loadedElements)
+                    };
+                },
                 stopSyncing: function () {
                     this.syncState = SyncState.NOT_CONNECTED;
                     this.sendDataToIFrame("disconnect")
                 },
                 navigateTo: function (element) {
                     if (element != "") {
-                        this.craftingTreeData = null;
-                        this.showHiddenRecipes = false;
-                        if (this.currentElement == "") {
+                        if (this.currentElement === "") {
                             this.currentPanelIndex = 0;
                             this.showFullRecipe = false;
                         }
-                        if (!this.data.data[element]) {
-                            this.craftingTreeData == null;
-                            this.loadChunk(this.getChunk(element)).then(_ => {
-                                this.smoothScrollTop();
-                                this.calcCraftingTree(element);
-                            });
-                        } else {
-                            this.smoothScrollTop();
-                            this.calcCraftingTree(element);
-                        }
+                        this.smoothScrollTop();
                     }
                     this.loaded = 1000;
                     this.loadedElements = 100;
@@ -692,123 +660,11 @@
                     return this.saveDataExists ? (this.saveData.has(element) ? 'Crafted' : 'Not crafted') : '';
                 },
                 isElementLoaded: function (element) {
-                    return this.data.metadata.loadedChunks[this.getChunk(element)] ?
-                        this.data.metadata.loadedChunks[this.getChunk(element)][1] : false;
-                },
-                getChunk: function (value) {
-                    let base64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-='
-                    let result = 0
-                    for (let i = 0; i < value.length; i++) {
-                        result = (result * 64 + base64.indexOf(value[i]))
-                    }
-
-                    return Math.floor(Math.log(result / 50 + 1) * 8) + 1;
-                },
-                loadChunk: async function (chunk) {
-                    if (this.data.metadata.loadedChunks[chunk]) {
-                        return this.data.metadata.loadedChunks[chunk][0];
-                    }
-                    const worker = new Worker(CHUNK_WORKER_PATH);
-                    const promise = new Promise((resolve, reject) => {
-                        worker.onmessage = (e) => {
-                            const { chunkData, chunk } = e.data;
-                            this.data.data = Object.freeze(Object.assign({}, this.data.data, chunkData));
-                            this.data.metadata.loadedChunks[chunk][1] = true;
-                            worker.terminate();
-                            resolve(true);
-                        };
-                        worker.onerror = (e) => {
-                            delete this.data.metadata.loadedChunks[chunk];
-                            worker.terminate();
-                            reject(e);
-                        };
-                    });
-                    worker.postMessage({
-                        chunk: chunk,
-                        saveData: this.saveDataArray,
-                        DATA_PREFIX: DATA_PREFIX,
-                    });
-                    this.data.metadata.loadedChunks[chunk] = [promise, false];
-                    return promise;
-                },
-                calcCraftingTree: async function (element) {
-                    if (this.data.costs[element] == 1) {
-                        this.craftingTreeData = [];
-                        return;
-                    }
-                    this.craftingTreeData = null;
-                    let usedElements = new Set();
-                    let loopingElements = new Set();
-                    let result = [];
-                    let tree = {
-                        value: element
-                    };
-                    let craftingList = [tree];
-                    while (craftingList.length > 0) {
-                        let currentNode = craftingList.shift();
-                        let currentElement = currentNode.value;
-
-                        if (usedElements.has(currentElement)) {
-                            continue;
-                        }
-
-                        if (!this.saveDataExists || this.showFullRecipe) {
-                            currentNode.left = { value: this.data.craftingCache[currentElement][0] };
-                            currentNode.right = { value: this.data.craftingCache[currentElement][1] };
-                            usedElements.add(currentElement);
-                        } else {
-                            if (!this.data.data[currentElement] && currentElement != "") {
-                                await this.loadChunk(this.getChunk(currentElement));
-                            }
-                            let fromIndex = null;
-                            for (let i = currentNode.lastIndex != undefined ? currentNode.lastIndex + 1 : 0; i < this.data.data[currentElement].from.length; i++) {
-                                if (this.saveData.has(this.data.data[currentElement].from[i][0])) {
-                                    if (this.saveData.has(this.data.data[currentElement].from[i][1])) {
-                                        fromIndex = i;
-                                        break;
-                                    }
-                                    if (!usedElements.has(this.data.data[currentElement].from[i][1])) {
-                                        fromIndex = i;
-                                        break;
-                                    }
-                                } else if (this.saveData.has(this.data.data[currentElement].from[i][1])) {
-                                    if (!usedElements.has(this.data.data[currentElement].from[i][0])) {
-                                        fromIndex = i;
-                                        break;
-                                    }
-                                } else {
-                                    fromIndex = i;
-                                    break;
-                                }
-                            }
-
-                            if (fromIndex == null) {
-                                console.log('Added looping element: ' + this.data.index[currentElement][1]);
-                                // If a dependency loop is detected move to the parent again and try the following recipe instead
-                                usedElements.delete(currentNode.parent.value);
-                                craftingList.unshift(currentNode.parent);
-                                continue;
-                            } else {
-                                currentNode.left = { value: this.data.data[currentElement].from[fromIndex][0], parent: currentNode };
-                                currentNode.right = { value: this.data.data[currentElement].from[fromIndex][1], parent: currentNode };
-                                currentNode.lastIndex = fromIndex;
-                                usedElements.add(currentElement);
-                            }
-                        }
-
-                        result.unshift({ A: currentNode.left.value, B: currentNode.right.value, C: currentElement });
-                        if (this.data.costs[currentNode.left.value] != 1 && (!this.saveData.has(currentNode.left.value) || this.showFullRecipe)) {
-                            craftingList.unshift(currentNode.left);
-                        }
-                        if (this.data.costs[currentNode.right.value] != 1 && (!this.saveData.has(currentNode.right.value) || this.showFullRecipe)) {
-                            craftingList.unshift(currentNode.right);
-                        }
-                    }
-                    this.craftingTreeData = result;
+                    return !!this.data.chunks[getChunk(element)]
                 },
                 sendDataToIFrame: (type, data = {}) => {
                     window.iframeRef.postMessage(JSON.stringify({ type: type, data: data }), `https://${window.location.host}`);
-                }
+                },
             },
             async mounted() {
                 if (localStorage.getItem("showToast") === null || localStorage.getItem("showToast") === true) {
@@ -822,45 +678,25 @@
                 } else {
                     this.showToast = false;
                 }
-                // Load recipes from JSON file
-                fetch(DATA_PREFIX + 'index.json')
-                    .then(response => { console.log(response); return response.json() })
-                    .then(index => {
-                        console.log("Start mounted")
-                        const tempIndex = {};
-                        const tempCraftingCache = {};
-                        const tempList = [];
-                        const tempCosts = {};
 
-                        for (const [key, value] of Object.entries(index)) {
-                            tempIndex[key] = [value[0], value[1]];
-                            tempCraftingCache[key] = [value[3], value[4]];
-                            tempCosts[key] = value[2];
-
-                            if (value[1] !== 'Nothing') {
-                                tempList.push([key, value[1], value[2]]);
-                            }
-                        }
-
-                        tempList.sort((a, b) => a[2] - b[2]);
-
-                        this.data.index = Object.freeze(tempIndex);
-                        this.data.craftingCache = Object.freeze(tempCraftingCache);
-                        this.data.list = Object.freeze(tempList.map(x => [x[0], x[1]]));
-                        this.data.costs = Object.freeze(tempCosts);
-
-                        this.navigateTo(getQuery().e || (document.referrer === IFRAME_PATH ? localStorage.getItem('lastElement') : '') || '');
-                        console.log("Finish mounted")
-
-                    })
-                    .catch(error => {
-                        console.error('Error loading recipes:', error);
-                    });
+                searchWorker.onmessage = (e) => {
+                    if (e.data.query == this.searchQuery) {
+                        this.list = [...this.list, ...e.data.results];
+                    }
+                };
 
                 fetch(DATA_PREFIX + 'metadata.json')
                     .then(response => { console.log(response); return response.json() })
                     .then(metadata => {
                         this.data.metadata.recipeCount = metadata.recipeCount
+                        this.data.metadata.elementCount = metadata.elementCount
+
+                        for (let i = 0; i < metadata.indexCount; i++) {
+                            fetch(DATA_PREFIX + `/index/idx-${i + 1}.json`).then(res => res.json()).then(chunk => {
+                                console.log("Loaded " + i)
+                                this.data.index = Object.assign({}, this.data.index, Object.fromEntries(chunk.map(x => [x[0], [x[1], x[2], x[3], x[4], x[5]]])))
+                            })
+                        }
                     })
                     .catch(error => {
                         console.error('Error loading metadata:', error);
@@ -942,7 +778,7 @@
                 document.addEventListener('wheel', (event) => {
                     window.isScrolling = true;
                     window.lastScrollTime ??= Date.now();
-                    if (this.currentElement && window.lastScrollTime + 200 < Date.now()) {
+                    if (this.currentElement !== '' && window.lastScrollTime + 200 < Date.now()) {
                         if (event.deltaX > 30 && event.deltaY < 30) {
                             this.slideRight()
                         }
@@ -952,6 +788,8 @@
                         window.lastScrollTime = Date.now();
                     }
                 });
+
+                this.getElement(this.currentElement || 0)
                 // Preload initial chunks
                 // for (let i = 0; i < 5; i++) {
                 //     await this.loadChunk(i);

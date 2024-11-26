@@ -4,7 +4,7 @@ const DEFAULT_LOAD_FILE = 'web/data/data.json'
 const DEFAULT_SAVE_FILE = 'web/data/data.json'
 
 function toBase64(n) {
-    n = n + 1
+    if (n == 0) return 'A'
     let base64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-='
     let result = ''
     while (n > 0) {
@@ -14,6 +14,14 @@ function toBase64(n) {
     return result
 }
 
+function fromBase64(value) {
+    let base64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-='
+    let result = 0
+    for (let i = 0; i < value.length; i++) {
+        result = (result * 64 + base64.indexOf(value[i]))
+    }
+    return result
+}
 // Takes { attempted, icons, costs }, returns { index, data }
 function compress(data) {
     console.log("Compressing...")
@@ -90,4 +98,4 @@ function load(filepath = DEFAULT_LOAD_FILE) {
     return data
 }
 
-module.exports = { compress, uncompress, getCosts, save, load }
+module.exports = { fromBase64, toBase64, compress, uncompress, getCosts, save, load }
