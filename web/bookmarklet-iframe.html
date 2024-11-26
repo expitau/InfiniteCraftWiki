@@ -24,9 +24,6 @@
       fetch(DATA_PREFIX + `/metadata.json`)
                     .then(response => { console.log(response); return response.json() })
                     .then(metadata => {
-                        this.data.metadata.recipeCount = metadata.recipeCount
-                        this.data.metadata.elementCount = metadata.elementCount
-
                         for (let i = 0; i < metadata.indexCount; i++) {
                             fetch(DATA_PREFIX + `/index/idx-${i + 1}.json`).then(res => res.json()).then(chunk => {
                                 console.log("Loaded " + i)
