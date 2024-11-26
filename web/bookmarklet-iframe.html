@@ -18,12 +18,29 @@
       let saveData = [];
       let index = null;
       let isIndexReady = false;
-      fetch(`https://raw.githubusercontent.com/expitau/InfiniteCraftWiki/main/web/data/index.json`)
-         .then(res => res.json())
-         .then(data => {
-            index = Object.fromEntries(Object.entries(data).map(x => [x[1][1], x[0]]));;
-            isIndexReady = true;
-         });
+      let DATA_PREFIX = `https://expitau.com/InfiniteCraftWiki/data`
+      let indexChunks = []
+
+      fetch(DATA_PREFIX + `/metadata.json`)
+                    .then(response => { console.log(response); return response.json() })
+                    .then(metadata => {
+                        this.data.metadata.recipeCount = metadata.recipeCount
+                        this.data.metadata.elementCount = metadata.elementCount
+
+                        for (let i = 0; i < metadata.indexCount; i++) {
+                            fetch(DATA_PREFIX + `/index/idx-${i + 1}.json`).then(res => res.json()).then(chunk => {
+                                console.log("Loaded " + i)
+                                indexChunks = indexChunks.concat(chunk.map(x => [x[2], x[0]]))
+                                if (indexChunks.length == metadata.indexCount) {
+                                    index = Object.fromEntries(indexChunks)
+                                    isIndexReady = true;
+                                }
+                            })
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading metadata:', error);
+                    });
 
       function sendDataToWiki(type, data = {}) {
          wikiTab.postMessage(JSON.stringify({ type, data }), `https://${window.location.host}`);

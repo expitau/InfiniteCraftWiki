@@ -743,6 +743,7 @@
                 }
 
                 function processDataFromIframe(data) {
+                    console.log("Recieved data")
                     if (data.type == 'update') {
                         console.log('Updated data received');
                         this.saveDataArray = data.data;
