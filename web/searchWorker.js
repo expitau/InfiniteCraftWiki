@@ -1,11 +1,11 @@
 let chunks = {}
 let numChunks = 0
 
-let DATA_PREFIX = '/web/data'
-fetch(DATA_PREFIX + '/metadata.json').then(res => res.json()).then(data => {
+let DATA_PREFIX = 'data/'
+fetch(DATA_PREFIX + 'metadata.json').then(res => res.json()).then(data => {
     numChunks = data.indexCount
     for (let i = 0; i < data.indexCount; i++) {
-        fetch(DATA_PREFIX + `/index/idx-${i+1}.json`).then(res => res.json())
+        fetch(DATA_PREFIX + `index/idx-${i+1}.json`).then(res => res.json())
         .then(chunk => {
             chunks[i] = chunk
             if (Object.keys(chunks).length == numChunks) {
