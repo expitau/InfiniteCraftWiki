@@ -73,7 +73,7 @@
             }, 1000);
             return
          }
-         saveData = JSON.parse(data.data).elements.map(a => index[a.text]).filter(x => x);
+         saveData = JSON.parse(data.data).elements.map(a => index[a.text]).filter(x => x === 0 || x);
 
          if (saveData.join(",") !== lastSaveData.join(",")) {
             console.log("Sending update", saveData, lastSaveData)
