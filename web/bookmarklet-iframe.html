@@ -20,6 +20,7 @@
       let isIndexReady = false;
       let DATA_PREFIX = `https://expitau.com/InfiniteCraftWiki/data`
       let indexChunks = []
+      let indexChunkCount = 0
 
       fetch(DATA_PREFIX + `/metadata.json`)
                     .then(response => { console.log(response); return response.json() })
@@ -28,7 +29,8 @@
                             fetch(DATA_PREFIX + `/index/idx-${i + 1}.json`).then(res => res.json()).then(chunk => {
                                 console.log("Loaded " + i)
                                 indexChunks = indexChunks.concat(chunk.map(x => [x[2], x[0]]))
-                                if (indexChunks.length == metadata.indexCount) {
+                                indexChunkCount += 1
+                                if (indexChunkCount >= metadata.indexCount) {
                                     index = Object.fromEntries(indexChunks)
                                     isIndexReady = true;
                                 }
