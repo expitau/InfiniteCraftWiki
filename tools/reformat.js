@@ -111,9 +111,15 @@ for (let i = 0; i < recipes.length; i++) {
         console.log(Math.floor(i / recipes.length * 100) + "%")
     }
     let [A, B, C] = recipes[i];
+    let costA = resolvedObj[A][3]
+    let costB = resolvedObj[B][3]
     resolvedObj[A][4].push([resolvedObj[B][0], resolvedObj[C][0]])
     resolvedObj[B][4].push([resolvedObj[A][0], resolvedObj[C][0]])
-    resolvedObj[C][5].push([resolvedObj[A][0], resolvedObj[B][0]])
+    if (costA > costB) {
+        resolvedObj[C][5].push([resolvedObj[B][0], resolvedObj[A][0]])
+    } else {
+        resolvedObj[C][5].push([resolvedObj[A][0], resolvedObj[B][0]])
+    }
 }
 
 console.log("Sorting and finalizing (takes 60s)...")

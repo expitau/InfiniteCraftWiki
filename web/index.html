@@ -506,7 +506,41 @@
                             required.push(B)
                         }
                     }
-                    console.log(tree)
+                    crafted = [0,1,2,3]
+                    // // Iterate over tree, if an ingredient that has not been crafted yet is used, then put it underneath the current element
+                    // for (let i = tree.length - 1; i > 0; i--) {
+                    //     let [A, B, C] = tree[i]
+                    //     console.log(tree[i], i)
+                    //     if (!crafted.includes(A)) {
+                    //         // Iterate through tree, find where A is crafted, and splice it into current position
+                    //         for (let j = i - 1; j >= 0; j--) {
+                    //             let [D, E, F] = tree[j]
+                    //             if (F == A) {
+                    //                 tree.splice(j, 1)
+                    //                 tree.splice(i+1, 0, [D, E, F])
+                    //                 break
+                    //             }
+                    //         }
+                    //         i = tree.length - 1;
+                    //         crafted = [0,1,2,3]
+                    //         continue
+                    //     }
+                    //     if (!crafted.includes(B)) {
+                    //         // Iterate through tree, find where B is crafted, and splice it into current position
+                    //         for (let j = i - 1; j >= 0; j--) {
+                    //             let [D, E, F] = tree[j]
+                    //             if (F == B) {
+                    //                 tree.splice(j, 1)
+                    //                 tree.splice(i+1, 0, [D, E, F])
+                    //                 break
+                    //             }
+                    //         }
+                    //         i = tree.length - 1;
+                    //         crafted = [0,1,2,3]
+                    //         continue
+                    //     }
+                    //     crafted.push(C)
+                    // }
                     return tree
                 },
                 elementList: function () {
@@ -546,10 +580,10 @@
                             for (let [index, rawTo, rawFrom] of data) {
                                 let from = rawFrom.map(x => base64ToRecipeSegment(x));
                                 let to = rawTo.map(x => base64ToRecipeSegment(x));
-                                chunkData[index] = {
+                                chunkData[index] = Object.freeze({
                                     from: from,
                                     to: to,
-                                };
+                                });
                             }
 
                             this.data.chunks = {
@@ -694,7 +728,7 @@
                         for (let i = 0; i < metadata.indexCount; i++) {
                             fetch(DATA_PREFIX + `/index/idx-${i + 1}.json`).then(res => res.json()).then(chunk => {
                                 console.log("Loaded " + i)
-                                this.data.index = Object.assign({}, this.data.index, Object.fromEntries(chunk.map(x => [x[0], [x[1], x[2], x[3], x[4], x[5]]])))
+                                this.data.index = Object.freeze(Object.assign({}, this.data.index, Object.fromEntries(chunk.map(x => [x[0], [x[1], x[2], x[3], x[4], x[5]]]))))
                             })
                         }
                     })
